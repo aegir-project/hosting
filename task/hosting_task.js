@@ -42,14 +42,14 @@ function hostingTaskRefreshQueueBlock() {
   }
 
   var hostingTaskQueueRefreshCallback = function(data, responseText) {
-    $("#hosting-task-queue-block").html(data.markup);
+    $("#block-views-hosting_task_list-block .content").html(data.markup);
 
-    hostingTaskBindButtons('#hosting-task-queue-block');
+    hostingTaskBindButtons('#block-views-hosting_task_list-block');
     setTimeout("hostingTaskRefreshQueueBlock()", 30000);
   }
- 
-  hostingTaskAddOverlay('#hosting-task-queue-block');
-  $.get(Drupal.settings.basePath + 'hosting/tasks/queue', null, hostingTaskQueueRefreshCallback , 'json' );
+
+  hostingTaskAddOverlay('#block-views-hosting_task_list-block .view-content');
+  $.get(Drupal.settings.basePath + 'hosting/tasks/queue', null, hostingTaskQueueRefreshCallback , 'json');
 }
 
 $(document).ready(function() {

@@ -398,3 +398,32 @@ function hosting_update_6015(&$sandbox) {
 
   return $ret;
 }
+
+/**
+ * Replace lists with Views.
+ */
+function hosting_update_6016() {
+  $ret = array();
+
+  // Enable and install Views and Views Bulk operations.
+  module_enable(array('views', 'views_bulk_operations'));
+  views_install();
+
+  // Flush all Drupal caches.
+  drupal_flush_all_caches();
+
+  // Enable Install Profile API module and load includes.
+  module_enable(array('install_profile_api'));
+  drupal_load('module', 'install_profile_api');
+  install_include(array('block'));
+
+  // Enable blocks.
+  $theme = 'eldir';
+  install_set_block('views', 'hosting_task_list-block' , $theme, 'right', 0);
+  install_set_block('views', '-exp-hosting_site_list-page_1' , $theme, 'content_top', 0, 1, 'hosting/sites');
+  install_set_block('views', 'hosting_site_list-block_1' , $theme, 'content_bottom', 0, 1, 'hosting/c/platform_*');
+  install_set_block('views', 'hosting_site_list-block_2' , $theme, 'content_bottom', 0, 2, "<?php\n\$node = menu_get_object();\nif (!empty(\$node)) {\n  return \$node->package_type == 'profile';\n}\n?>");
+  install_set_block('views', 'hosting_site_list-block_3' , $theme, 'content_bottom', 0, 2, "<?php\n\$node = menu_get_object();\nif (!empty(\$node)) {\n  return \$node->type == 'client';\n}\n?>");
+
+  return $ret;
+}

@@ -448,7 +448,7 @@ function hosting_platform_view($node, $teaser = FALSE, $page = FALSE) {
   $node->content['info']['status'] = array(
     '#type' => 'item',
     '#title' => t('Status'),
-    '#value' => _hosting_platform_status($node),
+    '#value' => _hosting_platform_status($node->platform_status),
   );
 
   if ($node->makefile) {
@@ -468,33 +468,23 @@ function hosting_platform_view($node, $teaser = FALSE, $page = FALSE) {
       '#weight' => -6
     );
   }
-  
-  if ($page) {
-    $node->content['sites_view'] = array(
+
+  // Task list
+  if ($page && $node->nid) {
+    $node->content['tasks_view'] = array(
       '#type' => 'item',
-      '#value' => drupal_get_form('hosting_site_list_form', 'platform', $node->nid),
-      '#prefix' => '<div id="hosting-site-list">',
+      '#value' => hosting_task_table($node),
+      '#prefix' => '<div id="hosting-task-list">',
       '#suffix' => '</div>',
-      '#weight' => 10
+      '#weight' => 10,
     );
+    $settings['hostingTaskRefresh'] = array(
+      'nid' => $node->nid,
+      'changed' => $node->changed,
+    );
+    drupal_add_js($settings, 'setting');
 
-    // Task list
-    if ($node->nid) {
-      $node->content['tasks_view'] = array(
-        '#type' => 'item',
-        '#value' => hosting_task_table($node),
-        '#prefix' => '<div id="hosting-task-list">',
-        '#suffix' => '</div>',
-        '#weight' => 10,
-      );
-      $settings['hostingTaskRefresh'] = array(
-        'nid' => $node->nid,
-        'changed' => $node->changed,
-      );
-      drupal_add_js($settings, 'setting');
-
-      drupal_add_js(drupal_get_path('module','hosting_task') . '/hosting_task.js');
-    }
+    drupal_add_js(drupal_get_path('module','hosting_task') . '/hosting_task.js');
   }
   return $node;
 }
@@ -506,14 +496,14 @@ function hosting_platform_hosting_site_site_list_filters() {
   return array('platform');
 }
 
-function _hosting_platform_status($node) {
+function _hosting_platform_status($status) {
   static $labels = array(
     HOSTING_PLATFORM_QUEUED => "Queued",
     HOSTING_PLATFORM_ENABLED => "Enabled",
     HOSTING_PLATFORM_DELETED => "Deleted",
     HOSTING_PLATFORM_LOCKED => "Locked",
   );
-  return $labels[$node->platform_status];
+  return is_object($status) ? $labels[$status->platform_status] : $labels[$status];
 }
 
 /**
@@ -546,15 +536,14 @@ function hosting_platform_views_api() {
 /**
  * Define the classes that correspond to the platform status.
  */
-function _hosting_platform_list_class($node) {
+function _hosting_platform_list_class($status) {
   static $labels = array(
     HOSTING_PLATFORM_QUEUED => "hosting-queue",
     HOSTING_PLATFORM_ENABLED => "hosting-success",
     HOSTING_PLATFORM_DELETED => "hosting-error",
     HOSTING_PLATFORM_LOCKED => "hosting-warning",
   );
-
-  return $labels[$node->platform_status]; 
+  return is_object($status) ? $labels[$status->platform_status] : $labels[$status];
 }
 
 /**
@@ -578,7 +567,7 @@ function hosting_platform_listing() {
     $row[] = hosting_format_interval($node->verified);
     $total += $count = hosting_site_count($nid, array(HOSTING_SITE_ENABLED, HOSTING_SITE_DISABLED, HOSTING_SITE_QUEUED));
     $row[] = $count;
-    $rows[] = array('data' => $row, 'class' => _hosting_platform_list_class($node));
+    $rows[] = array('data' => $row, 'class' => _hosting_platform_list_class($node->platform_status));
   }
   $row = array();
   $row[] = array('data' => t('Total sites hosted'), 'colspan' => 4);

@@ -32,45 +32,6 @@ function hosting_package_node_info() {
   return $types;
 }
 
-/**
- * Implementation of hook_menu().
- */
-function hosting_package_menu() {
-  $items = array();
-
-  $items['node/%hosting_package_node/packages'] = array(
-    'title' => 'Packages',
-    'description' => 'List of packages available for this platform',
-    'page callback' => 'hosting_package_list',
-    'page arguments' => array(1),
-    'type' => MENU_LOCAL_TASK,
-    'access arguments' => array('view package'),
-    'weight' => 1,
-  );
-  $items['node/%hosting_package_node/packages/all'] = array(
-    'title' => 'All packages',
-    'description' => 'List of all packages',
-    'page callback' => 'hosting_package_list',
-    'page arguments' => array(1),
-    'access arguments' => array('view package'),
-    'type' => MENU_DEFAULT_LOCAL_TASK,
-    'weight' => -1,
-  );
-  $x = 0;
-  foreach (_hosting_package_types() as $type => $description) {
-    $items['node/%hosting_package_node/packages/' . $type] = array(
-      'title' => $description,
-      'description' => $description,
-      'page callback' => 'hosting_package_list',
-      'page arguments' => array(1, $type),
-      'access arguments' => array('view package'),
-      'type' => MENU_LOCAL_TASK,
-      'weight' => $x++,
-    );
-  }
-  return $items;
-}
-
 function hosting_package_node_load($arg) {
  if (!is_numeric($arg)) {
     return FALSE;
@@ -319,17 +280,7 @@ function hosting_package_view($node, $teaser = FALSE, $page = FALSE) {
   }
   $node->content['info']['#suffix'] = '</div>';
 
-  if ($node->package_type == 'profile') {
-    $node->content['sites_view'] = array(
-      '#type' => 'item',
-      '#value' => drupal_get_form('hosting_site_list_form', 'profile', $node->nid),
-      '#prefix' => '<div id="hosting-site-list">',
-      '#suffix' => '</div>',
-      '#weight' => 10
-    );
-  }
-  else {  // For modules & themes
-
+  if (!$node->package_type == 'profile') {
     $node->content['hosting-package-usage'] = array(
       '#prefix' => '<div id="hosting-package-usage">',
       '#suffix' => '</div>',
@@ -461,55 +412,11 @@ function hosting_package_sync(&$data) {
 }
 
 /**
- * Display a list of packages associated to a node
- * @TODO Add ability to filter by additional fields
- * @TODO Add paging.
- */
-function hosting_package_list($ref, $type = null) {
-  drupal_set_title(t('Packages on @reference', array('@reference' => $ref->title)));
-  $header = array(
-    array('data' => t('Status'), 'field' => 'status', 'sort' => 'DESC'),
-    array('data' => t('Package'), 'field' => 'short_name'),
-    array('data' => t('Release'), 'field' => 'version'),
-    array('data' => t('Package type'), 'field' => 'package_type'),
-    );
-  $args[] = $ref->nid;
-
-  if (!is_null($type)) {
-    $cond = " AND h.package_type = '%s'";
-    $args[] = $type;
-  }
-
-  $sql = "SELECT h.nid as 'package', i.status, h.short_name, i.version, h.package_type, i.status FROM {hosting_package} h
-    LEFT JOIN {hosting_package_instance} i ON i.package_id=h.nid WHERE i.rid=%d" . $cond;
-  $sql .= tablesort_sql($header);
-  // @TODO hide deleted sites
-  $result = pager_query(db_rewrite_sql($sql, 'h'), 25, 2, null, $args);
-  $view_package_perm = user_access('view package');
-
-  if (!$result) {
-    return t('No packages are associated with @reference', array('@reference' => $ref->title));
-  }
-  $rows = array();
-  while ($package = db_fetch_object($result)) {
-    $row_class = ($package->status == 1) ? 'hosting-success' : 'hosting-info';
-    $row = array();
-    $row[] =  array('data' => ($package->status) ? t('Enabled') : t('Available') , 'class'=> 'hosting-status');
-    $row[] =  ($view_package_perm) ? l(filter_xss($package->short_name), 'node/' . $package->package) : $package->short_name;
-    $row[] =  $package->version;
-    $row[] = filter_xss($package->package_type);
-    $rows[] = array('data' => $row, 'class' => $row_class);
-  }
-
-  return theme('table',  $header, $rows, array('class' => 'hosting-table')) . theme('pager', null, 25, 2);
-}
-
-/**
  * Implementation of hook_views_api().
  */
 function hosting_package_views_api() {
   return array(
-    'api' => 2,
+    'api' => 3,
     'path' => drupal_get_path('module', 'hosting_package'),
   );
 }

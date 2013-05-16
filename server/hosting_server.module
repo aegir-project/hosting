@@ -575,3 +575,13 @@ function hosting_get_servers($service) {
   drupal_alter('hosting_servers_titles', $return, $service);
   return $return;
 }
+
+/**
+ * Views integration
+ */
+function hosting_server_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'hosting_server'),
+  );
+}

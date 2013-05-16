@@ -68,6 +68,18 @@ td.hosting-actions .hosting-button-disabled {
 }
 
 /**
+ * Hosting queue list.
+ */
+
+.view-hosting-task-list .views-field-task-type {
+  text-transform: capitalize;
+}
+
+.view-hosting-task-list .views-field-task-type a {
+  text-transform: none;
+}
+
+/**
  * Status icons, colors.
  */
 
@@ -212,7 +224,7 @@ div.hosting-site-field-description {
   -webkit-border-radius: 3px;
 }
 
-div#hosting-task-list, div#hosting-task-queue-block { position: relative }
+div#hosting-task-list, div.view-hosting-task-list .view-content { position: relative }
 div.modalframe-page-wrapper { background: white }
 
 

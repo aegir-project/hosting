@@ -73,7 +73,11 @@ function hosting_task_ajax_list($node) {
 }
 
 function hosting_task_ajax_queue() {
-  $return['markup'] = hosting_task_queue_block();
+  $view = views_get_view('hosting_task_list');
+  $view->set_display('block');
+  $view->pre_execute();
+  $return['markup'] = $view->render('block');
+
   drupal_json($return);
   exit();
 }
@@ -375,6 +379,16 @@ function hosting_add_task($nid, $type, $args = null, $status = HOSTING_TASK_QUEU
 
  return $task;
 }
+
+/**
+ * Callback for Node operations.
+ */
+function hosting_task_operation($nodes, $type) {
+  foreach ($nodes as $nid) {
+    hosting_add_task($nid, $type);
+  }
+}
+
 /**
  * Implementation of hook_form().
  */
@@ -1197,7 +1211,26 @@ function hosting_task_status_class($status = null) {
  */
 function hosting_task_views_api() {
   return array(
-    'api' => 2, 
+    'api' => 3,
     'path' => drupal_get_path('module', 'hosting_task'),
   );
+}
+
+/**
+ * Implements hook_preprocess_views_view_table().
+ */
+function hosting_task_preprocess_views_view_table(&$vars) {
+  $id = "{$vars['view']->name}-{$vars['view']->current_display}";
+
+  switch ($id) {
+    case 'hosting_task_list-block':
+      modalframe_parent_js();
+      drupal_add_js(drupal_get_path('module','hosting_task') . '/hosting_task.js');
+
+      $settings['hostingTaskRefresh'] = array(
+        'queueBlock' => 1
+      );
+      drupal_add_js($settings, 'setting');
+      break;
+  }
 }

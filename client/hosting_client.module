@@ -491,14 +491,6 @@ function hosting_client_view($node, $teaser = FALSE, $page = FALSE) {
 
   $node->content['info']['#suffix'] = '</div>';
   if ($page) {
-    $node->content['sites_view'] = array(
-      '#type' => 'item',
-      '#value' => drupal_get_form('hosting_site_list_form', 'client', $node->nid),
-      '#prefix' => '<div id="hosting-site-list">',
-      '#suffix' => '</div>',
-      '#weight' => 10
-    );
-
     $users = hosting_client_users($node);
     foreach ($users as $uid => $uname) {
       if (user_access('access user profiles') || ($uid == $GLOBALS['user']->uid)) {

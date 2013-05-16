@@ -342,16 +342,11 @@ function hosting_block($op = 'list', $delta = 0, $edit = array()) {
     case 'list' :
       $blocks['hosting_summary'] = array('info' => t('Hosting summary'), 
             'enabled' => 1, 'region' => 'left', 'weight' => 10);
-      $blocks['hosting_queues'] = array('info' => t('Hosting queues'),
-            'enabled' => 1, 'region' => 'right', 'weight' => 0);
       $blocks['hosting_queues_summary'] = array('info' => t('Hosting queues summary'),
             'enabled' => 1, 'region' => 'right', 'weight' => 1, 'cache' => BLOCK_NO_CACHE);
       return $blocks;
     case 'view' : 
       switch ($delta) {
-      case 'hosting_queues':
-        return array('title' => t('Queues'),
-                     'content' => hosting_queue_block());
       case 'hosting_queues_summary':
         return array('title' => t('Queues summary'),
                      'content' => hosting_queue_summary_block());
@@ -384,25 +379,6 @@ function hosting_queue_summary_block() {
         $disp[] = $title . ": " . $info[$key]; 
       }
       $output .= theme('item_list', $disp, $info['name']);
-    }
-    return $output;
-  }
-}
-
-/**
- * Build a block of the hosting queues.
- *
- * @see hosting_TASK_SINGULAR_summary()
- */
-function hosting_queue_block() {
-  if (user_access('access task logs')) {
-    $queues = hosting_get_queues();
-    $output = '';
-    foreach ($queues as $queue => $info) {
-      $func = 'hosting_'.$info['singular'].'_summary';
-      if (function_exists($func)) {
-        $output .= $func();
-      }
     }
     return $output;
   }
