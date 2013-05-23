@@ -476,13 +476,21 @@ function hosting_import_site($site_id, $data, $platform) {
  */
 function _hosting_site_status($node) {
   $status = (is_numeric($node)) ? $node : $node->site_status;
+  $labels = _hosting_site_status_options();
+  return $labels[$status];
+}
+
+/**
+ * Define the status type labels.
+ */
+function _hosting_site_status_options() {
   static $labels = array(
     HOSTING_SITE_QUEUED => "Queued",
     HOSTING_SITE_ENABLED => "Enabled",
     HOSTING_SITE_DELETED => "Deleted",
     HOSTING_SITE_DISABLED => "Disabled",
   );
-  return $labels[$status];
+  return $labels;
 }
 
 /**

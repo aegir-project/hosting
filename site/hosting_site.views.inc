@@ -98,7 +98,8 @@ function hosting_site_views_data() {
       'click sortable' => TRUE,
     ),
     'filter' => array(
-      'handler' => 'views_handler_filter_numeric',
+      'handler' => 'views_handler_filter_in_operator',
+      'options callback' => '_hosting_site_status_options',
     ),
   );
 
