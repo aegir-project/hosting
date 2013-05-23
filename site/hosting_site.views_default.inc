@@ -391,8 +391,10 @@ function hosting_site_views_default_views() {
   $handler->display->display_options['filters']['status']['id'] = 'status';
   $handler->display->display_options['filters']['status']['table'] = 'hosting_site';
   $handler->display->display_options['filters']['status']['field'] = 'status';
-  $handler->display->display_options['filters']['status']['operator'] = '!=';
-  $handler->display->display_options['filters']['status']['value']['value'] = '-2';
+  $handler->display->display_options['filters']['status']['operator'] = 'not in';
+  $handler->display->display_options['filters']['status']['value'] = array(
+    -2 => '-2',
+  );
   $handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
   /* Filter: Node: Published */
   $handler->display->display_options['filters']['status_1']['id'] = 'status_1';
@@ -467,8 +469,10 @@ function hosting_site_views_default_views() {
   $handler->display->display_options['filters']['status']['id'] = 'status';
   $handler->display->display_options['filters']['status']['table'] = 'hosting_site';
   $handler->display->display_options['filters']['status']['field'] = 'status';
-  $handler->display->display_options['filters']['status']['operator'] = '!=';
-  $handler->display->display_options['filters']['status']['value']['value'] = '-2';
+  $handler->display->display_options['filters']['status']['operator'] = 'not in';
+  $handler->display->display_options['filters']['status']['value'] = array(
+    -2 => '-2',
+  );
   $handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
   /* Filter: Node: Published */
   $handler->display->display_options['filters']['status_1']['id'] = 'status_1';
@@ -508,8 +512,10 @@ function hosting_site_views_default_views() {
   $handler->display->display_options['filters']['status']['id'] = 'status';
   $handler->display->display_options['filters']['status']['table'] = 'hosting_site';
   $handler->display->display_options['filters']['status']['field'] = 'status';
-  $handler->display->display_options['filters']['status']['operator'] = '!=';
-  $handler->display->display_options['filters']['status']['value']['value'] = '-2';
+  $handler->display->display_options['filters']['status']['operator'] = 'not in';
+  $handler->display->display_options['filters']['status']['value'] = array(
+    -2 => '-2',
+  );
   $handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
   /* Filter: Node: Published */
   $handler->display->display_options['filters']['status_1']['id'] = 'status_1';
@@ -549,8 +555,10 @@ function hosting_site_views_default_views() {
   $handler->display->display_options['filters']['status']['id'] = 'status';
   $handler->display->display_options['filters']['status']['table'] = 'hosting_site';
   $handler->display->display_options['filters']['status']['field'] = 'status';
-  $handler->display->display_options['filters']['status']['operator'] = '!=';
-  $handler->display->display_options['filters']['status']['value']['value'] = '-2';
+  $handler->display->display_options['filters']['status']['operator'] = 'not in';
+  $handler->display->display_options['filters']['status']['value'] = array(
+    -2 => '-2',
+  );
   $handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
   /* Filter: Node: Published */
   $handler->display->display_options['filters']['status_1']['id'] = 'status_1';
