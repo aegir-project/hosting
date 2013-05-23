@@ -35,7 +35,7 @@ function hosting_ip_save($node, $update = FALSE) {
     }
   }
 
-  $ips = is_array($node->new_ip_addresses) ? $node->ip_addresses : array();
+  $ips = is_array($node->new_ip_addresses) ? $node->new_ip_addresses : array();
   foreach ($ips as $id => $ip) {
     if (!empty($ip)) {
       // new entries are prefixed with the string 'new', insert those
