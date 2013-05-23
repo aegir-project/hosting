@@ -719,21 +719,21 @@ function hosting_queues_configure_submit($form, &$form_state) {
   drupal_set_message(t('The queue settings have been updated.'));
 }
 
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
 function hosting_form_views_bulk_operations_form__1_alter(&$form, &$form_state) {
-  // Check if we're on a client node page
-  $node = menu_get_object();
-  if (isset($node) && $node->type == 'client') {
-    $form['select']['#title'] = 'Client site operations';
-  }
-  switch ($form['#plugin']['view']['current_display']) {
+  switch ($form['#plugin']->view->current_display) {
     case 'page_platforms':
       $form['select']['#title'] = 'Platform operations';
       break;
     case 'page_sites':
       $form['select']['#title'] = 'Site operations';
       break;
+    case 'block_client':
+      $form['select']['#title'] = 'Client site operations';
+      break;
   }
-  dsm($form);
 }
 
 /**
