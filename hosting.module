@@ -728,10 +728,9 @@ function hosting_form_views_bulk_operations_form__1_alter(&$form, &$form_state) 
       $form['select']['#title'] = 'Platform operations';
       break;
     case 'page_sites':
-      $form['select']['#title'] = 'Site operations';
-      break;
     case 'block_client':
-      $form['select']['#title'] = 'Client site operations';
+    case 'block_profile':
+      $form['select']['#title'] = 'Site operations';
       break;
   }
 }
