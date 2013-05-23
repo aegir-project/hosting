@@ -238,7 +238,7 @@ function hosting_package_views_default_views() {
   $handler->display->display_options['filters']['package_type']['expose']['reduce'] = 0;
 
   /* Display: Page */
-  $handler = $view->new_display('page', 'Page', 'page_1');
+  $handler = $view->new_display('page', 'Page', 'page_packages');
   $handler->display->display_options['path'] = 'node/%/packages';
   $handler->display->display_options['menu']['type'] = 'tab';
   $handler->display->display_options['menu']['title'] = 'Packages';

@@ -427,7 +427,7 @@ function hosting_platform_views_default_views() {
   $handler->display->display_options['filters']['status_1']['allow_null'] = 1;
 
   /* Display: Page */
-  $handler = $view->new_display('page', 'Page', 'page_1');
+  $handler = $view->new_display('page', 'Page', 'page_platforms');
   $handler->display->display_options['path'] = 'hosting/platforms';
   $handler->display->display_options['menu']['type'] = 'normal';
   $handler->display->display_options['menu']['title'] = 'Platforms';
