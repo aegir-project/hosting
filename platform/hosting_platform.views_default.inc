@@ -36,6 +36,7 @@ function hosting_platform_views_default_views() {
     'status' => 'status',
     'status_1' => 'status_1',
     'title' => 'title',
+    'release' => 'release',
     'title_1' => 'title_1',
     'verified' => 'verified',
     'sites' => 'sites',
@@ -55,6 +56,12 @@ function hosting_platform_views_default_views() {
       'separator' => '',
     ),
     'title' => array(
+      'sortable' => 1,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
+    'release' => array(
       'sortable' => 1,
       'default_sort_order' => 'asc',
       'align' => '',
@@ -309,6 +316,27 @@ function hosting_platform_views_default_views() {
   $handler->display->display_options['fields']['title']['empty_zero'] = 0;
   $handler->display->display_options['fields']['title']['hide_alter_empty'] = 1;
   $handler->display->display_options['fields']['title']['link_to_node'] = 1;
+  /* Field: Hosting Platform: Release */
+  $handler->display->display_options['fields']['release']['id'] = 'release';
+  $handler->display->display_options['fields']['release']['table'] = 'hosting_platform';
+  $handler->display->display_options['fields']['release']['field'] = 'release';
+  $handler->display->display_options['fields']['release']['alter']['alter_text'] = 0;
+  $handler->display->display_options['fields']['release']['alter']['make_link'] = 0;
+  $handler->display->display_options['fields']['release']['alter']['absolute'] = 0;
+  $handler->display->display_options['fields']['release']['alter']['external'] = 0;
+  $handler->display->display_options['fields']['release']['alter']['replace_spaces'] = 0;
+  $handler->display->display_options['fields']['release']['alter']['trim_whitespace'] = 0;
+  $handler->display->display_options['fields']['release']['alter']['nl2br'] = 0;
+  $handler->display->display_options['fields']['release']['alter']['word_boundary'] = 1;
+  $handler->display->display_options['fields']['release']['alter']['ellipsis'] = 1;
+  $handler->display->display_options['fields']['release']['alter']['strip_tags'] = 0;
+  $handler->display->display_options['fields']['release']['alter']['trim'] = 0;
+  $handler->display->display_options['fields']['release']['alter']['html'] = 0;
+  $handler->display->display_options['fields']['release']['element_label_colon'] = 1;
+  $handler->display->display_options['fields']['release']['element_default_classes'] = 1;
+  $handler->display->display_options['fields']['release']['hide_empty'] = 0;
+  $handler->display->display_options['fields']['release']['empty_zero'] = 0;
+  $handler->display->display_options['fields']['release']['hide_alter_empty'] = 1;
   /* Field: Node: Title */
   $handler->display->display_options['fields']['title_1']['id'] = 'title_1';
   $handler->display->display_options['fields']['title_1']['table'] = 'node';

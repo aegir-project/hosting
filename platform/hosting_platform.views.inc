@@ -14,10 +14,12 @@ function hosting_platform_views_handlers() {
       ),
     'handlers' => array(
       // field handlers
+      'views_handler_field_hosting_platform_release' => array(
+        'parent' => 'views_handler_field',
+      ),
       'views_handler_field_hosting_platform_status' => array(
         'parent' => 'views_handler_field_hosting_site_status',
       ),
-      // field handlers
       'views_handler_field_hosting_platform_sites' => array(
         'parent' => 'views_handler_field',
       ),
@@ -60,14 +62,15 @@ function hosting_platform_views_data() {
     ),
   );
 
-  // $data['hosting_platform']['release_id'] = array(
-  //   'title' => t('Release ID'),
-  //   'help' => t('The release ID.'),
-  //   'field' => array(
-  //     'handler' => 'views_handler_field',
-  //     'click sortable' => TRUE,
-  //   ),
-  // );
+  $data['hosting_platform']['release'] = array(
+    'title' => t('Release'),
+    'help' => t('The release name.'),
+    'field' => array(
+      'field' => 'nid',
+      'handler' => 'views_handler_field_hosting_platform_release',
+      'click sortable' => TRUE,
+    ),
+  );
 
   $data['hosting_platform']['verified'] = array(
     'title' => t('Verified Date'),
@@ -96,7 +99,6 @@ function hosting_platform_views_data() {
     'field' => array(
       'handler' => 'views_handler_field_hosting_platform_sites',
       'field' => 'nid',
-      // 'click sortable' => TRUE,
     ),
   );
 
