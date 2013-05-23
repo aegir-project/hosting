@@ -420,10 +420,10 @@ function hosting_update_6016() {
   // Enable blocks.
   $theme = 'eldir';
   install_set_block('views', 'hosting_task_list-block' , $theme, 'right', 0);
-  install_set_block('views', '-exp-hosting_site_list-page_1' , $theme, 'content_top', 0, 1, 'hosting/sites');
-  install_set_block('views', 'hosting_site_list-block_1' , $theme, 'content_bottom', 0, 1, 'hosting/c/platform_*');
-  install_set_block('views', 'hosting_site_list-block_2' , $theme, 'content_bottom', 0, 2, "<?php\n\$node = menu_get_object();\nif (!empty(\$node)) {\n  return \$node->package_type == 'profile';\n}\n?>");
-  install_set_block('views', 'hosting_site_list-block_3' , $theme, 'content_bottom', 0, 2, "<?php\n\$node = menu_get_object();\nif (!empty(\$node)) {\n  return \$node->type == 'client';\n}\n?>");
+  install_set_block('views', '-exp-hosting_site_list-page_sites' , $theme, 'content_top', 0, 1, 'hosting/sites');
+  install_set_block('views', 'hosting_site_list-block_platform' , $theme, 'content_bottom', 0, 1, 'hosting/c/platform_*');
+  install_set_block('views', 'hosting_site_list-block_profile' , $theme, 'content_bottom', 0, 2, "<?php\n\$node = menu_get_object();\nif (!empty(\$node)) {\n  return \$node->package_type == 'profile';\n}\n?>");
+  install_set_block('views', 'hosting_site_list-block_client' , $theme, 'content_bottom', 0, 2, "<?php\n\$node = menu_get_object();\nif (!empty(\$node)) {\n  return \$node->type == 'client';\n}\n?>");
 
   return $ret;
 }
