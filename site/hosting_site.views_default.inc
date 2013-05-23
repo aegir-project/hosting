@@ -428,7 +428,7 @@ function hosting_site_views_default_views() {
   $handler->display->display_options['filters']['title_1']['case'] = 1;
 
   /* Display: Page */
-  $handler = $view->new_display('page', 'Page', 'page_sites');
+  $handler = $view->new_display('page', 'Page', 'page_1');
   $handler->display->display_options['exposed_block'] = TRUE;
   $handler->display->display_options['path'] = 'hosting/sites';
   $handler->display->display_options['menu']['type'] = 'normal';
@@ -438,7 +438,7 @@ function hosting_site_views_default_views() {
   $handler->display->display_options['menu']['name'] = 'primary-links';
 
   /* Display: Block: Platform */
-  $handler = $view->new_display('block', 'Block: Platform', 'block_platform');
+  $handler = $view->new_display('block', 'Block: Platform', 'block_1');
   $handler->display->display_options['defaults']['arguments'] = FALSE;
   /* Argument: Node: Nid */
   $handler->display->display_options['arguments']['nid']['id'] = 'nid';
