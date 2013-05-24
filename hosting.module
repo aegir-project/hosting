@@ -322,14 +322,13 @@ function hosting_init() {
 
 /**
  * Provide a welcome page for anonymous users.
- **/
+ *
+ * To override this page, users should simply change the site_frontpage
+ * setting to point to another page. The translation system can also be used.
+ */
 function hosting_welcome() {
-  $default_title = 'Welcome to Aegir';
-  $default_content = 'The Aegir hosting system allows developers and site administrators to automate many of the common tasks associated with deploying and managing large websites. Aegir makes it easy to install, upgrade, deploy, and backup an entire network of Drupal sites.';
-  drupal_set_title(variable_get('hosting_welcome_title', $default_title));
-  $content = '<div>' . variable_get('hosting_welcome_content', $default_content) . '</div>';
-
-  return $content;
+  drupal_set_title(t('Welcome to Aegir'));
+  return '<div>' . t('The Aegir hosting system allows developers and site administrators to automate many of the common tasks associated with deploying and managing large websites. Aegir makes it easy to install, upgrade, deploy, and backup an entire network of Drupal sites.') . '</div>';
 }
 
 /**

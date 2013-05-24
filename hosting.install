@@ -439,9 +439,6 @@ function hosting_update_6201() {
 function hosting_update_6202() {
   $ret = array();
 
-  variable_set('hosting_welcome_title', 'Welcome to Aegir');
-  variable_set('hosting_welcome_content', 'The Aegir hosting system allows developers and site administrators to automate many of the common tasks associated with deploying and managing large websites. Aegir makes it easy to install, upgrade, deploy, and backup an entire network of Drupal sites.');
-
   // Flush the menu cache.
   menu_rebuild();
 
