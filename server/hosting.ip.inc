@@ -109,22 +109,22 @@ function hosting_ip_allocate($cert, $site) {
   $server = node_load($platform->web_server);
 
   // IP allocation for master server
-  $ips = array(hosting_server_ip_allocate($server->nid));
+  $ips = array();
 
   // IP allocation for nodes in the cluster
   // XXX: this should be in classes, see below
   switch ($server->services['http']->type) {
   case 'pack':
-    foreach ($server->services['http']->master_servers as $server) {
-      $ips[] = hosting_server_ip_allocate($server);
+    foreach ($server->services['http']->master_servers as $s) {
+      $ips[] = hosting_server_ip_allocate($s);
     }
-    foreach ($server->services['http']->slave_servers as $server) {
-      $ips[] = hosting_server_ip_allocate($server);
+    foreach ($server->services['http']->slave_servers as $s) {
+      $ips[] = hosting_server_ip_allocate($s);
     }
     break;
   case 'cluster':
-    foreach ($server->services['http']->web_servers as $server) {
-      $ips[] = hosting_server_ip_allocate($server);
+    foreach ($server->services['http']->web_servers as $s) {
+      $ips[] = hosting_server_ip_allocate($s);
     }
     break;
   }
