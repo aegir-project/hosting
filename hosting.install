@@ -443,6 +443,8 @@ function hosting_update_6202() {
   module_enable(array('install_profile_api'));
   module_load_include('inc', 'install_profile_api', 'core/user');
 
+  install_remove_permissions(install_get_rid('aegir client'), array('access all views'));
+
   install_add_role('aegir platform manager');
   install_add_permissions(install_get_rid('aegir platform manager'), array('create clone task', 'create migrate task', 'create platform', 'delete platform', 'edit platform', 'view locked platforms', 'view platform', 'create site', 'delete site', 'edit site', 'view site', 'access task logs', 'create lock task', 'create unlock task', 'view revisions', 'search content', 'use advanced search'));
   install_add_role('aegir administrator');
