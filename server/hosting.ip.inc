@@ -109,7 +109,7 @@ function hosting_ip_allocate($cert, $site) {
   $server = node_load($platform->web_server);
 
   // IP allocation for master server
-  $ips = array(hosting_server_ip_allocate($cert, $server->nid));
+  $ips = array(hosting_server_ip_allocate($server->nid));
 
   // IP allocation for nodes in the cluster
   // XXX: this should be in classes, see below
