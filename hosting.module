@@ -43,7 +43,12 @@ function hosting_menu() {
     'type' => MENU_CALLBACK
   );
 
-  
+  $items['welcome'] = array(
+    'title' => 'Welcome',
+    'page callback' => 'hosting_welcome',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
 
   $items['admin/hosting'] = array(
     'title' => 'Hosting',
@@ -307,6 +312,24 @@ function hosting_init() {
 
   // moved from hook_menu()
   drupal_add_css(drupal_get_path('module', 'hosting') . '/hosting.css');
+
+  // Redirect anonymous users to our default welcome page
+  global $user;
+  if (!user_is_logged_in() && php_sapi_name() != 'cli' && drupal_is_front_page()) {
+    drupal_goto('welcome');
+  }
+}
+
+/**
+ * Provide a welcome page for anonymous users.
+ **/
+function hosting_welcome() {
+  $default_title = 'Welcome to Aegir';
+  $default_content = 'The Aegir hosting system allows developers and site administrators to automate many of the common tasks associated with deploying and managing large websites. Aegir makes it easy to install, upgrade, deploy, and backup an entire network of Drupal sites.';
+  drupal_set_title(variable_get('hosting_welcome_title', $default_title));
+  $content = '<div>' . variable_get('hosting_welcome_content', $default_content) . '</div>';
+
+  return $content;
 }
 
 /**
