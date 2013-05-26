@@ -92,13 +92,13 @@ function hosting_features_form() {
       '#disabled' => hosting_feature($feature) == HOSTING_FEATURE_REQUIRED,
     );
     if ($info['group'] == 'required') {
-      $required[$feature] = $element;
+      $required['hosting_feature_' . $feature] = $element;
     }
     elseif ($info['group'] == 'experimental') {
-      $experimental[$feature] = $element;
+      $experimental['hosting_feature_' . $feature] = $element;
     }
     else {
-      $form[$feature] = $element;
+      $form['hosting_feature_' . $feature] = $element;
     }
 
   }
@@ -128,9 +128,8 @@ function hosting_features_form_submit($form, &$form_state) {
   $features = hosting_get_features(TRUE);
   $module_cache = module_rebuild_cache();
   foreach ($features  as $feature => $info) {
-    $value = $values[$feature];
+    $value = $values['hosting_feature_' . $feature];
     $current = hosting_feature($feature);
-    variable_set('hosting_feature_' . $feature, $value);
     if ((!$current) && $value) {
       if ($module = $features[$feature]['module']) {
         include_once('includes/install.inc');
