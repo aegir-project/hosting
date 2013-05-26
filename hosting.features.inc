@@ -64,13 +64,23 @@ function hosting_features_form() {
     '#value' => t('You may choose any of the additional system features from the list below.'),
   );
 
+  $required = array(
+    '#type' => 'fieldset',
+    '#title' => t('Required system features'),
+    '#collapsed' => TRUE,
+    '#collapsible' => TRUE,
+    '#weight' => -10,
+    '#description' => t("These features are central to Aegir's functionality, and thus cannot be disabled."),
+  );
+
   $experimental = array(
     '#type' => 'fieldset',
     '#title' => t('Experimental'),
     '#collapsed' => TRUE,
     '#collapsible' => TRUE,
-     '#description' => t('Features marked experimental have not been completed to a satisfactory level to be considered production ready, so use at your own risk.'),
+    '#description' => t('Features marked experimental have not been completed to a satisfactory level to be considered production ready, so use at your own risk.'),
   );
+
   $features = hosting_get_features(TRUE);
   foreach ($features as $feature => $info) {
     $element = array(
@@ -81,7 +91,10 @@ function hosting_features_form() {
       '#required' => hosting_feature($feature) == HOSTING_FEATURE_REQUIRED,
       '#disabled' => hosting_feature($feature) == HOSTING_FEATURE_REQUIRED,
     );
-    if ($info['group'] == 'experimental') {
+    if ($info['group'] == 'required') {
+      $required[$feature] = $element;
+    }
+    elseif ($info['group'] == 'experimental') {
       $experimental[$feature] = $element;
     }
     else {
@@ -89,6 +102,7 @@ function hosting_features_form() {
     }
 
   }
+  $form['required'] = $required;
   $form['experimental'] = $experimental;
   $form['#submit'][] = 'hosting_features_form_submit';
   return system_settings_form($form);
