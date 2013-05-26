@@ -444,3 +444,19 @@ function hosting_update_6202() {
 
   return $ret;
 }
+
+/**
+ * Delete hosting features junk variables.
+ */
+function hosting_update_6203() {
+  $ret = array();
+
+  $features = hosting_get_features(TRUE);
+  foreach ($features as $feature => $info) {
+    if (variable_get($feature, FALSE) != FALSE) {
+      variable_del($feature);
+    }
+  }
+
+  return $ret;
+}
