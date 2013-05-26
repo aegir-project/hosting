@@ -99,8 +99,8 @@ function hook_drush_context_import($context, &$node) {
  *   - 'module': A module to enable or disable whenever the feature is enabled
  *      or disabled.
  *   - 'node': A node type that is associated with this feature.
- *   - 'callback': A function name to call when this feature is enabled or
- *      disabled.
+ *   - 'enable': A function name to call when this feature is enabled.
+ *   - 'disable': A function name to call when this feature is disabled.
  *   - 'group': The group that this feature belongs to, should be either NULL or
  *     'experimental' (or 'required' for core features).
  *
@@ -117,6 +117,9 @@ function hook_hosting_feature() {
     'status' => HOSTING_FEATURE_DISABLED,
     // module to enable/disable alongside feature
     'module' => 'hosting_example',
+    // Callback functions to execute on enabling or disabling this feature
+    'enable' => 'hosting_example_feature_enable_callback',
+    'disable' => 'hosting_example_feature_disable_callback',
     // associate with a specific node type.
     //  'node' => 'nodetype',
     // which group to display in ( null , experimental , required )
