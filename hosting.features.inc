@@ -58,10 +58,11 @@ function hosting_feature($feature) {
  * @see hosting_features_form_submit()
  */
 function hosting_features_form() {
-  $form['features'] = array(
-    '#type' => 'item',
+  $optional = array(
+    '#type' => 'fieldset',
     '#title' => t('Optional system features'),
-    '#value' => t('You may choose any of the additional system features from the list below.'),
+    '#description' => t('You may choose any of the additional system features from the list below.'),
+    '#collapsible' => FALSE,
   );
 
   $required = array(
@@ -98,11 +99,12 @@ function hosting_features_form() {
       $experimental['hosting_feature_' . $feature] = $element;
     }
     else {
-      $form['hosting_feature_' . $feature] = $element;
+      $optional['hosting_feature_' . $feature] = $element;
     }
 
   }
   $form['required'] = $required;
+  $form['optional'] = $optional;
   $form['experimental'] = $experimental;
   $form['#submit'][] = 'hosting_features_form_submit';
   return system_settings_form($form);
