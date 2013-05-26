@@ -35,7 +35,7 @@ function hosting_feature($feature) {
     $features = hosting_get_features();
   }
   if (isset($features[$feature]['status']) && ($features[$feature]['status'] == HOSTING_FEATURE_REQUIRED)) {
-    $return = HOSTING_FEATURE_REQUIRED;
+    $return = module_exists($features[$feature]['module']) ? HOSTING_FEATURE_REQUIRED : HOSTING_FEATURE_DISABLED;
   }
   elseif (isset($features[$feature]['module'])) {
     $return = (module_exists($features[$feature]['module'])) ? HOSTING_FEATURE_ENABLED : HOSTING_FEATURE_DISABLED;
