@@ -23,7 +23,7 @@ function hosting_example_hosting_feature() {
     'module' => 'hosting_example',
     // associate with a specific node type.
     //  'node' => 'nodetype',
-    // which group to display in ( null , experimental )
+    // which group to display in ( null , experimental , required )
     'group' => 'experimental'
     );
   return $features;

@@ -102,7 +102,7 @@ function hook_drush_context_import($context, &$node) {
  *   - 'callback': A function name to call when this feature is enabled or
  *      disabled.
  *   - 'group': The group that this feature belongs to, should be either NULL or
- *     'experimental'.
+ *     'experimental' (or 'required' for core features).
  *
  * @see hosting_get_features()
  */
@@ -119,7 +119,7 @@ function hook_hosting_feature() {
     'module' => 'hosting_example',
     // associate with a specific node type.
     //  'node' => 'nodetype',
-    // which group to display in ( null , experimental )
+    // which group to display in ( null , experimental , required )
     'group' => 'experimental'
     );
   return $features;
