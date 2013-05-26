@@ -88,9 +88,9 @@ function hosting_features_form() {
       '#type' => 'checkbox',
       '#title' => $info['title'],
       '#description' => $info['description'],
-      '#default_value' => hosting_feature($feature),
-      '#required' => hosting_feature($feature) == HOSTING_FEATURE_REQUIRED,
-      '#disabled' => hosting_feature($feature) == HOSTING_FEATURE_REQUIRED,
+      '#default_value' => $info['status'] == HOSTING_FEATURE_REQUIRED ? 1 : hosting_feature($feature),
+      '#required' => $info['status'] == HOSTING_FEATURE_REQUIRED,
+      '#disabled' => $info['status'] == HOSTING_FEATURE_REQUIRED,
     );
     if ($info['group'] == 'required') {
       $required['hosting_feature_' . $feature] = $element;
