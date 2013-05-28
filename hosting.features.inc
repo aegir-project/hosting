@@ -155,12 +155,18 @@ function hosting_features_form() {
  * @see hook_hosting_feature()
  */
 function hosting_features_form_submit($form, &$form_state) {
-  $values = $form_state['values'];
-  $features = hosting_get_features(TRUE);
-  $module_cache = module_rebuild_cache();
-  foreach ($features  as $feature => $info) {
+  // Get form values, filtering out irrelevant entries.
+  $values = array_filter($form_state['values'], 'is_int');
+  // Filter out un-selected (0) values.
+  $enable = array_filter($values);
+
+  $enable = hosting_feature_resolve_dependencies($enable);
+  $values = array_merge($values, $enable);
+  $features = hosting_get_features();
+
+  foreach ($features as $feature => $info) {
     $value = $values['hosting_feature_' . $feature];
-    $current = hosting_feature($feature);
+    $current = $info['enabled'];
     if ((!$current) && $value) {
       if ($module = $features[$feature]['module']) {
         include_once('includes/install.inc');
@@ -168,7 +174,7 @@ function hosting_features_form_submit($form, &$form_state) {
         $modules = array($module);
 
         // Gather any dependencies to enable
-        foreach ($module_cache[$module]->info['dependencies'] as $dependency) {
+        foreach ($info['dependencies']['modules'] as $dependency) {
           if (!module_exists($dependency)) {
             $modules[] = $dependency;
           }
