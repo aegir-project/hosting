@@ -84,10 +84,39 @@ function hosting_features_form() {
 
   $features = hosting_get_features(TRUE);
   foreach ($features as $feature => $info) {
+    $description = $info['description'];
+    // Gather dependencies and their statuses
+    if (isset($info['dependencies']['features'])) {
+      $description .= "<div class=\"admin-dependencies\">Depends on:";
+      $last = end($info['dependencies']['features']);
+      reset($info['dependencies']['features']);
+      foreach ($info['dependencies']['features'] as $module => $dependency) {
+        $description .= ' ' . $features[$dependency]['title'];
+        $enabled = $features[$dependency]['enabled'] ? 'enabled' : 'disabled';
+        $description .= " (<span class=\"admin-$enabled\">";
+        $description .= $enabled;
+        $description .= '</span>)';
+        $description .= $dependency == $last ? '.</div>' : ',';
+      }
+    }
+    // Gather relying features and their statuses
+    if (isset($info['dependencies']['reverse'])) {
+      $description .= "<div class=\"admin-required\">Required by:";
+      $last = end($info['dependencies']['reverse']);
+      reset($info['dependencies']['reverse']);
+      foreach ($info['dependencies']['reverse'] as $module => $require) {
+        $description .= ' ' . $features[$require]['title'];
+        $enabled = $features[$require]['enabled'] ? 'enabled' : 'disabled';
+        $description .= " (<span class=\"admin-$enabled\">";
+        $description .= $enabled;
+        $description .= '</span>)';
+        $description .= $rely == $last ? '.</div>' : ',';
+      }
+    }
     $element = array(
       '#type' => 'checkbox',
       '#title' => $info['title'],
-      '#description' => $info['description'],
+      '#description' => $description,
       '#default_value' => $info['status'] == HOSTING_FEATURE_REQUIRED ? 1 : hosting_feature($feature),
       '#required' => $info['status'] == HOSTING_FEATURE_REQUIRED,
       '#disabled' => $info['status'] == HOSTING_FEATURE_REQUIRED,
