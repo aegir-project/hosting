@@ -117,7 +117,7 @@ function hosting_features_form() {
       '#type' => 'checkbox',
       '#title' => $info['title'],
       '#description' => $description,
-      '#default_value' => $info['status'] == HOSTING_FEATURE_REQUIRED ? 1 : hosting_feature($feature),
+      '#default_value' => $info['status'] == HOSTING_FEATURE_REQUIRED ? HOSTING_FEATURE_REQUIRED : hosting_feature($feature),
       '#required' => $info['status'] == HOSTING_FEATURE_REQUIRED,
       '#disabled' => $info['status'] == HOSTING_FEATURE_REQUIRED,
     );
