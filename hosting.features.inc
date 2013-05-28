@@ -304,3 +304,30 @@ function hosting_feature_node_types($refresh = FALSE) {
   }
   return $types;
 }
+
+/**
+ * Recursively resolve Hosting feature dependencies.
+ *
+ * @param $enable
+ *   (optional) Array of Hosting features to enable.
+ * @return
+ *   Array of Hosting features to enable with dependencies fully resolved.
+ */
+function hosting_feature_resolve_dependencies($enable = array()) {
+  $features = hosting_get_features(TRUE);
+  // Add dependent hosting features
+  foreach ($enable as $feature) {
+    if ($dependencies = $features[$feature]['dependencies']['features']) {
+      foreach ($dependencies as $dependency) {
+        if (!in_array($dependency, $enable)) {
+          $enable[$dependency] = HOSTING_FEATURE_ENABLED;
+          // Recurse through added dependencies
+          $recurse = hosting_feature_resolve_dependencies(array($dependency));
+          array_merge($enable, $recurse);
+        }
+      }
+    }
+  }
+
+  return $enable;
+}
