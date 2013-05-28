@@ -68,6 +68,22 @@ function hosting_site_menu() {
   return $items;
 }
 
+/**
+ * Implements hook_theme().
+ */
+function hosting_site_theme() {
+  $items = array();
+
+  $items['hosting_site_profile'] = array(
+    'arguments' => array(
+      'profile' => NULL,
+      'html' => FALSE,
+    ),
+  );
+
+  return $items;
+}
+
 function _hosting_site_form_check() {
   drupal_json(
     hosting_site_available_options($_POST)
@@ -545,4 +561,14 @@ function hosting_site_views_api() {
     'api' => 3,
     'path' => drupal_get_path('module', 'hosting_site'),
   );
+}
+
+/**
+ * Theme function for install profile item.
+ */
+function theme_hosting_site_profile($profile, $html = FALSE) {
+  if ($html) {
+    return "{$profile->title} <em>({$profile->short_name})</em>";
+  }
+  return "{$profile->title} ({$profile->short_name})";
 }
