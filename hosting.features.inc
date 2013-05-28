@@ -223,6 +223,28 @@ function hosting_get_features($refresh = FALSE) {
     foreach ($hooks as $func) {
       $features = array_merge($features, $func());
     }
+    // Add module dependencies and enabled status
+    $module_cache = module_rebuild_cache();
+    foreach ($features as $feature => $info) {
+      $features[$feature]['enabled'] = $module_cache[$info['module']]->status;
+      $features[$feature]['dependencies']['modules'] = $module_cache[$info['module']]->info['dependencies'];
+    }
+    // Generate a list of features keyed by module name
+    $modules = array();
+    foreach ($features as $feature => $info) {
+      $modules[$info['module']] = $feature;
+    }
+    // Add Hosting feature dependencies, keyed by module
+    foreach ($features as $feature => $info) {
+      foreach ($info['dependencies']['modules'] as $dependency) {
+        $feature_name = $modules[$dependency];
+        if (in_array($feature_name, array_keys($features))) {
+          $features[$feature]['dependencies']['features'][$dependency] = $modules[$dependency];
+          $features[$modules[$dependency]]['dependencies']['reverse'][$info['module']] = $feature;
+        }
+      }
+    }
+
     cache_set('hosting_features', $features);
     return $features;
   }
