@@ -337,3 +337,22 @@ function hosting_feature_resolve_dependencies($enable = array()) {
 
   return $enable;
 }
+
+/**
+ * Theme function to display Hosting feature dependencies.
+ */
+function theme_hosting_feature_dependencies($dependencies, $prefix, $features) {
+  $return = "<div class=\"admin-required\">$prefix:";
+  $last = end($dependencies);
+  reset($dependencies);
+  foreach ($dependencies as $module => $require) {
+    $return .= ' ' . $features[$require]['title'];
+    $enabled = $features[$require]['enabled'] ? 'enabled' : 'disabled';
+    $return .= " (<span class=\"admin-$enabled\">";
+    $return .= $enabled;
+    $return .= '</span>)';
+    $return .= $require == $last ? '.</div>' : ',';
+  }
+
+  return $return;
+}
