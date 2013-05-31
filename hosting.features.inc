@@ -86,40 +86,34 @@ function hosting_features_form() {
   foreach ($features as $feature => $info) {
     $description = $info['description'];
     // Gather dependencies and their statuses
-    if (isset($info['dependencies']['features'])) {
-      $description .= "<div class=\"admin-dependencies\">Depends on:";
-      $last = end($info['dependencies']['features']);
-      reset($info['dependencies']['features']);
-      foreach ($info['dependencies']['features'] as $module => $dependency) {
-        $description .= ' ' . $features[$dependency]['title'];
-        $enabled = $features[$dependency]['enabled'] ? 'enabled' : 'disabled';
-        $description .= " (<span class=\"admin-$enabled\">";
-        $description .= $enabled;
-        $description .= '</span>)';
-        $description .= $dependency == $last ? '.</div>' : ',';
-      }
+    $depends_on = isset($info['dependencies']['features']) ? $info['dependencies']['features'] : FALSE;
+    if ($depends_on) {
+      $description .= theme('hosting_feature_dependencies', $depends_on, 'Depends on', $features);
     }
     // Gather relying features and their statuses
-    if (isset($info['dependencies']['reverse'])) {
-      $description .= "<div class=\"admin-required\">Required by:";
-      $last = end($info['dependencies']['reverse']);
-      reset($info['dependencies']['reverse']);
-      foreach ($info['dependencies']['reverse'] as $module => $require) {
-        $description .= ' ' . $features[$require]['title'];
-        $enabled = $features[$require]['enabled'] ? 'enabled' : 'disabled';
-        $description .= " (<span class=\"admin-$enabled\">";
-        $description .= $enabled;
-        $description .= '</span>)';
-        $description .= $rely == $last ? '.</div>' : ',';
+    $required_by = isset($info['dependencies']['reverse']) ? $info['dependencies']['reverse'] : FALSE;
+    if ($required_by) {
+      $description .= theme('hosting_feature_dependencies', $required_by, 'Required by', $features);
+    }
+
+    $locked = FALSE;
+    // Disable checkbox for required features.
+    if ($info['status'] == HOSTING_FEATURE_REQUIRED) {
+      $locked = TRUE;
+    }
+    elseif ($required_by) {
+      foreach ($required_by as $mod => $feat) {
+        $locked = $features[$feat]['enabled'] ? TRUE : $locked;
       }
     }
+
     $element = array(
       '#type' => 'checkbox',
       '#title' => $info['title'],
       '#description' => $description,
       '#default_value' => $info['status'] == HOSTING_FEATURE_REQUIRED ? HOSTING_FEATURE_REQUIRED : hosting_feature($feature),
       '#required' => $info['status'] == HOSTING_FEATURE_REQUIRED,
-      '#disabled' => $info['status'] == HOSTING_FEATURE_REQUIRED,
+      '#disabled' => $locked, 
     );
     if ($info['group'] == 'required') {
       $required['hosting_feature_' . $feature] = $element;
