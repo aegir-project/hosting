@@ -71,18 +71,19 @@ function drush_hosting_task_validate($id, $type = null) {
     drush_set_context('HOSTING_TASK', $task);
     drush_set_context('DRUSH_LOG_CALLBACK', '_hosting_task_log');
     drush_log(dt("Task starts processing"), 'queue');
+
+    // Load Task Info
+    $tasks_info = hosting_available_tasks($task->ref->type);
+
+    // Find task type and pass through if it needs provision_save
+    if (isset($tasks_info[$task->task_type])){
+      $task->task_info = $tasks_info[$task->task_type];
+    }
   }
   else {
     drush_set_error('HOSTING_INVALID_TASK', t("This task is not valid"));
   }
 
-  // Load Task Info
-  $tasks_info = hosting_available_tasks($task->ref->type);
-
-  // Find task type and pass through if it needs provision_save
-  if (isset($tasks_info[$task->task_type])){
-    $task->task_info = $tasks_info[$task->task_type];
-  }
 }
 
 /**
