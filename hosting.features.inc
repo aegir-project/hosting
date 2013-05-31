@@ -158,6 +158,12 @@ function hosting_features_form_submit($form, &$form_state) {
   $values = array_merge($values, $enable);
   $features = hosting_get_features();
 
+  // Generate a array of features keyed by module.
+  $feature_modules = array();
+  foreach ($features as $feature => $info) {
+    $feature_modules[$info['module']] = $feature;
+  }
+
   foreach ($features as $feature => $info) {
     $value = $values['hosting_feature_' . $feature];
     $current = $info['enabled'];
