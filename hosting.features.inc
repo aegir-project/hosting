@@ -151,11 +151,7 @@ function hosting_features_form() {
 function hosting_features_form_submit($form, &$form_state) {
   // Get form values, filtering out irrelevant entries.
   $values = array_filter($form_state['values'], 'is_int');
-  // Filter out un-selected (0) values.
-  $enable = array_filter($values);
 
-  $enable = hosting_feature_resolve_dependencies($enable);
-  $values = array_merge($values, $enable);
   $features = hosting_get_features();
 
   // Generate a array of features keyed by module.
