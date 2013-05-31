@@ -352,6 +352,14 @@ function hosting_theme() {
         'form' => NULL,
       ),
     ),
+    'hosting_feature_dependencies' => array(
+      'file' => 'hosting.features.inc',
+      'arguments' => array (
+        'dependencies' => NULL,
+        'prefix' => NULL,
+        'features' => NULL,
+      ),
+    ),
   );
 }
 
