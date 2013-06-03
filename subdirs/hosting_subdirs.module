@@ -29,14 +29,16 @@ function hosting_subdirs_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
     switch ($op) {
       case 'validate' :
         $aliases = $node->aliases;
+        $subdirs = array();
         foreach ($aliases as $alias) {
-          if ($alias = trim($alias)) {
-            if (!hosting_domain_allowed($alias, array('nid' => $node->nid)) || $alias == $node->title) {
-              form_set_error('aliases', t('The domain name @alias is already in use', array('@alias' => $alias)));
-            }
-            if (!_hosting_valid_fqdn_wildcard($alias)) {
-              form_set_error('aliases', t('The domain name @alias is not a valid url', array('@alias' => $alias)));
-            }
+          // If we're adding a subdirectory alias, it can't begin with '/'.
+          if (strpos($alias, '/', 1)) {
+            $subdirs[$alias] = explode('/', $alias, 2);
+            hosting_alias_validate_alias($node, $subdirs[$alias][0]);
+          }
+          else {
+            // No subdirectory in use, so validate normally.
+            hosting_alias_validate_alias($node, $alias);
           }
         }
         break;
