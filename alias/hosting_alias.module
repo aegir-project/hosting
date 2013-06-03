@@ -340,13 +340,15 @@ function hosting_alias_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
         break;
       case 'validate' :
         $aliases = $node->aliases;
-        foreach ($aliases as $alias) {
-          if ($alias = trim($alias)) {
-            if (!hosting_domain_allowed($alias, array('nid' => $node->nid)) || $alias == $node->title) {
-              form_set_error('aliases', t('The domain name @alias is already in use', array('@alias' => $alias)));
-            }
-            if (!_hosting_valid_fqdn_wildcard($alias)) {
-              form_set_error('aliases', t('The domain name @alias is not a valid url', array('@alias' => $alias)));
+        if (!module_exists('hosting_subdirs')) {
+          foreach ($aliases as $alias) {
+            if ($alias = trim($alias)) {
+              if (!hosting_domain_allowed($alias, array('nid' => $node->nid)) || $alias == $node->title) {
+                form_set_error('aliases', t('The domain name @alias is already in use', array('@alias' => $alias)));
+              }
+              if (!_hosting_valid_fqdn_wildcard($alias)) {
+                form_set_error('aliases', t('The domain name @alias is not a valid url', array('@alias' => $alias)));
+              }
             }
           }
         }

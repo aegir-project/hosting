@@ -1,0 +1,46 @@
+<?php
+
+/**
+ * @file
+ *   Allow sites to be installed in subdirectories.
+ */
+
+/**
+ * Implements hook_form_alter().
+ */
+function hosting_subdirs_form_alter(&$form, &$form_state, $form_id) {
+  if($form_id == 'site_node_form') {
+    $form['aliases_wrapper']['#description'] .= 'Description of how to use aliases for subdirs.';
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function hosting_subdirs_form_site_node_form_alter(&$form, &$form_state) {
+  $form['title']['#description'] = 'Description of how to name sites for use with subdirs.';
+}
+
+/**
+ * Implementation of hook_nodeapi().
+ */
+function hosting_subdirs_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+  if ($node->type == 'site') {
+    switch ($op) {
+      case 'validate' :
+        $aliases = $node->aliases;
+        foreach ($aliases as $alias) {
+          if ($alias = trim($alias)) {
+            if (!hosting_domain_allowed($alias, array('nid' => $node->nid)) || $alias == $node->title) {
+              form_set_error('aliases', t('The domain name @alias is already in use', array('@alias' => $alias)));
+            }
+            if (!_hosting_valid_fqdn_wildcard($alias)) {
+              form_set_error('aliases', t('The domain name @alias is not a valid url', array('@alias' => $alias)));
+            }
+          }
+        }
+        break;
+    }
+  }
+}
+
