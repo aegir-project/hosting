@@ -13,6 +13,7 @@ function hosting_migrate_hosting_feature() {
     'description' => t('Migrate sites to platforms of the same or later version.'),
     'status' => HOSTING_FEATURE_ENABLED,
     'module' => 'hosting_migrate',
+    'group' => 'optional',
     );
   return $features;
 }

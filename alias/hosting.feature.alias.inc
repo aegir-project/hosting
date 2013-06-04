@@ -13,6 +13,7 @@ function hosting_alias_hosting_feature() {
     'description' => t('Provide multiple domain names for sites to be accessible by.'),
     'status' => HOSTING_FEATURE_ENABLED,
     'module' => 'hosting_alias',
+    'group' => 'optional',
     );
   return $features;
 }
