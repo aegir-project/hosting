@@ -113,16 +113,16 @@ function hosting_features_form() {
       '#description' => $description,
       '#default_value' => $info['status'] == HOSTING_FEATURE_REQUIRED ? HOSTING_FEATURE_REQUIRED : hosting_feature($feature),
       '#required' => $info['status'] == HOSTING_FEATURE_REQUIRED,
-      '#disabled' => $locked, 
+      '#disabled' => $locked,
     );
     if ($info['group'] == 'required') {
       $required['hosting_feature_' . $feature] = $element;
     }
-    elseif ($info['group'] == 'experimental') {
-      $experimental['hosting_feature_' . $feature] = $element;
+    elseif ($info['group'] == 'optional') {
+      $optional['hosting_feature_' . $feature] = $element;
     }
     else {
-      $optional['hosting_feature_' . $feature] = $element;
+      $experimental['hosting_feature_' . $feature] = $element;
     }
 
   }
@@ -144,7 +144,7 @@ function hosting_features_form() {
  *   The built form.
  * @param $form_state
  *   The current form state.
- *   
+ *
  * @see hosting_features_form()
  * @see hook_hosting_feature()
  */
@@ -258,6 +258,7 @@ function hosting_get_features($refresh = FALSE) {
     $module_cache = module_rebuild_cache();
     foreach ($features as $feature => $info) {
       $features[$feature]['enabled'] = $module_cache[$info['module']]->status;
+      $features[$feature]['package'] = $module_cache[$info['module']]->info['package'];
       $features[$feature]['dependencies']['modules'] = $module_cache[$info['module']]->info['dependencies'];
     }
     // Generate a list of features keyed by module name
