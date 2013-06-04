@@ -6,6 +6,7 @@ function hosting_signup_hosting_feature() {
     'description' => t('Provides a simpler signup form that can be opened to anonymous users.'),
     'status' => HOSTING_FEATURE_DISABLED,
     'module' => 'hosting_signup',
+    'group' => 'optional',
     );
   return $features;
 }
