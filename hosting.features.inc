@@ -96,8 +96,8 @@ function hosting_features_form() {
       $description .= theme('hosting_feature_dependencies', $required_by, 'Required by', $features);
     }
 
-    $locked = FALSE;
     // Disable checkbox for required features.
+    $locked = FALSE;
     if ($info['status'] == HOSTING_FEATURE_REQUIRED) {
       $locked = TRUE;
     }
@@ -115,14 +115,48 @@ function hosting_features_form() {
       '#required' => $info['status'] == HOSTING_FEATURE_REQUIRED,
       '#disabled' => $locked,
     );
-    if ($info['group'] == 'required') {
-      $required['hosting_feature_' . $feature] = $element;
+
+    // Add another fieldset based on contrib module package.
+    $package = FALSE;
+    if ($info['package'] != 'Hosting') {
+      $package = array(
+        '#type' => 'fieldset',
+        '#title' => $info['package'],
+        '#collapsed' => FALSE,
+        '#collapsible' => TRUE,
+      );
     }
-    elseif ($info['group'] == 'optional') {
-      $optional['hosting_feature_' . $feature] = $element;
+    if ($package) {
+      if ($info['group'] == 'required') {
+        if (!isset($required[$info['package']])) {
+          $required[$info['package']] = $package;
+        }
+        $required[$info['package']]['hosting_feature_' . $feature] = $element;
+      }
+      elseif ($info['group'] == 'optional') {
+        if (!isset($optional[$info['package']])) {
+          $optional[$info['package']] = $package;
+        }
+        $optional[$info['package']]['hosting_feature_' . $feature] = $element;
+      }
+      else {
+        if (!isset($experimental[$info['package']])) {
+          $experimental[$info['package']] = $package;
+        }
+        $experimental[$info['package']]['hosting_feature_' . $feature] = $element;
+      }
     }
+    // This feature is in the 'Hosting' module package
     else {
-      $experimental['hosting_feature_' . $feature] = $element;
+      if ($info['group'] == 'required') {
+        $required['hosting_feature_' . $feature] = $element;
+      }
+      elseif ($info['group'] == 'optional') {
+        $optional['hosting_feature_' . $feature] = $element;
+      }
+      else {
+        $experimental['hosting_feature_' . $feature] = $element;
+      }
     }
 
   }
