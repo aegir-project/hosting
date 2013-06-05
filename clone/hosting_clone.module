@@ -60,7 +60,7 @@ function hosting_task_clone_form($node) {
 }
 
 /**
- * Redner the clone task form.
+ * Render the clone task form.
  */
 function theme_hosting_task_clone_form(&$form) {
   return theme_hosting_task_migrate_form($form);
