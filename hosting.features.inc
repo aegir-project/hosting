@@ -188,67 +188,68 @@ function hosting_features_form_submit($form, &$form_state) {
 
   $features = hosting_get_features();
 
-  // Generate a array of features keyed by module.
-  $feature_modules = array();
-  foreach ($features as $feature => $info) {
-    $feature_modules[$info['module']] = $feature;
-  }
+  // List of features currently enabled.
+  $enabled = array();
+  // List of features to enable.
+  $enable = array();
+  // List of features to disable.
+  $disable = array();
 
   foreach ($features as $feature => $info) {
     $value = $values['hosting_feature_' . $feature];
     $current = $info['enabled'];
-    if ((!$current) && $value) {
-      if ($module = $features[$feature]['module']) {
-        include_once('includes/install.inc');
-
-        $modules = array($module);
-
-        // Gather any dependencies to enable
-        foreach ($info['dependencies']['modules'] as $dependency) {
-          if (!module_exists($dependency)) {
-            $modules[] = $dependency;
-          }
-        }
-
-        // Enable the module(s).
-        drupal_set_message(t("Enabling %module module!plural", array(
-          '%module' => implode(", ", $modules),
-          '!plural' => count($modules) > 1 ? 's' : '',
-        )));
-        drupal_install_modules($modules);
+    if ($current) {
+      $enabled[$features[$feature]['module']] = $features[$feature]['title'];
+      if (!$value) {
+        $disable[$features[$feature]['module']] = $features[$feature]['title'];
       }
+    }
+    elseif ($value) {
+      $enable[$features[$feature]['module']] = $features[$feature]['title'];
+      // Add dependencies to enable
+      if (count($info['dependencies']['features'])){
+        foreach ($info['dependencies']['features'] as $module_dep => $feature_dep) {
+          $enable[$module_dep] = $features[$feature_dep]['title'];
+        }
+      }
+    }
+  }
+
+  // Remove any features we're about to enable from those to disable.
+  $disable = array_diff_assoc($disable, $enable);
+  // Remove any features already enabled from those to enable.
+  $enable = array_diff_assoc($enable, $enabled);
+
+  include_once('includes/install.inc');
+
+  // Enable the feature(s).
+  if (count($enable)) {
+    drupal_set_message(t("Enabling %feature feature!plural.", array(
+      '%feature' => implode(", ", $enable),
+      '!plural' => count($enable) > 1 ? 's' : '',
+    )));
+    drupal_install_modules(array_keys($enable));
+    foreach ($enable as $module => $feature) {
       if (function_exists($callback = $features[$feature]['enable'])) {
         $callback();
       }
     }
-    if ($current && !$value) {
-      $dependencies = array();
-      if ($module = $features[$feature]['module']) {
-        $modules = array($module);
-        $files = module_rebuild_cache();
-        foreach ($files as $dependency => $file) {
-          if (isset($file->info['dependencies']) && is_array($file->info['dependencies'])) {
-            if (in_array($module, $file->info['dependencies']) && $file->status) {
-              $dependencies[] = $dependency;
-            }
-          }
-        }
+  }
 
-        if ($dependencies) {
-          form_set_error('', t("You cannot disable %module because %dep depends on it", array('%module' => $module, '%dep' => implode(', ', $dependencies))));
-        }
-        else {
-          drupal_set_message(t("Disabling %module module", array('%module' => implode(",", $modules))));
-          // turn off module
-          module_disable($modules);
-          if (function_exists($callback = $features[$feature]['disable'])) {
-            $callback();
-          }
-        }
+  // Disable the feature(s).
+  if (count($disable)) {
+    drupal_set_message(t("Disabling %feature feature!plural.", array(
+      '%feature' => implode(", ", $disable),
+      '!plural' => count($disable) > 1 ? 's' : '',
+    )));
+    module_disable(array_keys($disable));
+    foreach ($disable as $module => $feature) {
+      if (function_exists($callback = $features[$feature]['disable'])) {
+        $callback();
       }
     }
-    #print("$feature $current $value $module <br />");
   }
+
   // Rebuild schema.
   drupal_get_schema(NULL, TRUE);
 
