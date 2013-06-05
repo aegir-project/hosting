@@ -291,18 +291,18 @@ function hosting_get_features($refresh = FALSE) {
     foreach ($hooks as $func) {
       $features = array_merge($features, $func());
     }
-    // Add module dependencies and enabled status
+
+    // Add module dependencies, package and enabled status
     $module_cache = module_rebuild_cache();
+    $modules = array();
     foreach ($features as $feature => $info) {
       $features[$feature]['enabled'] = $module_cache[$info['module']]->status;
       $features[$feature]['package'] = $module_cache[$info['module']]->info['package'];
       $features[$feature]['dependencies']['modules'] = $module_cache[$info['module']]->info['dependencies'];
-    }
-    // Generate a list of features keyed by module name
-    $modules = array();
-    foreach ($features as $feature => $info) {
+      // Generate a list of features keyed by module name
       $modules[$info['module']] = $feature;
     }
+
     // Add Hosting feature dependencies, keyed by module
     foreach ($features as $feature => $info) {
       foreach ($info['dependencies']['modules'] as $dependency) {
@@ -324,7 +324,7 @@ function hosting_get_features($refresh = FALSE) {
 
 /**
  * Determine which node types are provided by Hosting features.
- * 
+ *
  * @param $refresh
  *   (optional) Pass in TRUE to force the list of node types to be rebuilt and
  *   not returned from the cache.
