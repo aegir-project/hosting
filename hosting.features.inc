@@ -233,6 +233,7 @@ function hosting_features_form_submit($form, &$form_state) {
       if (function_exists($callback = $features[$feature]['enable'])) {
         $callback();
       }
+      variable_set('hosting_feature_' . $feature, HOSTING_FEATURE_ENABLED);
     }
   }
 
@@ -247,6 +248,7 @@ function hosting_features_form_submit($form, &$form_state) {
       if (function_exists($callback = $features[$feature]['disable'])) {
         $callback();
       }
+      variable_set('hosting_feature_' . $feature, HOSTING_FEATURE_DISABLED);
     }
   }
 
