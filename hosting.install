@@ -457,6 +457,7 @@ function hosting_update_6203() {
       variable_del($feature);
     }
   }
+}
 
 /**
  * Create new roles.
