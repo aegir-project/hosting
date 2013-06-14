@@ -10,7 +10,7 @@
  */
 function hosting_subdirs_form_alter(&$form, &$form_state, $form_id) {
   if($form_id == 'site_node_form') {
-    $form['aliases_wrapper']['#description'] .= 'Description of how to use aliases for subdirs.';
+    $form['aliases_wrapper']['#description'] .= 'To create a site using a subdirectory, enter one of more aliases here (e.g., example.com/foo, example.com/bar). Redirection to one of these will also work. This is useful if you do not want the site to be accessible from its subdomain (e.g., foo.example.com).';
   }
 }
 
@@ -18,7 +18,7 @@ function hosting_subdirs_form_alter(&$form, &$form_state, $form_id) {
  * Implements hook_form_FORM_ID_alter().
  */
 function hosting_subdirs_form_site_node_form_alter(&$form, &$form_state) {
-  $form['title']['#description'] = 'Description of how to name sites for use with subdirs.';
+  $form['title']['#description'] = 'To create a site using a subdirectory, name it using a subdomain (e.g., foo.example.com), and then enter an alias below for the desired subdirectory (e.g., example.com/foo). <strong>N.B. The root domain (e.g., example.com) cannot be in use for a subdirectory to work.</strong>';
 }
 
 /**
