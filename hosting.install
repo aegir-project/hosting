@@ -436,7 +436,7 @@ function hosting_update_6201() {
 /**
  * Create new roles.
  */
-function hosting_update_6202() {
+function hosting_update_6204() {
   $ret = array();
 
   // Temporarily enable Install Profile API module and load includes.
