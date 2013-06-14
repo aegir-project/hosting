@@ -1,0 +1,7 @@
+name = Subdirectories
+description = Allow hostmaster to install sites in subdirectories.
+package = Hosting
+dependencies[] = hosting
+dependencies[] = hosting_alias
+
+core = 6.x
