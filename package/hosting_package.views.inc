@@ -162,15 +162,14 @@ function hosting_package_views_data() {
     'title' => t('Version'),
     'help' => t('The package instance version.'),
     'field' => array(
-      'handler' => 'views_handler_field_numeric',
+      'handler' => 'views_handler_field',
       'click sortable' => TRUE,
     ),
     'argument' => array(
-      'handler' => 'views_handler_argument_numeric',
-      'numeric' => TRUE,
+      'handler' => 'views_handler_argument_string',
     ),
     'filter' => array(
-      'handler' => 'views_handler_filter_numeric',
+      'handler' => 'views_handler_filter_string',
     ),
     'sort' => array(
       'handler' => 'views_handler_sort',
