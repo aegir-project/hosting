@@ -50,6 +50,11 @@ function hosting_platform_post_hosting_verify_task($task, $data) {
     $context = $data['context'];
     $packages = $context['packages'];
 
+    // Lock platforms by default
+    if ($node->verified == 0 && variable_get('hosting_lock_platforms_by_default', FALSE)) {
+      $node->platform_status = HOSTING_PLATFORM_LOCKED;
+    }
+
     $node->verified = time(); // set verified flag on platform, to let it know it has been checked.
     /**
      * If we are verifying a Locked platform (i.e if the publish_path has changed), 

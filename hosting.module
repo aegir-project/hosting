@@ -962,6 +962,12 @@ function hosting_settings() {
     '#description' => t('When selecting a Drupal core profile, hide platforms that also contain other profiles (i.e intended as distributions). Warning: requires a platform other than the Hostmaster platform.'),
     '#default_value' => variable_get('hosting_ignore_default_profiles', FALSE),
   );
+  $form['hosting_lock_platforms_by_default'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Lock platforms by default on initial creation'),
+    '#description' => t('When verifying a new platform, set its initial state to \'Locked\'. This can avoid having sites created on a new platform before there has been a chance to test it. Those users with the \'create sites on locked platforms\' permission (e.g., with the \'platform manager\' role) will still be able to build sites.'),
+    '#default_value' => variable_get('hosting_lock_platforms_by_default', FALSE),
+  );
   $form['hosting_require_disable_before_delete'] = array(
     '#type' => 'checkbox',
     '#title' => t('Require site to be disabled before deletion'),

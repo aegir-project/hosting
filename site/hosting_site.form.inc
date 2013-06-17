@@ -155,7 +155,8 @@ function hosting_site_available_options($node) {
     foreach ($platforms as $nid => $title) {
       $platform = node_load($nid);
 
-      if ($platform->platform_status != HOSTING_PLATFORM_LOCKED) {
+      //if ($platform->platform_status != HOSTING_PLATFORM_LOCKED) {
+      if ($platform->platform_status != HOSTING_PLATFORM_LOCKED || user_access('create sites on locked platforms')) {
         if (!isset($platform->clients) || sizeof(array_intersect(array_keys($user->client_id), $platform->clients)) || $user->uid == 1) {
           $options[] = $nid;
         }

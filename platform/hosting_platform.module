@@ -96,8 +96,8 @@ function hosting_platform_hosting_tasks() {
     'title' => t('Lock'),
     'description' => t('Locking this platform will not delete or disable it or its sites, but will
         prevent any new sites from being created on it. This may be useful when you have sites that
-        cannot be migrated onto a newer platform, but you wish to prevent other administrators or
-        clients from continuing to provision on this platform. The platform can be unlocked later.
+        cannot be migrated onto a newer platform, but you wish to prevent other users or clients
+        from continuing to provision on this platform. The platform can be unlocked later.
         Are you really sure you want to lock this platform?'),
     'weight' => 10,
   );
@@ -115,7 +115,7 @@ function hosting_platform_hosting_tasks() {
  * Implementation of hook_perm().
  */
 function hosting_platform_perm() {
-  return array('create platform', 'view platform', 'edit platform', 'delete platform', 'view locked platforms');
+  return array('create platform', 'view platform', 'edit platform', 'delete platform', 'view locked platforms', 'create sites on locked platforms');
 }
 
 /**
