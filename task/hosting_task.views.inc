@@ -15,6 +15,9 @@ function hosting_task_views_handlers() {
       'hosting_task_handler_field_hosting_task_status' => array(
         'parent' => 'views_handler_field',
       ),
+      'hosting_task_handler_filter_hosting_task_status' => array(
+        'parent' => 'views_handler_filter_in_operator',
+      ),
       'hosting_task_handler_filter_hosting_task_type' => array(
         'parent' => 'views_handler_filter_in_operator',
       ),
@@ -31,6 +34,10 @@ function hosting_task_views_data() {
     'title' => 'Task',
     'join' => array(
       'node' => array(
+        'left_field' => 'vid',
+        'field' => 'vid',
+      ),
+      'node_revisions' => array(
         'left_field' => 'vid',
         'field' => 'vid',
       ),
@@ -73,6 +80,9 @@ function hosting_task_views_data() {
     'field' => array(
       'handler' => 'hosting_task_handler_field_hosting_task_status',
       'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'hosting_task_handler_filter_hosting_task_status',
     ),
   );
 
