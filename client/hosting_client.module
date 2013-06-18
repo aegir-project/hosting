@@ -8,6 +8,13 @@ include('hosting_client.access.inc');
 include drupal_get_path( 'module', 'node' ) . '/node.pages.inc';
 
 /**
+ * Implements hook_init().
+ */
+function hosting_client_init() {
+  drupal_add_css(drupal_get_path('module', 'hosting_client') . '/hosting_client.css');
+}
+
+/**
  * The maximum length of a UNIX group
  *
  * Used to determine the sane maximum length of the internal name of a
@@ -769,6 +776,9 @@ function hosting_client_block($op = 'list', $delta = 0, $edit = array()) {
         case 'hosting_clients':
           $blocks['title'] = t('Clients');
           $blocks['content'] = user_access('view client') ? hosting_client_list() : '';
+          if (user_access('create client')) {
+            $blocks['content'] .= l(t('Add new client'), 'node/add/client', array('attributes' => array('class' => 'add-new-client')));
+          }
           break;
 
       }
