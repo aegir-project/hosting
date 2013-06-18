@@ -541,7 +541,7 @@ function _hosting_platform_list_class($status) {
     HOSTING_PLATFORM_QUEUED => "hosting-queue",
     HOSTING_PLATFORM_ENABLED => "hosting-success",
     HOSTING_PLATFORM_DELETED => "hosting-error",
-    HOSTING_PLATFORM_LOCKED => "hosting-warning",
+    HOSTING_PLATFORM_LOCKED => "hosting-disable",
   );
   return is_object($status) ? $labels[$status->platform_status] : $labels[$status];
 }
