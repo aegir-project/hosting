@@ -556,14 +556,14 @@ function hosting_import_client($name) {
  */
 function hosting_client_menu() {
   $items['node/%node/site/add'] = array(
-          'title' => 'Add site',
-          'description' => 'Add a site to the current client',
-          'page callback' => 'hosting_client_site_form',
-          'page arguments' => array('site_node_form', 1),
-	  'access callback' => 'hosting_client_menu_access',
-          'access arguments' => array('create site', 1),
-          'type' => MENU_LOCAL_TASK,
-          'weight' => 5,
+    'title' => 'Add site',
+    'description' => 'Add a site to the current client',
+    'page callback' => 'hosting_client_site_form',
+    'page arguments' => array('site_node_form', 1),
+    'access callback' => 'hosting_client_menu_access',
+    'access arguments' => array('create site', 1),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 5,
 	);
 
   $items['hosting_client/autocomplete'] = array(
@@ -580,6 +580,22 @@ function hosting_client_menu() {
     'access callback' => '_hosting_client_configure_access',
     'type' => MENU_LOCAL_TASK
   );
+
+  $items['hosting/clients/list'] = array(
+    'title' => 'List',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
+
+  $items['hosting/clients/add'] = array(
+    'title' => 'Add client',
+    'type' => MENU_LOCAL_TASK,
+    'page callback' => 'drupal_goto',
+    'page arguments' => array('node/add/client'),
+    'access callback' => 'node_access',
+    'access arguments' => array('create', 'client'),
+  );
+
   return $items;
 }
 
