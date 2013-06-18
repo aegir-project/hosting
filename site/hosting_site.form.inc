@@ -208,7 +208,7 @@ function hosting_site_form($node) {
       '#required' => TRUE,
       '#title' => t('Client'),
       '#default_value' => _hosting_client_site_default($node),
-      '#description' => t('The client who this site belongs to.'),
+      '#description' => t('The client to whom this site belongs. You can add a new client at !url.', array('!url' => l('node/add/client', 'node/add/client', array('attributes' => array('target' => '_blank'))))),
       '#autocomplete_path' => 'hosting_client/autocomplete/client',
     ), 'filter_xss', $editable);
 
