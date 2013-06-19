@@ -35,7 +35,7 @@ function hosting_ip_save($node, $update = FALSE) {
     }
   }
 
-  $ips = is_array($node->new_ip_addresses) ? $node->new_ip_addresses : array();
+  $ips = isset($node->new_ip_addresses) ? $node->new_ip_addresses : array();
   foreach ($ips as $id => $ip) {
     if (!empty($ip)) {
       // new entries are prefixed with the string 'new', insert those
@@ -114,19 +114,21 @@ function hosting_ip_allocate($cert, $site) {
   // IP allocation for nodes in the cluster
   // XXX: this should be in classes, see below
   switch ($server->services['http']->type) {
-  case 'pack':
-    foreach ($server->services['http']->master_servers as $s) {
-      $ips[] = hosting_server_ip_allocate($s);
-    }
-    foreach ($server->services['http']->slave_servers as $s) {
-      $ips[] = hosting_server_ip_allocate($s);
-    }
-    break;
-  case 'cluster':
-    foreach ($server->services['http']->web_servers as $s) {
-      $ips[] = hosting_server_ip_allocate($s);
-    }
-    break;
+    case 'pack':
+      foreach ($server->services['http']->master_servers as $s) {
+        $ips[] = hosting_server_ip_allocate($s);
+      }
+      foreach ($server->services['http']->slave_servers as $s) {
+        $ips[] = hosting_server_ip_allocate($s);
+      }
+      break;
+    case 'cluster':
+      foreach ($server->services['http']->web_servers as $s) {
+        $ips[] = hosting_server_ip_allocate($s);
+      }
+      break;
+    default:
+      $ips = array(hosting_server_ip_allocate($server->nid));
   }
   foreach ($ips as $ip) {
     if (!$ip) {
