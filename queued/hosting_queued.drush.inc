@@ -70,8 +70,18 @@ function drush_hosting_queued() {
       hosting_queued_restart();
     }
 
-    // Get some tasks to run
-    $tasks = _hosting_get_new_tasks();
+    if (db_error()) {
+      // There was a database error, see: https://drupal.org/node/1992254
+      drush_log('Caught database error. Restarting queue daemon.', 'warning');
+      // Give the database time to come back.
+      sleep(3);
+      hosting_queued_restart();
+    }
+    else {
+      // Get some tasks to run
+      $tasks = @_hosting_get_new_tasks();
+    }
+
     foreach ($tasks as $task) {
       // We sleep for a second just in case others want to run the task first.
       // This guards against other processes that want to add a hosting task
