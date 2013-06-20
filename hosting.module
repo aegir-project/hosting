@@ -203,10 +203,6 @@ function hosting_nodeapi(&$node, $op, $arg1, $arg2) {
         }
         break;
 
-      case 'update':
-        drupal_set_message('Any changes will take effect once the scheduled Verify task has been processed.');
-        break;
-
       case 'load':
         $return = db_fetch_array(db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = %d", $node->nid));
         if ($return === FALSE) { // Should only happen on install
@@ -813,8 +809,21 @@ function hosting_form_alter(&$form, &$form_state, $form_id) {
 
       // because these aren't really posts, 'preview' doesnt make sense in this context.
       $form['buttons']['preview']['#access'] = FALSE;
+
+      // Add message that verify is required for changes to take effect.
+      if (in_array($type, array('site', 'platform', 'server'))){
+        $form['#submit'][] = 'hosting_form_verify_reqd_submit';
+      }
     }
   }
+}
+
+/**
+ * Submit handler to add a message that verify is required for changes to take effect.
+ * See: https://drupal.org/node/1761932
+ */
+function hosting_form_verify_reqd_submit() {
+  drupal_set_message('Any changes will take effect once the scheduled Verify task has been processed.');
 }
 
 /**
