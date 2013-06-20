@@ -23,16 +23,7 @@ function hosting_queued_drush_command() {
     'drupal dependencies' => array(
       'hosting_queued',
     ),
-    // We need this get around a drush bug, see: http://drupal.org/node/704848
-    // But we remove it below for Drush 4.5 and above.
-    'callback' => 'drush_hosting_queued',
-    'options' => array('onetime' => array('description' => dt('exit if there are no more tasks queued after the 1 second poll timeout.'))),
   );
-
-  // We don't need the callback defined for Drush > 4.4
-  if (defined('DRUSH_VERSION') && version_compare(DRUSH_VERSION, '4.4', '>')) {
-    unset($items['hosting-queued']['callback']);
-  }
 
   return $items;
 }
