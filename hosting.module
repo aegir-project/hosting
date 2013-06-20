@@ -203,10 +203,6 @@ function hosting_nodeapi(&$node, $op, $arg1, $arg2) {
         }
         break;
 
-      case 'update':
-        drupal_set_message('Any changes will take effect once the scheduled Verify task has been processed.');
-        break;
-
       case 'load':
         $return = db_fetch_array(db_query("SELECT name AS hosting_name FROM {hosting_context} WHERE nid = %d", $node->nid));
         if ($return === FALSE) { // Should only happen on install
