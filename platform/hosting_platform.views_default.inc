@@ -29,9 +29,11 @@ function hosting_platform_views_default_views() {
   $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['exposed_form']['type'] = 'basic';
-  $handler->display->display_options['pager']['type'] = 'none';
-  $handler->display->display_options['pager']['options']['offset'] = '0';
+  $handler->display->display_options['pager']['type'] = 'full';
   $handler->display->display_options['pager']['options']['items_per_page'] = '25';
+  $handler->display->display_options['pager']['options']['offset'] = '0';
+  $handler->display->display_options['pager']['options']['id'] = '0';
+  $handler->display->display_options['pager']['options']['expose']['items_per_page_options_all'] = 0;
   $handler->display->display_options['style_plugin'] = 'bulk';
   $handler->display->display_options['style_options']['row_class'] = '[status]';
   $handler->display->display_options['style_options']['columns'] = array(
@@ -271,30 +273,6 @@ function hosting_platform_views_default_views() {
   $handler->display->display_options['fields']['status']['empty_zero'] = 0;
   $handler->display->display_options['fields']['status']['hide_alter_empty'] = 1;
   $handler->display->display_options['fields']['status']['status_mode'] = 'class';
-  /* Field: Hosting Platform: Status */
-  $handler->display->display_options['fields']['status_1']['id'] = 'status_1';
-  $handler->display->display_options['fields']['status_1']['table'] = 'hosting_platform';
-  $handler->display->display_options['fields']['status_1']['field'] = 'status';
-  $handler->display->display_options['fields']['status_1']['alter']['alter_text'] = 1;
-  $handler->display->display_options['fields']['status_1']['alter']['text'] = '&nbsp;';
-  $handler->display->display_options['fields']['status_1']['alter']['make_link'] = 0;
-  $handler->display->display_options['fields']['status_1']['alter']['absolute'] = 0;
-  $handler->display->display_options['fields']['status_1']['alter']['external'] = 0;
-  $handler->display->display_options['fields']['status_1']['alter']['replace_spaces'] = 0;
-  $handler->display->display_options['fields']['status_1']['alter']['trim_whitespace'] = 0;
-  $handler->display->display_options['fields']['status_1']['alter']['nl2br'] = 0;
-  $handler->display->display_options['fields']['status_1']['alter']['word_boundary'] = 1;
-  $handler->display->display_options['fields']['status_1']['alter']['ellipsis'] = 1;
-  $handler->display->display_options['fields']['status_1']['alter']['strip_tags'] = 0;
-  $handler->display->display_options['fields']['status_1']['alter']['trim'] = 0;
-  $handler->display->display_options['fields']['status_1']['alter']['html'] = 0;
-  $handler->display->display_options['fields']['status_1']['element_class'] = 'hosting-status';
-  $handler->display->display_options['fields']['status_1']['element_label_colon'] = 1;
-  $handler->display->display_options['fields']['status_1']['element_default_classes'] = 1;
-  $handler->display->display_options['fields']['status_1']['hide_empty'] = 0;
-  $handler->display->display_options['fields']['status_1']['empty_zero'] = 0;
-  $handler->display->display_options['fields']['status_1']['hide_alter_empty'] = 1;
-  $handler->display->display_options['fields']['status_1']['status_mode'] = 'image';
   /* Field: Node: Title */
   $handler->display->display_options['fields']['title']['id'] = 'title';
   $handler->display->display_options['fields']['title']['table'] = 'node';
@@ -312,6 +290,7 @@ function hosting_platform_views_default_views() {
   $handler->display->display_options['fields']['title']['alter']['strip_tags'] = 0;
   $handler->display->display_options['fields']['title']['alter']['trim'] = 0;
   $handler->display->display_options['fields']['title']['alter']['html'] = 0;
+  $handler->display->display_options['fields']['title']['element_class'] = 'hosting-status';
   $handler->display->display_options['fields']['title']['element_label_colon'] = 1;
   $handler->display->display_options['fields']['title']['element_default_classes'] = 1;
   $handler->display->display_options['fields']['title']['hide_empty'] = 0;
@@ -429,6 +408,9 @@ function hosting_platform_views_default_views() {
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page_platforms');
+  $handler->display->display_options['defaults']['access'] = FALSE;
+  $handler->display->display_options['access']['type'] = 'perm';
+  $handler->display->display_options['access']['perm'] = 'view platform';
   $handler->display->display_options['path'] = 'hosting/platforms';
   $handler->display->display_options['menu']['type'] = 'normal';
   $handler->display->display_options['menu']['title'] = 'Platforms';
@@ -440,3 +422,4 @@ function hosting_platform_views_default_views() {
 
   return $views;
 }
+
