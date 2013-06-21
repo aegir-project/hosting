@@ -70,11 +70,22 @@ function drush_hosting_queued() {
       hosting_queued_restart();
     }
 
+    // Check if there was a database error, so we can recover gracefully if needed.
+    // See: https://drupal.org/node/1992254.
     if (db_error()) {
-      // There was a database error, see: https://drupal.org/node/1992254
-      drush_log('Caught database error. Restarting queue daemon.', 'warning');
-      // Give the database time to come back.
-      sleep(3);
+      drush_log('Caught database error.', 'warning');
+      $db = drush_convert_db_from_db_url($GLOBALS['db_url']);
+      drush_log('Waiting for database to become available.', 'warning');
+      do {
+        // Give the database time to come back.
+        sleep(1);
+        // Check connection
+        $connect = @mysqli_connect($db['host'], $db['username'], $db['password']);
+        drush_log('.', 'warning');
+      } while (!$connect);
+      // Close connection
+      mysqli_close($connect);
+      drush_log('Restarting queue daemon.', 'warning');
       hosting_queued_restart();
     }
     else {
