@@ -50,6 +50,15 @@ function hosting_site_menu() {
     'access arguments' => array('create', 'site'),
   );
 
+  $items['node/%node/platform-add-site'] = array(
+    'title' => 'Add site',
+    'type' => MENU_LOCAL_TASK,
+    'page callback' => 'hosting_site_add_by_platform',
+    'page arguments' => array(1),
+    'access callback' => 'hosting_site_add_by_platform_access',
+    'access arguments' => array(1),
+  );
+
   $items['hosting/hosting_site_form_check'] = array(
     'page callback' =>'_hosting_site_form_check',
     'type' => MENU_CALLBACK,
@@ -85,8 +94,12 @@ function hosting_site_theme() {
 }
 
 function _hosting_site_form_check() {
+  $platform = NULL;
+  if (isset($_GET['platform'])) {
+    $platform = $_GET['platform'];
+  }
   drupal_json(
-    hosting_site_available_options($_POST)
+    hosting_site_available_options($_POST, $platform)
   );
   exit();
 }
@@ -341,6 +354,20 @@ function hosting_site_access($op, $node, $account) {
       return user_access('view site', $account);
       break;
   }
+}
+
+/**
+ * Access callback for Site add by platform.
+ */
+function hosting_site_add_by_platform_access($node) {
+  return $node->type == 'platform' && node_access('create', 'site');
+}
+
+/**
+ * Page callback for Site add by platform.
+ */
+function hosting_site_add_by_platform($node) {
+  drupal_goto('node/add/site', "platform={$node->nid}");
 }
 
 /**

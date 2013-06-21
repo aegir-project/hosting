@@ -88,7 +88,7 @@ function _hosting_site_form_pre_render($elements) {
  * fields are available for selection.
  *
  */
-function hosting_site_available_options($node) {
+function hosting_site_available_options($node, $platform = NULL) {
   // cast to object if it's an array.
   $node = (is_array($node)) ? (object) $node : clone $node;
 
@@ -124,11 +124,19 @@ function hosting_site_available_options($node) {
                         JOIN hosting_package p ON p.nid = i.package_id
                         JOIN hosting_platform l ON l.nid = i.rid WHERE i.package_id = %d
                         AND p.package_type = 'profile' AND l.status = %d;", $id, HOSTING_PLATFORM_ENABLED);
-    $allowed_plats = _hosting_get_allowed_platforms($user->uid);
+    if (is_null($platform)) {
+      $allowed_plats = _hosting_get_allowed_platforms($user->uid);
+    }
+    else {
+      $allowed_plats = array($platform => $platform);
+    }
     $access_check = FALSE;
 
     while ($row = db_fetch_array($result)) {
-      if (array_key_exists($row['nid'], $allowed_plats)) {
+      if (!is_null($platform) && array_key_exists($row['nid'], $allowed_plats)) {
+        $platform_profiles[$id] = $name;
+      }
+      elseif (array_key_exists($row['nid'], $allowed_plats)) {
         $access_check = TRUE;
       }
       // open access if no platform access has been set
@@ -141,6 +149,9 @@ function hosting_site_available_options($node) {
       unset($profiles[$id]);
     }
   }
+  if (!is_null($platform)) {
+    $profiles = $platform_profiles;
+  }
   reset($profiles);
   $return['profile'] = array_keys($profiles);
 
@@ -149,21 +160,26 @@ function hosting_site_available_options($node) {
   }
 
   // filter the available platforms based on which clients the user has access to.
-  $options = array();
-  $platforms = hosting_get_profile_platforms($node->profile, isset($node->check_profile_migrations) ? $node->check_profile_migrations : FALSE);
-  if (sizeof($platforms)) {
-    foreach ($platforms as $nid => $title) {
-      $platform = node_load($nid);
+  if (!is_null($platform)) {
+    $node->profile = $return['profile'][0];
+    $return['platform'] = array($platform);
+  }
+  else {
+    $options = array();
+    $platforms = hosting_get_profile_platforms($node->profile, isset($node->check_profile_migrations) ? $node->check_profile_migrations : FALSE);
+    if (sizeof($platforms)) {
+      foreach ($platforms as $nid => $title) {
+        $platform = node_load($nid);
 
-      //if ($platform->platform_status != HOSTING_PLATFORM_LOCKED) {
-      if ($platform->platform_status != HOSTING_PLATFORM_LOCKED || user_access('create sites on locked platforms')) {
-        if (!isset($platform->clients) || sizeof(array_intersect(array_keys($user->client_id), $platform->clients)) || $user->uid == 1) {
-          $options[] = $nid;
+        if ($platform->platform_status != HOSTING_PLATFORM_LOCKED || user_access('create sites on locked platforms')) {
+          if (!isset($platform->clients) || sizeof(array_intersect(array_keys($user->client_id), $platform->clients)) || $user->uid == 1) {
+            $options[] = $nid;
+          }
         }
       }
-    }
 
-    $return['platform'] = $options;
+      $return['platform'] = $options;
+    }
   }
 
   if (!isset($node->platform) || !in_array($node->platform, $return['platform'])) {
