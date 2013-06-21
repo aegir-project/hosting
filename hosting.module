@@ -760,23 +760,6 @@ function hosting_queues_configure_submit($form, &$form_state) {
 }
 
 /**
- * Implements hook_form_FORM_ID_alter().
- */
-function hosting_form_views_bulk_operations_form__1_alter(&$form, &$form_state) {
-  switch ($form['#plugin']->view->current_display) {
-    case 'page_platforms':
-      $form['select']['#title'] = 'Platform operations';
-      break;
-    case 'page_1':
-    case 'block_1':
-    case 'block_client':
-    case 'block_profile':
-      $form['select']['#title'] = 'Site operations';
-      break;
-  }
-}
-
-/**
  * Implementation of hook_form_alter().
  */
 function hosting_form_alter(&$form, &$form_state, $form_id) {

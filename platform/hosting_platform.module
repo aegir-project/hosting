@@ -301,6 +301,10 @@ function hosting_platform_form_alter(&$form, &$form_state, $form_id) {
       $form['buttons']['delete']['#type'] = 'hidden';
     }
   }
+  // Override the 'Bulk operations' title.
+  if ($form_id == 'views_bulk_operations_form_hosting_platform_list_page_platforms') {
+    $form['select']['#title'] = 'Platform operations';
+  }
 }
 
 /**
