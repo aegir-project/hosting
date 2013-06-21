@@ -496,14 +496,32 @@ function hosting_platform_hosting_site_site_list_filters() {
   return array('platform');
 }
 
-function _hosting_platform_status($status) {
-  static $labels = array(
-    HOSTING_PLATFORM_QUEUED => "Queued",
-    HOSTING_PLATFORM_ENABLED => "Enabled",
-    HOSTING_PLATFORM_DELETED => "Deleted",
-    HOSTING_PLATFORM_LOCKED => "Locked",
+function _hosting_platform_status_codes() {
+  $codes = array(
+    HOSTING_PLATFORM_QUEUED => array(
+      'label' => 'Queued',
+      'class' => 'hosting-queue',
+    ),
+    HOSTING_PLATFORM_ENABLED => array(
+      'label' => 'Enabled',
+      'class' => 'hosting-success',
+    ),
+    HOSTING_PLATFORM_DELETED => array(
+      'label' => 'Deleted',
+      'class' => 'hosting-error',
+    ),
+    HOSTING_PLATFORM_LOCKED => array(
+      'label' => 'Locked',
+      'class' => 'hosting-disable',
+    ),
   );
-  return is_object($status) ? $labels[$status->platform_status] : $labels[$status];
+  return $codes;
+}
+
+function _hosting_platform_status($status) {
+  static $labels;
+  $labels = _hosting_platform_status_codes();
+  return is_object($status) ? $labels[$status->platform_status]['label'] : $labels[$status]['label'];
 }
 
 /**
@@ -537,13 +555,9 @@ function hosting_platform_views_api() {
  * Define the classes that correspond to the platform status.
  */
 function _hosting_platform_list_class($status) {
-  static $labels = array(
-    HOSTING_PLATFORM_QUEUED => "hosting-queue",
-    HOSTING_PLATFORM_ENABLED => "hosting-success",
-    HOSTING_PLATFORM_DELETED => "hosting-error",
-    HOSTING_PLATFORM_LOCKED => "hosting-disable",
-  );
-  return is_object($status) ? $labels[$status->platform_status] : $labels[$status];
+  static $labels;
+  $labels = _hosting_platform_status_codes();
+  return is_object($status) ? $labels[$status->platform_status]['class'] : $labels[$status]['class'];
 }
 
 /**
