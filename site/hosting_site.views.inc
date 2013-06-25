@@ -102,6 +102,9 @@ function hosting_site_views_data() {
       'options callback' => 'hosting_site_status_codes',
       'options arguments' => array('label'),
     ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
   );
 
   return $data;
