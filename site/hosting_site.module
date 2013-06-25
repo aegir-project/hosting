@@ -519,21 +519,47 @@ function hosting_import_site($site_id, $data, $platform) {
  */
 function _hosting_site_status($node) {
   $status = (is_numeric($node)) ? $node : $node->site_status;
-  $labels = _hosting_site_status_options();
+  $labels = hosting_site_status_codes('label');
   return $labels[$status];
 }
 
 /**
- * Define the status type labels.
+ * Define the status type labels and classes.
+ *
+ * @param $type
+ *   The type of status to return ('label' or 'class').
  */
-function _hosting_site_status_options() {
-  static $labels = array(
-    HOSTING_SITE_QUEUED => "Queued",
-    HOSTING_SITE_ENABLED => "Enabled",
-    HOSTING_SITE_DELETED => "Deleted",
-    HOSTING_SITE_DISABLED => "Disabled",
+function hosting_site_status_codes($type = NULL) {
+  static $codes = array(
+    HOSTING_SITE_QUEUED => array(
+      'label' => 'Queued',
+      'class' => 'hosting-queue',
+    ),
+    HOSTING_SITE_ENABLED => array(
+      'label' => 'Enabled',
+      'class' => 'hosting-success',
+    ),
+    HOSTING_SITE_DELETED => array(
+      'label' => 'Deleted',
+      'class' => 'hosting-error',
+    ),
+    HOSTING_SITE_DISABLED => array(
+      'label' => 'Disabled',
+      'class' => 'hosting-disable',
+    ),
   );
-  return $labels;
+  if (!is_null($type)) {
+    // Return just the $type
+    $return = array();
+    foreach ($codes as $code => $types) {
+      $return[$code] = $types[$type];
+    }
+    return $return;
+  }
+  else {
+    // Return everything
+    return $codes;
+  }
 }
 
 /**
@@ -567,12 +593,7 @@ function hosting_site_task_status($nid) {
  */
 function _hosting_site_list_class($node, $verified = null) {
   $status = (is_numeric($node)) ? $node : $node->site_status;
-  static $classes = array(
-    HOSTING_SITE_QUEUED => "hosting-queue",
-    HOSTING_SITE_ENABLED => "hosting-success",
-    HOSTING_SITE_DELETED => "hosting-error",
-    HOSTING_SITE_DISABLED => "hosting-disable",
-  );
+  $classes = hosting_site_status_codes('class');
   if (($status == HOSTING_SITE_ENABLED) && (!$verified)) {
     return 'hosting-warning';
   }

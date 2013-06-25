@@ -99,7 +99,8 @@ function hosting_site_views_data() {
     ),
     'filter' => array(
       'handler' => 'views_handler_filter_in_operator',
-      'options callback' => '_hosting_site_status_options',
+      'options callback' => 'hosting_site_status_codes',
+      'options arguments' => array('label'),
     ),
   );
 
@@ -116,7 +117,6 @@ function hosting_site_views_handlers() {
       'views_handler_field_hosting_language' => array(
         'parent' => 'views_handler_field',
       ),
-      // field handlers
       'views_handler_field_hosting_site_status' => array(
         'parent' => 'views_handler_field',
       ),
