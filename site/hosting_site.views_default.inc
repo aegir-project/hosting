@@ -36,22 +36,15 @@ function hosting_site_views_default_views() {
   $handler->display->display_options['style_options']['row_class'] = '[status]';
   $handler->display->display_options['style_options']['columns'] = array(
     'status' => 'status',
-    'status_1' => 'status_1',
     'title' => 'title',
     'title_3' => 'title_3',
     'created' => 'created',
     'title_2' => 'title_2',
   );
-  $handler->display->display_options['style_options']['default'] = 'status_1';
+  $handler->display->display_options['style_options']['default'] = '-1';
   $handler->display->display_options['style_options']['info'] = array(
     'status' => array(
       'sortable' => 0,
-      'default_sort_order' => 'asc',
-      'align' => '',
-      'separator' => '',
-    ),
-    'status_1' => array(
-      'sortable' => 1,
       'default_sort_order' => 'desc',
       'align' => '',
       'separator' => '',
@@ -122,11 +115,6 @@ function hosting_site_views_default_views() {
     ),
     'hosting_task_operation-2b33c2655429ff68933d62ef1c2c5dbf' => array(
       'selected' => 1,
-      'skip_confirmation' => 0,
-      'label' => '',
-    ),
-    'views_bulk_operations_ruleset_action_rules_set_1' => array(
-      'selected' => 0,
       'skip_confirmation' => 0,
       'label' => '',
     ),
@@ -350,6 +338,11 @@ function hosting_site_views_default_views() {
   $handler->display->display_options['fields']['title_2']['alter']['trim'] = 1;
   $handler->display->display_options['fields']['title_2']['alter']['html'] = 0;
   $handler->display->display_options['fields']['title_2']['link_to_node'] = 1;
+  /* Sort criterion: Hosting Site: Status */
+  $handler->display->display_options['sorts']['status']['id'] = 'status';
+  $handler->display->display_options['sorts']['status']['table'] = 'hosting_site';
+  $handler->display->display_options['sorts']['status']['field'] = 'status';
+  $handler->display->display_options['sorts']['status']['order'] = 'DESC';
   /* Sort criterion: Node: Title */
   $handler->display->display_options['sorts']['title']['id'] = 'title';
   $handler->display->display_options['sorts']['title']['table'] = 'node';
@@ -545,3 +538,4 @@ function hosting_site_views_default_views() {
 
   return $views;
 }
+
