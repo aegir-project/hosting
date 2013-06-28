@@ -122,29 +122,8 @@ function drush_hosting_task() {
   $output = provision_backend_invoke($task->ref->hosting_name, 'provision-' . $task->task_type, $task->args, $task->options, $mode);
   drush_set_context('HOSTING_DRUSH_OUTPUT', $output);
 
-  // Get any errors logged by Drush.
-  $code = drush_get_error();
-
-  // Parse output for warnings, since these aren't logged by Drush.
-  $warning = FALSE;
-  foreach ($output['log'] as $entry) {
-    if ($entry['type'] == 'warning') {
-      $warning = TRUE;
-    }
-  }
-
-  if ($code) {
-    $task->task_status = HOSTING_TASK_ERROR;
-  }
-  elseif ($warning) {
-    $task->task_status = HOSTING_TASK_WARNING;
-  }
-  else {
-    $task->task_status = HOSTING_TASK_SUCCESS;
-  }
-
   // On succesful delete, remove the named context.
-  if ($task->task_type === 'delete' && $task->task_status === HOSTING_TASK_SUCCESS) {
+  if ($task->task_type === 'delete' && !drush_get_error()) {
     $output = drush_invoke_process('@none', 'provision-save', array('@' . $task->ref->hosting_name), array('delete' => TRUE), array('method' => $mode));
   }
 
