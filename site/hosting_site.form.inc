@@ -219,12 +219,16 @@ function hosting_site_form($node) {
     ));
 
   $editable = ((!$node->client || $node->nid) || user_access('administer sites')) && hosting_feature('client');
+  $add_client_text = '';
+  if (user_access('administer clients') || user_access('create client')) {
+    $add_client_text = t(' Click !here to add a new client.', array('!here' => l('here', 'node/add/client', array('attributes' => array('target' => '_blank')))));
+  }
   _hosting_site_field($form, $node, 'client', array(
       '#type' => 'textfield',
       '#required' => TRUE,
       '#title' => t('Client'),
       '#default_value' => _hosting_client_site_default($node),
-      '#description' => t('The client to whom this site belongs. You can add a new client at !url.', array('!url' => l('node/add/client', 'node/add/client', array('attributes' => array('target' => '_blank'))))),
+      '#description' => t('The client to whom this site belongs.') . $add_client_text,
       '#autocomplete_path' => 'hosting_client/autocomplete/client',
     ), 'filter_xss', $editable);
 
