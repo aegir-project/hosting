@@ -13,6 +13,7 @@ function hosting_task_hosting_feature() {
     'description' => t('API to provide support for tasks.'),
     'status' => HOSTING_FEATURE_REQUIRED,
     'module' => 'hosting_task',
+    'node' => 'task',
     'group' => 'required',
     );
   return $features;
