@@ -75,7 +75,7 @@ function hosting_server_hosting_tasks() {
  * Implementation of hook_perm()
  */
 function hosting_server_perm() {
-  return array('create server', 'view server', 'edit server', 'delete server');
+  return array('administer servers', 'create server', 'view server', 'edit server', 'delete server');
 }
 
 /**

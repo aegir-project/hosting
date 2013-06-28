@@ -115,7 +115,7 @@ function hosting_platform_hosting_tasks() {
  * Implementation of hook_perm().
  */
 function hosting_platform_perm() {
-  return array('create platform', 'view platform', 'edit platform', 'delete platform', 'view locked platforms', 'create sites on locked platforms');
+  return array('administer platforms', 'create platform', 'view platform', 'edit platform', 'delete platform', 'view locked platforms', 'create sites on locked platforms');
 }
 
 /**
@@ -133,6 +133,9 @@ function hosting_platform_access($op, $node, $account) {
       break;
     case 'update':
       return user_access('edit platform', $account);
+      break;
+    case 'view':
+      return user_access('view platform', $account);
       break;
   } 
 }
