@@ -225,7 +225,6 @@ function hosting_client_node_access_records($node) {
       break;
     case 'platform' :
       $base_grant['gid'] = HOSTING_ADMIN_CLIENT;
-      /*
       if (sizeof($node->clients)) {
         foreach ($node->clients as $cid => $client) {
           if ($cid != HOSTING_ADMIN_CLIENT) {
@@ -233,7 +232,6 @@ function hosting_client_node_access_records($node) {
           }
         }
       }
-       */
       break;
     default :
       //Not hosting node, don't change access.
