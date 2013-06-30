@@ -290,47 +290,35 @@ function hosting_site_node_operations() {
   $operations = array();
 
   $operations['hosting-site-backup'] = array(
-    'label' => t('Backup'),
+    'label' => t('Backup Site'),
     'callback' => 'hosting_task_operation',
     'callback arguments' => array('backup'),
    );
-
   $operations['hosting-site-verify'] = array(
-    'label' => t('Verify'),
+    'label' => t('Verify Site'),
     'callback' => 'hosting_task_operation',
     'callback arguments' => array('verify'),
   );
-
   $operations['hosting-site-disable'] = array(
-    'label' => t('Disable'),
+    'label' => t('Disable Site'),
     'callback' => 'hosting_task_operation',
     'callback arguments' => array('disable'),
   );
-
   $operations['hosting-site-enable'] = array(
-    'label' => t('Enable'),
+    'label' => t('Enable Site'),
     'callback' => 'hosting_task_operation',
     'callback arguments' => array('enable'),
   );
-
   $operations['hosting-site-delete'] = array(
-    'label' => t('Delete'),
+    'label' => t('Delete Site'),
     'callback' => 'hosting_task_operation',
     'callback arguments' => array('delete'),
   );
-
   $operations['hosting-site-login-reset'] = array(
     'label' => t('Reset password'),
     'callback' => 'hosting_task_operation',
     'callback arguments' => array('login-reset'),
   );
-
-  $operations['hosting-site-backup-delete'] = array(
-    'label' => t('Delete backups'),
-    'callback' => 'hosting_task_operation',
-    'callback arguments' => array('backup-delete'),
-  );
-
 
   return $operations;
 }

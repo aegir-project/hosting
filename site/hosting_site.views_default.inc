@@ -80,21 +80,11 @@ function hosting_site_views_default_views() {
   $handler->display->display_options['style_options']['operations'] = array(
     'hosting_task_operation-e0d50030fc9bde5ba86be99826a116eb' => array(
       'selected' => 1,
-      'skip_confirmation' => 0,
-      'label' => '',
+      'skip_confirmation' => 1,
+      'label' => 'Backup',
     ),
     'node_assign_owner_action' => array(
       'selected' => 0,
-      'skip_confirmation' => 0,
-      'label' => '',
-    ),
-    'hosting_task_operation-d5753f4149333e6bb163b78489af62a7' => array(
-      'selected' => 1,
-      'skip_confirmation' => 0,
-      'label' => '',
-    ),
-    'hosting_task_operation-cbcdb2f1b1694e48f1d2a1956d5b34aa' => array(
-      'selected' => 1,
       'skip_confirmation' => 0,
       'label' => '',
     ),
@@ -102,6 +92,11 @@ function hosting_site_views_default_views() {
       'selected' => 0,
       'skip_confirmation' => 0,
       'label' => '',
+    ),
+    'hosting_task_operation-d5753f4149333e6bb163b78489af62a7' => array(
+      'selected' => 1,
+      'skip_confirmation' => 0,
+      'label' => 'Delete',
     ),
     'node_mass_update-a27b9efabcd054685a549378b174ad11' => array(
       'selected' => 0,
@@ -111,7 +106,7 @@ function hosting_site_views_default_views() {
     'hosting_task_operation-2e697b94e1c2d6cfa04148e13bbf09ab' => array(
       'selected' => 1,
       'skip_confirmation' => 0,
-      'label' => '',
+      'label' => 'Disable',
     ),
     'system_message_action' => array(
       'selected' => 0,
@@ -120,8 +115,8 @@ function hosting_site_views_default_views() {
     ),
     'hosting_task_operation-2b33c2655429ff68933d62ef1c2c5dbf' => array(
       'selected' => 1,
-      'skip_confirmation' => 0,
-      'label' => '',
+      'skip_confirmation' => 1,
+      'label' => 'Enable',
     ),
     'views_bulk_operations_action' => array(
       'selected' => 0,
@@ -129,6 +124,11 @@ function hosting_site_views_default_views() {
       'label' => '',
     ),
     'views_bulk_operations_script_action' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'hosting_task_operation-5ea28743c6538d23450961aa6ada7877' => array(
       'selected' => 0,
       'skip_confirmation' => 0,
       'label' => '',
@@ -190,7 +190,7 @@ function hosting_site_views_default_views() {
     ),
     'hosting_task_operation-62832bfa32dda6f49c47986802958a8d' => array(
       'selected' => 1,
-      'skip_confirmation' => 0,
+      'skip_confirmation' => 1,
       'label' => '',
     ),
     'node_save_action' => array(
@@ -199,6 +199,11 @@ function hosting_site_views_default_views() {
       'label' => '',
     ),
     'system_send_email_action' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'hosting_task_operation-5fed962c664f8dab8599a47f3ebe138c' => array(
       'selected' => 0,
       'skip_confirmation' => 0,
       'label' => '',
@@ -220,16 +225,16 @@ function hosting_site_views_default_views() {
     ),
     'hosting_task_operation-1ba8dfdca72110c3d78b76f9b18bf909' => array(
       'selected' => 1,
-      'skip_confirmation' => 0,
-      'label' => '',
+      'skip_confirmation' => 1,
+      'label' => 'Verify',
     ),
   );
   $handler->display->display_options['style_options']['execution_type'] = '1';
   $handler->display->display_options['style_options']['display_type'] = '0';
-  $handler->display->display_options['style_options']['display_result'] = 1;
+  $handler->display->display_options['style_options']['display_result'] = 0;
   $handler->display->display_options['style_options']['merge_single_action'] = 1;
   $handler->display->display_options['style_options']['hide_selector'] = 0;
-  $handler->display->display_options['style_options']['preserve_selection'] = 0;
+  $handler->display->display_options['style_options']['preserve_selection'] = 1;
   $handler->display->display_options['exposed_block'] = TRUE;
   /* Relationship: Hosting Site: Install Profile */
   $handler->display->display_options['relationships']['profile']['id'] = 'profile';
@@ -272,7 +277,7 @@ function hosting_site_views_default_views() {
   $handler->display->display_options['fields']['title']['id'] = 'title';
   $handler->display->display_options['fields']['title']['table'] = 'node';
   $handler->display->display_options['fields']['title']['field'] = 'title';
-  $handler->display->display_options['fields']['title']['label'] = 'SIte';
+  $handler->display->display_options['fields']['title']['label'] = 'Site';
   $handler->display->display_options['fields']['title']['alter']['alter_text'] = 0;
   $handler->display->display_options['fields']['title']['alter']['make_link'] = 0;
   $handler->display->display_options['fields']['title']['alter']['absolute'] = 0;
