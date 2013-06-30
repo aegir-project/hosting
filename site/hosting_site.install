@@ -331,3 +331,22 @@ function hosting_site_update_6202() {
 
   return $ret;
 }
+
+/**
+ * Add new Action permissions.
+ */
+function hosting_platform_update_6203() {
+  $ret = array();
+
+  // Enable Acstions permissions, and temporarily Install Profile API module to load includes.
+  module_enable(array('actions_permissions', 'install_profile_api'));
+  module_load_include('inc', 'install_profile_api', 'core/user');
+
+  install_add_permissions(install_get_rid('aegir administrator'), array('execute Site: Backup (hosting_site_op_backup)', 'execute Site: Delete (hosting_site_op_delete)', 'execute Site: Disable (hosting_site_op_disable)', 'execute Site: Enable (hosting_site_op_enable)', 'execute Site: Reset password (hosting_site_op_login_reset)', 'execute Site: Verify (hosting_site_op_verify)'));
+  install_add_permissions(install_get_rid('aegir platform manager'), array('execute Site: Delete (hosting_site_op_delete)', 'execute Site: Disable (hosting_site_op_disable)', 'execute Site: Enable (hosting_site_op_enable)', 'execute Site: Verify (hosting_site_op_verify)'));
+  install_add_permissions(install_get_rid('aegir client'), array('execute Site: Backup (hosting_site_op_backup)', 'execute Site: Delete (hosting_site_op_delete)', 'execute Site: Disable (hosting_site_op_disable)', 'execute Site: Enable (hosting_site_op_enable)', 'execute Site: Reset password (hosting_site_op_login_reset)', 'execute Site: Verify (hosting_site_op_verify)'));
+
+  module_disable(array('install_profile_api'));
+
+  return $ret;
+}

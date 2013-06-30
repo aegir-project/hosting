@@ -184,3 +184,21 @@ function hosting_platform_update_6206() {
 
   return $ret;
 }
+
+/**
+ * Add new Action permissions.
+ */
+function hosting_platform_update_6207() {
+  $ret = array();
+
+  // Enable Acstions permissions, and temporarily Install Profile API module to load includes.
+  module_enable(array('actions_permissions', 'install_profile_api'));
+  module_load_include('inc', 'install_profile_api', 'core/user');
+
+  install_add_permissions(install_get_rid('aegir administrator'), array('execute Platform: Delete (hosting_platform_op_delete)', 'execute Platform: Lock (hosting_platform_op_lock)', 'execute Platform: Unlock (hosting_platform_op_unlock)', 'execute Platform: Verify (hosting_platform_op_verify)'));
+  install_add_permissions(install_get_rid('aegir platform manager'), array('execute Platform: Delete (hosting_platform_op_delete)', 'execute Platform: Lock (hosting_platform_op_lock)', 'execute Platform: Unlock (hosting_platform_op_unlock)', 'execute Platform: Verify (hosting_platform_op_verify)'));
+
+  module_disable(array('install_profile_api'));
+
+  return $ret;
+}
