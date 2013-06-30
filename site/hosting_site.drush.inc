@@ -129,6 +129,10 @@ function hosting_site_post_hosting_disable_task($task, $data) {
   $task->ref->site_status = HOSTING_SITE_DISABLED;
   $task->ref->no_verify = TRUE;
   node_save($task->ref);
+
+  // Record the backup created during disable.
+  $task->task_args['description'] = t('Pre-disable backup');
+  hosting_site_post_hosting_backup_task($task, $data);
 }
 
 /**
@@ -160,6 +164,10 @@ function hosting_site_post_hosting_delete_task($task, $data) {
     $task->ref->no_verify = TRUE;
     hosting_context_delete($task->ref->nid);
     node_save($task->ref);
+
+    // Record the backup created during delete.
+    $task->task_args['description'] = t('Pre-delete backup');
+    hosting_site_post_hosting_backup_task($task, $data);
   }
 }
 
