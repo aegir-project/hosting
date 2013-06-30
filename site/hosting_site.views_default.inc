@@ -398,6 +398,15 @@ function hosting_site_views_default_views() {
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page_1');
   $handler->display->display_options['exposed_block'] = TRUE;
+  $handler->display->display_options['defaults']['empty'] = FALSE;
+  /* Empty text: Global: Text area */
+  $handler->display->display_options['empty']['area']['id'] = 'area';
+  $handler->display->display_options['empty']['area']['table'] = 'views';
+  $handler->display->display_options['empty']['area']['field'] = 'area';
+  $handler->display->display_options['empty']['area']['empty'] = FALSE;
+  $handler->display->display_options['empty']['area']['content'] = 'No sites have been created. <a href="/node/add/site">Click here</a> to add one.';
+  $handler->display->display_options['empty']['area']['format'] = '1';
+  $handler->display->display_options['empty']['area']['tokenize'] = 0;
   $handler->display->display_options['path'] = 'hosting/sites';
   $handler->display->display_options['menu']['type'] = 'normal';
   $handler->display->display_options['menu']['title'] = 'Sites';
@@ -413,9 +422,9 @@ function hosting_site_views_default_views() {
   $handler->display->display_options['empty']['area']['table'] = 'views';
   $handler->display->display_options['empty']['area']['field'] = 'area';
   $handler->display->display_options['empty']['area']['empty'] = FALSE;
-  $handler->display->display_options['empty']['area']['content'] = 'No sites have been created on this platform. Click the \'Add site\' tab above to create one.';
+  $handler->display->display_options['empty']['area']['content'] = 'No sites have been created on this platform. <a href="/node/!1/platform-add-site">Click here</a> to add one.';
   $handler->display->display_options['empty']['area']['format'] = '1';
-  $handler->display->display_options['empty']['area']['tokenize'] = 0;
+  $handler->display->display_options['empty']['area']['tokenize'] = 1;
   $handler->display->display_options['defaults']['arguments'] = FALSE;
   /* Argument: Node: Nid */
   $handler->display->display_options['arguments']['nid']['id'] = 'nid';
@@ -517,9 +526,9 @@ function hosting_site_views_default_views() {
   $handler->display->display_options['empty']['area']['table'] = 'views';
   $handler->display->display_options['empty']['area']['field'] = 'area';
   $handler->display->display_options['empty']['area']['empty'] = FALSE;
-  $handler->display->display_options['empty']['area']['content'] = 'No sites have been created for this client. Click the \'Add site\' tab above to create one.';
+  $handler->display->display_options['empty']['area']['content'] = 'No sites have been created for this client. <a href="/node/!1/site/add">Click here</a> to add one.';
   $handler->display->display_options['empty']['area']['format'] = '1';
-  $handler->display->display_options['empty']['area']['tokenize'] = 0;
+  $handler->display->display_options['empty']['area']['tokenize'] = 1;
   $handler->display->display_options['defaults']['arguments'] = FALSE;
   /* Argument: Node: Nid */
   $handler->display->display_options['arguments']['nid']['id'] = 'nid';
