@@ -453,7 +453,7 @@ function hosting_package_update_6200() {
 
   // Enable block.
   $theme = 'eldir';
-  install_set_block('views', 'hosting_package_list-block_1' , $theme, 'content_bottom', 0, 2, "<?php\n\$node = menu_get_object();\nif (!empty(\$node)) {\n  return \$node->type == 'package';\n}\n?>");
+  install_set_block('views', 'hosting_package_list-block_1' , $theme, 'content_bottom', 0, 2, "<?php\n\$node = menu_get_object();\nif (!empty(\$node)) {\n  return \$node->type == 'package' && \$node->package_type != 'profile';\n}\n?>");
 
   module_disable(array('install_profile_api'));
 
