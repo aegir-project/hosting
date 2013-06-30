@@ -340,7 +340,7 @@ function hosting_site_perm() {
  * Implementation of hook_access
  */
 function hosting_site_access($op, $node, $account) {
-  if (hosting_feature('client')) {
+  if ($op != 'create' && hosting_feature('client')) {
     // we rely on hosting_node_grants() instead of global configuration
     return NULL;
   }
