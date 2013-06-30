@@ -289,6 +289,12 @@ function hosting_site_hosting_tasks() {
 function hosting_site_node_operations() {
   $operations = array();
 
+  $operations['hosting-site-backup'] = array(
+    'label' => t('Backup'),
+    'callback' => 'hosting_task_operation',
+    'callback arguments' => array('backup'),
+   );
+
   $operations['hosting-site-verify'] = array(
     'label' => t('Verify'),
     'callback' => 'hosting_task_operation',

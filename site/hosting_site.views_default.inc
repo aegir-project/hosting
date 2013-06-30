@@ -78,6 +78,11 @@ function hosting_site_views_default_views() {
   $handler->display->display_options['style_options']['sticky'] = 0;
   $handler->display->display_options['style_options']['empty_table'] = 0;
   $handler->display->display_options['style_options']['operations'] = array(
+    'hosting_task_operation-e0d50030fc9bde5ba86be99826a116eb' => array(
+      'selected' => 1,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
     'node_assign_owner_action' => array(
       'selected' => 0,
       'skip_confirmation' => 0,
