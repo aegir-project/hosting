@@ -284,46 +284,6 @@ function hosting_site_hosting_tasks() {
 }
 
 /**
- * Implements hook_node_operations().
- */
-function hosting_site_node_operations() {
-  $operations = array();
-
-  $operations['hosting-site-backup'] = array(
-    'label' => t('Backup Site'),
-    'callback' => 'hosting_task_operation',
-    'callback arguments' => array('backup'),
-   );
-  $operations['hosting-site-verify'] = array(
-    'label' => t('Verify Site'),
-    'callback' => 'hosting_task_operation',
-    'callback arguments' => array('verify'),
-  );
-  $operations['hosting-site-disable'] = array(
-    'label' => t('Disable Site'),
-    'callback' => 'hosting_task_operation',
-    'callback arguments' => array('disable'),
-  );
-  $operations['hosting-site-enable'] = array(
-    'label' => t('Enable Site'),
-    'callback' => 'hosting_task_operation',
-    'callback arguments' => array('enable'),
-  );
-  $operations['hosting-site-delete'] = array(
-    'label' => t('Delete Site'),
-    'callback' => 'hosting_task_operation',
-    'callback arguments' => array('delete'),
-  );
-  $operations['hosting-site-login-reset'] = array(
-    'label' => t('Reset password'),
-    'callback' => 'hosting_task_operation',
-    'callback arguments' => array('login-reset'),
-  );
-
-  return $operations;
-}
-
-/**
  * Implementation of hook_perm
  */
 function hosting_site_perm() {
@@ -352,6 +312,93 @@ function hosting_site_access($op, $node, $account) {
     case 'view':
       return user_access('view site', $account);
       break;
+  }
+}
+
+/**
+ * Implements hook_node_operations().
+ */
+function hosting_site_node_operations() {
+  $operations = array();
+
+  $operations['hosting-site-backup'] = array(
+    'label' => t('Site: Backup'),
+    'callback' => 'hosting_site_op_backup',
+   );
+  $operations['hosting-site-verify'] = array(
+    'label' => t('Site: Verify'),
+    'callback' => 'hosting_site_op_verify',
+  );
+  $operations['hosting-site-disable'] = array(
+    'label' => t('Site: Disable'),
+    'callback' => 'hosting_site_op_disable',
+  );
+  $operations['hosting-site-enable'] = array(
+    'label' => t('Site: Enable'),
+    'callback' => 'hosting_site_op_enable',
+  );
+  $operations['hosting-site-delete'] = array(
+    'label' => t('Site: Delete'),
+    'callback' => 'hosting_site_op_delete',
+  );
+  $operations['hosting-site-login-reset'] = array(
+    'label' => t('Site: Reset password'),
+    'callback' => 'hosting_site_op_login_reset',
+  );
+
+  return $operations;
+}
+
+/**
+ * Callback for site backup operation.
+ */
+function hosting_site_op_backup($nodes) {
+  foreach ($nodes as $nid) {
+    hosting_add_task($nid, 'backup');
+  }
+}
+
+/**
+ * Callback for site verify operation.
+ */
+function hosting_site_op_verify($nodes) {
+  foreach ($nodes as $nid) {
+    hosting_add_task($nid, 'verify');
+  }
+}
+
+/**
+ * Callback for site verify operation.
+ */
+function hosting_site_op_disable($nodes) {
+  foreach ($nodes as $nid) {
+    hosting_add_task($nid, 'disable');
+  }
+}
+
+/**
+ * Callback for site verify operation.
+ */
+function hosting_site_op_enable($nodes) {
+  foreach ($nodes as $nid) {
+    hosting_add_task($nid, 'enable');
+  }
+}
+/**
+ * Callback for site verify operation.
+ */
+function hosting_site_op_delete($nodes) {
+  foreach ($nodes as $nid) {
+    hosting_add_task($nid, 'delete');
+  }
+}
+
+/**
+ * Callback for site verify operation.
+ */
+function hosting_site_op_login_reset($nodes) {
+  foreach ($nodes as $nid) {
+    hosting_add_task($nid, 'login-reset');
   }
 }
 

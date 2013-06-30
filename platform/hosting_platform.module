@@ -147,28 +147,61 @@ function hosting_platform_node_operations() {
   $operations = array();
 
   $operations['hosting-platform-verify'] = array(
-    'label' => t('Verify platform'),
-    'callback' => 'hosting_task_operation',
-    'callback arguments' => array('verify'),
+    'label' => t('Platform: Verify'),
+    'callback' => 'hosting_platform_op_verify',
    );
   $operations['hosting-platform-lock'] = array(
-    'label' => t('Lock platform'),
-    'callback' => 'hosting_task_operation',
-    'callback arguments' => array('lock'),
+    'label' => t('Platform: Lock'),
+    'callback' => 'hosting_platform_op_lock',
    );
   $operations['hosting-platform-unlock'] = array(
-    'label' => t('Unlock platform'),
-    'callback' => 'hosting_task_operation',
-    'callback arguments' => array('unlock'),
+    'label' => t('Platform: Unlock'),
+    'callback' => 'hosting_platform_op_unlock',
    );
   $operations['hosting-platform-delete'] = array(
-    'label' => t('Delete platform'),
-    'callback' => 'hosting_task_operation',
-    'callback arguments' => array('delete'),
+    'label' => t('Platform: Delete'),
+    'callback' => 'hosting_platform_op_delete',
    );
 
   return $operations;
 }
+
+/**
+ * Callback for platform verify operation.
+ */
+function hosting_platform_op_verify($nodes) {
+  foreach ($nodes as $nid) {
+    hosting_add_task($nid, 'verify');
+  }
+}
+
+/**
+ * Callback for platform lock operation.
+ */
+function hosting_platform_op_lock() {
+  foreach ($nodes as $nid) {
+    hosting_add_task($nid, 'lock');
+  }
+}
+
+/**
+ * Callback for platform unlock operation.
+ */
+function hosting_platform_op_unlock($nodes) {
+  foreach ($nodes as $nid) {
+    hosting_add_task($nid, 'unlock');
+  }
+}
+
+/**
+ * Callback for platform delete operation.
+ */
+function hosting_platform_op_delete($nodes) {
+  foreach ($nodes as $nid) {
+    hosting_add_task($nid, 'delete');
+  }
+}
+
 
 /**
  * Small helper function to get platforms that haven't been deleted.

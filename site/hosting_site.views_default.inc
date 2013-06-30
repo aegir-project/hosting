@@ -78,11 +78,6 @@ function hosting_site_views_default_views() {
   $handler->display->display_options['style_options']['sticky'] = 0;
   $handler->display->display_options['style_options']['empty_table'] = 0;
   $handler->display->display_options['style_options']['operations'] = array(
-    'hosting_task_operation-e0d50030fc9bde5ba86be99826a116eb' => array(
-      'selected' => 1,
-      'skip_confirmation' => 1,
-      'label' => 'Backup',
-    ),
     'node_assign_owner_action' => array(
       'selected' => 0,
       'skip_confirmation' => 0,
@@ -93,30 +88,15 @@ function hosting_site_views_default_views() {
       'skip_confirmation' => 0,
       'label' => '',
     ),
-    'hosting_task_operation-d5753f4149333e6bb163b78489af62a7' => array(
-      'selected' => 1,
-      'skip_confirmation' => 0,
-      'label' => 'Delete',
-    ),
     'node_mass_update-a27b9efabcd054685a549378b174ad11' => array(
       'selected' => 0,
       'skip_confirmation' => 0,
       'label' => '',
     ),
-    'hosting_task_operation-2e697b94e1c2d6cfa04148e13bbf09ab' => array(
-      'selected' => 1,
-      'skip_confirmation' => 0,
-      'label' => 'Disable',
-    ),
     'system_message_action' => array(
       'selected' => 0,
       'skip_confirmation' => 0,
       'label' => '',
-    ),
-    'hosting_task_operation-2b33c2655429ff68933d62ef1c2c5dbf' => array(
-      'selected' => 1,
-      'skip_confirmation' => 1,
-      'label' => 'Enable',
     ),
     'views_bulk_operations_action' => array(
       'selected' => 0,
@@ -124,11 +104,6 @@ function hosting_site_views_default_views() {
       'label' => '',
     ),
     'views_bulk_operations_script_action' => array(
-      'selected' => 0,
-      'skip_confirmation' => 0,
-      'label' => '',
-    ),
-    'hosting_task_operation-5ea28743c6538d23450961aa6ada7877' => array(
       'selected' => 0,
       'skip_confirmation' => 0,
       'label' => '',
@@ -149,6 +124,26 @@ function hosting_site_views_default_views() {
       'label' => '',
     ),
     'views_bulk_operations_argument_selector_action' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'hosting_platform_op_delete' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'hosting_platform_op_lock' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'hosting_platform_op_unlock' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'hosting_platform_op_verify' => array(
       'selected' => 0,
       'skip_confirmation' => 0,
       'label' => '',
@@ -188,11 +183,6 @@ function hosting_site_views_default_views() {
       'skip_confirmation' => 0,
       'label' => '',
     ),
-    'hosting_task_operation-62832bfa32dda6f49c47986802958a8d' => array(
-      'selected' => 1,
-      'skip_confirmation' => 1,
-      'label' => '',
-    ),
     'node_save_action' => array(
       'selected' => 0,
       'skip_confirmation' => 0,
@@ -203,10 +193,35 @@ function hosting_site_views_default_views() {
       'skip_confirmation' => 0,
       'label' => '',
     ),
-    'hosting_task_operation-5fed962c664f8dab8599a47f3ebe138c' => array(
-      'selected' => 0,
+    'hosting_site_op_backup' => array(
+      'selected' => 1,
+      'skip_confirmation' => 1,
+      'label' => 'Backup',
+    ),
+    'hosting_site_op_delete' => array(
+      'selected' => 1,
       'skip_confirmation' => 0,
-      'label' => '',
+      'label' => 'Delete',
+    ),
+    'hosting_site_op_disable' => array(
+      'selected' => 1,
+      'skip_confirmation' => 0,
+      'label' => 'Disable',
+    ),
+    'hosting_site_op_enable' => array(
+      'selected' => 1,
+      'skip_confirmation' => 1,
+      'label' => 'Enable',
+    ),
+    'hosting_site_op_login_reset' => array(
+      'selected' => 1,
+      'skip_confirmation' => 1,
+      'label' => 'Reset Password',
+    ),
+    'hosting_site_op_verify' => array(
+      'selected' => 1,
+      'skip_confirmation' => 1,
+      'label' => 'Verify',
     ),
     'node_mass_update-0ccad85c1ebe4c9ceada1aa64293b080' => array(
       'selected' => 0,
@@ -222,11 +237,6 @@ function hosting_site_views_default_views() {
       'selected' => 0,
       'skip_confirmation' => 0,
       'label' => '',
-    ),
-    'hosting_task_operation-1ba8dfdca72110c3d78b76f9b18bf909' => array(
-      'selected' => 1,
-      'skip_confirmation' => 1,
-      'label' => 'Verify',
     ),
   );
   $handler->display->display_options['style_options']['execution_type'] = '1';

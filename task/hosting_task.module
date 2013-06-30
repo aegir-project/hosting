@@ -394,15 +394,6 @@ function hosting_add_task($nid, $type, $args = null, $status = HOSTING_TASK_QUEU
 }
 
 /**
- * Callback for Node operations.
- */
-function hosting_task_operation($nodes, $type) {
-  foreach ($nodes as $nid) {
-    hosting_add_task($nid, $type);
-  }
-}
-
-/**
  * Implementation of hook_form().
  */
 function hosting_task_confirm_form($form_state, $node, $task) {
