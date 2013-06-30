@@ -439,3 +439,23 @@ function hosting_package_update_6006() {
   db_add_index($ret, 'hosting_package', 'hosting_package_nid_idx', array('nid'));
   return $ret;
 }
+
+/**
+ * Enable the "Hosting package list" block on Package nodes.
+ */
+function hosting_package_update_6200() {
+  $ret = array();
+
+  // Temporarily enable Install Profile API module and load includes.
+  module_enable(array('install_profile_api'));
+  drupal_load('module', 'install_profile_api');
+  install_include(array('block'));
+
+  // Enable block.
+  $theme = 'eldir';
+  install_set_block('views', 'hosting_package_list-block_1' , $theme, 'content_bottom', 0, 2, "<?php\n\$node = menu_get_object();\nif (!empty(\$node)) {\n  return \$node->type == 'package';\n}\n?>");
+
+  module_disable(array('install_profile_api'));
+
+  return $ret;
+}

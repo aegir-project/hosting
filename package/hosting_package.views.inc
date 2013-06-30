@@ -17,6 +17,9 @@ function hosting_package_views_handlers() {
       'views_handler_field_hosting_package_status' => array(
         'parent' => 'views_handler_field_hosting_site_status',
       ),
+      'views_handler_filter_hosting_package_status' => array(
+        'parent' => 'views_handler_filter_in_operator',
+      ),
     ),
   );
 }
@@ -197,13 +200,13 @@ function hosting_package_views_data() {
 
   $data['hosting_package_instance']['status'] = array(
     'title' => t('Status'),
-    'help' => t('The status of the pckage instance.'),
+    'help' => t('The status of the package instance.'),
     'field' => array(
       'handler' => 'views_handler_field_hosting_package_status',
       'click sortable' => TRUE,
     ),
     'filter' => array(
-      'handler' => 'views_handler_filter_boolean_operator',
+      'handler' => 'views_handler_filter_hosting_package_status',
       'label' => t('Status'),
       'type' => 'on-off',
       // use boolean_field = 1 instead of boolean_field <> 0 in WHERE statment
