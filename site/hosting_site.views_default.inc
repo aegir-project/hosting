@@ -426,6 +426,9 @@ function hosting_site_views_default_views() {
 
   /* Display: Block: Platform */
   $handler = $view->new_display('block', 'Block: Platform', 'block_1');
+  $handler->display->display_options['defaults']['access'] = FALSE;
+  $handler->display->display_options['access']['type'] = 'perm';
+  $handler->display->display_options['access']['perm'] = 'view platform';
   $handler->display->display_options['defaults']['empty'] = FALSE;
   /* Empty text: Global: Text area */
   $handler->display->display_options['empty']['area']['id'] = 'area';
@@ -478,6 +481,9 @@ function hosting_site_views_default_views() {
 
   /* Display: Block: Profile */
   $handler = $view->new_display('block', 'Block: Profile', 'block_profile');
+  $handler->display->display_options['defaults']['access'] = FALSE;
+  $handler->display->display_options['access']['type'] = 'perm';
+  $handler->display->display_options['access']['perm'] = 'view package';
   $handler->display->display_options['defaults']['empty'] = FALSE;
   /* Empty text: Global: Text area */
   $handler->display->display_options['empty']['area']['id'] = 'area';
@@ -530,6 +536,9 @@ function hosting_site_views_default_views() {
 
   /* Display: Block: Client */
   $handler = $view->new_display('block', 'Block: Client', 'block_client');
+  $handler->display->display_options['defaults']['access'] = FALSE;
+  $handler->display->display_options['access']['type'] = 'perm';
+  $handler->display->display_options['access']['perm'] = 'view client';
   $handler->display->display_options['defaults']['empty'] = FALSE;
   /* Empty text: Global: Text area */
   $handler->display->display_options['empty']['area']['id'] = 'area';
