@@ -38,24 +38,17 @@ function hosting_platform_views_default_views() {
   $handler->display->display_options['style_options']['row_class'] = '[status]';
   $handler->display->display_options['style_options']['columns'] = array(
     'status' => 'status',
-    'status_1' => 'status_1',
     'title' => 'title',
     'release' => 'release',
     'title_1' => 'title_1',
     'verified' => 'verified',
     'sites' => 'sites',
   );
-  $handler->display->display_options['style_options']['default'] = 'title';
+  $handler->display->display_options['style_options']['default'] = '-1';
   $handler->display->display_options['style_options']['info'] = array(
     'status' => array(
       'sortable' => 0,
       'default_sort_order' => 'asc',
-      'align' => '',
-      'separator' => '',
-    ),
-    'status_1' => array(
-      'sortable' => 1,
-      'default_sort_order' => 'desc',
       'align' => '',
       'separator' => '',
     ),
@@ -97,42 +90,22 @@ function hosting_platform_views_default_views() {
       'skip_confirmation' => 0,
       'label' => '',
     ),
-    'hosting_task_operation-d5753f4149333e6bb163b78489af62a7' => array(
-      'selected' => 0,
-      'skip_confirmation' => 0,
-      'label' => '',
-    ),
-    'hosting_task_operation-cbcdb2f1b1694e48f1d2a1956d5b34aa' => array(
-      'selected' => 0,
-      'skip_confirmation' => 0,
-      'label' => '',
-    ),
     'views_bulk_operations_delete_node_action' => array(
       'selected' => 0,
       'skip_confirmation' => 0,
       'label' => '',
+    ),
+    'hosting_task_operation-d5753f4149333e6bb163b78489af62a7' => array(
+      'selected' => 1,
+      'skip_confirmation' => 0,
+      'label' => 'Delete',
     ),
     'node_mass_update-a27b9efabcd054685a549378b174ad11' => array(
       'selected' => 0,
       'skip_confirmation' => 0,
       'label' => '',
     ),
-    'hosting_task_operation-2e697b94e1c2d6cfa04148e13bbf09ab' => array(
-      'selected' => 0,
-      'skip_confirmation' => 0,
-      'label' => '',
-    ),
     'system_message_action' => array(
-      'selected' => 0,
-      'skip_confirmation' => 0,
-      'label' => '',
-    ),
-    'hosting_task_operation-2b33c2655429ff68933d62ef1c2c5dbf' => array(
-      'selected' => 0,
-      'skip_confirmation' => 0,
-      'label' => '',
-    ),
-    'views_bulk_operations_ruleset_action_rules_set_1' => array(
       'selected' => 0,
       'skip_confirmation' => 0,
       'label' => '',
@@ -146,6 +119,11 @@ function hosting_platform_views_default_views() {
       'selected' => 0,
       'skip_confirmation' => 0,
       'label' => '',
+    ),
+    'hosting_task_operation-5ea28743c6538d23450961aa6ada7877' => array(
+      'selected' => 1,
+      'skip_confirmation' => 1,
+      'label' => 'Lock',
     ),
     'node_make_sticky_action' => array(
       'selected' => 0,
@@ -202,11 +180,6 @@ function hosting_platform_views_default_views() {
       'skip_confirmation' => 0,
       'label' => '',
     ),
-    'hosting_task_operation-62832bfa32dda6f49c47986802958a8d' => array(
-      'selected' => 0,
-      'skip_confirmation' => 0,
-      'label' => '',
-    ),
     'node_save_action' => array(
       'selected' => 0,
       'skip_confirmation' => 0,
@@ -216,6 +189,11 @@ function hosting_platform_views_default_views() {
       'selected' => 0,
       'skip_confirmation' => 0,
       'label' => '',
+    ),
+    'hosting_task_operation-5fed962c664f8dab8599a47f3ebe138c' => array(
+      'selected' => 1,
+      'skip_confirmation' => 1,
+      'label' => 'Unlock',
     ),
     'node_mass_update-0ccad85c1ebe4c9ceada1aa64293b080' => array(
       'selected' => 0,
@@ -233,14 +211,14 @@ function hosting_platform_views_default_views() {
       'label' => '',
     ),
     'hosting_task_operation-1ba8dfdca72110c3d78b76f9b18bf909' => array(
-      'selected' => 0,
-      'skip_confirmation' => 0,
-      'label' => '',
+      'selected' => 1,
+      'skip_confirmation' => 1,
+      'label' => 'Verify',
     ),
   );
   $handler->display->display_options['style_options']['execution_type'] = '1';
   $handler->display->display_options['style_options']['display_type'] = '0';
-  $handler->display->display_options['style_options']['display_result'] = 1;
+  $handler->display->display_options['style_options']['display_result'] = 0;
   $handler->display->display_options['style_options']['merge_single_action'] = 1;
   $handler->display->display_options['style_options']['hide_selector'] = 0;
   $handler->display->display_options['style_options']['preserve_selection'] = 1;
@@ -386,6 +364,10 @@ function hosting_platform_views_default_views() {
   $handler->display->display_options['fields']['sites']['hide_empty'] = 0;
   $handler->display->display_options['fields']['sites']['empty_zero'] = 0;
   $handler->display->display_options['fields']['sites']['hide_alter_empty'] = 1;
+  /* Sort criterion: Node: Title */
+  $handler->display->display_options['sorts']['title']['id'] = 'title';
+  $handler->display->display_options['sorts']['title']['table'] = 'node';
+  $handler->display->display_options['sorts']['title']['field'] = 'title';
   /* Filter: Node: Type */
   $handler->display->display_options['filters']['type']['id'] = 'type';
   $handler->display->display_options['filters']['type']['table'] = 'node';

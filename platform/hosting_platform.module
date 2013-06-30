@@ -141,6 +141,36 @@ function hosting_platform_access($op, $node, $account) {
 }
 
 /**
+ * Implements hook_node_operations().
+ */
+function hosting_platform_node_operations() {
+  $operations = array();
+
+  $operations['hosting-platform-verify'] = array(
+    'label' => t('Verify platform'),
+    'callback' => 'hosting_task_operation',
+    'callback arguments' => array('verify'),
+   );
+  $operations['hosting-platform-lock'] = array(
+    'label' => t('Lock platform'),
+    'callback' => 'hosting_task_operation',
+    'callback arguments' => array('lock'),
+   );
+  $operations['hosting-platform-unlock'] = array(
+    'label' => t('Unlock platform'),
+    'callback' => 'hosting_task_operation',
+    'callback arguments' => array('unlock'),
+   );
+  $operations['hosting-platform-delete'] = array(
+    'label' => t('Delete platform'),
+    'callback' => 'hosting_task_operation',
+    'callback arguments' => array('delete'),
+   );
+
+  return $operations;
+}
+
+/**
  * Small helper function to get platforms that haven't been deleted.
  */ 
 function _hosting_get_platforms() {
