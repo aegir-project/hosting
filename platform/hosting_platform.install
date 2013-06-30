@@ -170,7 +170,7 @@ function hosting_platform_update_6205() {
 /**
  * Add new permission.
  */
-function hosting_update_6206() {
+function hosting_platform_update_6206() {
   $ret = array();
 
   // Temporarily enable Install Profile API module and load includes.
