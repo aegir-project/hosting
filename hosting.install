@@ -491,7 +491,7 @@ function hosting_update_6205() {
   module_enable(array('install_profile_api'));
   module_load_include('inc', 'install_profile_api', 'core/user');
 
-  install_add_permissions(install_get_rid('aegir client'), array('view own quota', 'create site aliases', 'create verify task', 'create clone task', 'create migrate task', 'administer ssl', 'access task logs'));
+  install_add_permissions(install_get_rid('aegir client'), array('view own quota', 'create site aliases', 'create verify task', 'create clone task', 'create migrate task', 'administer ssl', 'access task logs', 'view package'));
   install_add_permissions(install_get_rid('aegir account manager'), array('administer clients', 'access content', 'access user profiles', 'edit all quotas', 'view all quotas', 'view own quota', 'edit client uname'));
   install_add_permissions(install_get_rid('aegir platform manager'), array('view package', 'administer platforms', 'cancel own tasks', 'view own tasks', 'access content', 'view own tasks', 'view task', 'administer sites', 'create verify task', 'retry failed tasks', 'administer clients'));
   install_add_permissions(install_get_rid('aegir administrator'), array('access administration menu', 'administer platforms', 'administer servers', 'access content', 'view revisions', 'administer hosting aliases', 'create site aliases', 'edit all quotas', 'view all quotas', 'view own quota', 'access hosting signup form', 'administer ssl', 'access user profiles'));
