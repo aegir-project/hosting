@@ -277,6 +277,7 @@ function hosting_task_perm() {
     'view task',
     'access task logs',
     'retry failed tasks',
+    'update status of tasks',
     'cancel own tasks',
 );
 }
@@ -677,6 +678,25 @@ function hosting_task_retry_form_submit($form, &$form_state) {
   modalframe_close_dialog();
 }
 
+function hosting_task_update_status_form($form_state, $vid) {
+  $form['#prefix'] = '<div class="hosting-task-retry">';
+  $form['task'] = array(
+    '#type' => 'hidden',
+    '#default_value' => $vid
+  );
+  $form['update-status'] = array(
+    '#type' => 'submit',
+    '#value' => t('Update status')
+  );
+  $form['#suffix'] = '</div>';
+  return $form;
+}
+
+function hosting_task_update_status_form_submit($form, &$form_state) {
+  hosting_task_update_status($form_state['values']['task']);
+  modalframe_close_dialog();
+}
+
 /**
  * Implementation of hook_view().
  */
@@ -746,6 +766,14 @@ function hosting_task_view($node, $teaser = FALSE, $page = FALSE) {
     $node->content['retry'] = array(
       '#type' => 'markup',
       '#value' => drupal_get_form('hosting_task_retry_form', $node->nid),
+      '#weight' => 5,
+    );
+  }
+
+  if (user_access('update status of tasks') && ($node->task_status == HOSTING_TASK_PROCESSING)) {
+    $node->content['update-status'] = array(
+      '#type' => 'markup',
+      '#value' => drupal_get_form('hosting_task_update_status_form', $node->vid),
       '#weight' => 5,
     );
   }

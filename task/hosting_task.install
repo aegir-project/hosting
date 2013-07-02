@@ -285,3 +285,21 @@ function hosting_task_update_6006() {
 
   return $ret;
 }
+
+/**
+ * Add permission.
+ */
+function hosting_update_6206() {
+  $ret = array();
+
+  // Temporarily enable Install Profile API module and load includes.
+  module_enable(array('install_profile_api'));
+  module_load_include('inc', 'install_profile_api', 'core/user');
+
+  install_add_permissions(install_get_rid('aegir administrator'), array('update status of tasks'));
+
+  module_disable(array('install_profile_api'));
+
+  return $ret;
+}
+
