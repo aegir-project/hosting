@@ -1250,3 +1250,58 @@ function hosting_task_preprocess_views_view_table(&$vars) {
       break;
   }
 }
+
+/**
+ * Set a task's status according to its log.
+ *
+ * @param (optional) A task object or the revision ID of a task node.
+ *
+ * @return The task's status error code.
+ */
+function hosting_task_update_status($task = NULL) {
+  if (is_null($task)) {
+    $task = drush_get_context('HOSTING_TASK');
+  }
+  if (is_numeric($task)) {
+    $vid = $task;
+  }
+  else {
+    $vid = $task->vid;
+  }
+
+  $update = hosting_task_parse_log($vid);
+  db_query('UPDATE {hosting_task} SET task_status=%d WHERE vid = %d', $update, $vid);
+  return $update;
+}
+
+/**
+ * Post task's status update
+ */
+function _hosting_task_update_status() {
+  $message = _hosting_parse_error_code(hosting_task_update_status());
+  drush_log(dt('Updated task status to "!log"', array('!log' => $message)), strtolower($message));
+}
+
+/**
+ * Parse a task's log, and return its status accordingly.
+ *
+ * @param The revision ID of a task node.
+ *
+ * @return The task's status error code.
+ */
+function hosting_task_parse_log($vid) {
+  // Assume the best
+  $update = HOSTING_TASK_SUCCESS;
+  $result = db_query('SELECT type FROM {hosting_task_log} WHERE vid = %d', $vid);
+  while ($status = db_result($result)) {
+    if ($status == 'error') {
+      $update = HOSTING_TASK_ERROR;
+    }
+    // Don't override a pre-existing error
+    elseif ($update != HOSTING_TASK_ERROR && $status == 'warning') {
+      $update = HOSTING_TASK_WARNING;
+    }
+  }
+  return $update;
+}
+
