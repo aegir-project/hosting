@@ -289,7 +289,7 @@ function hosting_task_update_6006() {
 /**
  * Add permission.
  */
-function hosting_update_6206() {
+function hosting_task_update_6200() {
   $ret = array();
 
   // Temporarily enable Install Profile API module and load includes.
