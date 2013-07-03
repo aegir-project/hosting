@@ -10,7 +10,7 @@
 function hosting_package_views_handlers() {
   return array(
     'info' => array(
-      'path' => drupal_get_path('module', 'hosting_package'),
+      'path' => drupal_get_path('module', 'hosting_package') . '/views',
     ),
     'handlers' => array(
       // field handlers
