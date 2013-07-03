@@ -12,7 +12,7 @@ function hosting_package_views_default_views() {
   // Exported view: hosting_package_list
   $view = new view;
   $view->name = 'hosting_package_list';
-  $view->description = 'Display a list of packages for a hosted site';
+  $view->description = '';
   $view->tag = '';
   $view->base_table = 'hosting_package_instance';
   $view->human_name = '';
@@ -22,9 +22,7 @@ function hosting_package_views_default_views() {
 
   /* Display: Defaults */
   $handler = $view->new_display('default', 'Defaults', 'default');
-  $handler->display->display_options['use_ajax'] = TRUE;
-  $handler->display->display_options['access']['type'] = 'perm';
-  $handler->display->display_options['access']['perm'] = 'view package';
+  $handler->display->display_options['access']['type'] = 'package';
   $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['exposed_form']['type'] = 'basic';
@@ -216,6 +214,36 @@ function hosting_package_views_default_views() {
   $handler->display->display_options['filters']['package_type']['expose']['label'] = 'Type';
   $handler->display->display_options['filters']['package_type']['expose']['identifier'] = 'package_type';
   $handler->display->display_options['filters']['package_type']['expose']['reduce'] = 0;
+
+  /* Display: Page: Packages */
+  $handler = $view->new_display('page', 'Page: Packages', 'page_packages');
+  $handler->display->display_options['display_description'] = 'Display a list of packages for a hosted site or platform';
+  $handler->display->display_options['defaults']['filters'] = FALSE;
+  /* Filter: Node: Title */
+  $handler->display->display_options['filters']['title']['id'] = 'title';
+  $handler->display->display_options['filters']['title']['table'] = 'node';
+  $handler->display->display_options['filters']['title']['field'] = 'title';
+  $handler->display->display_options['filters']['title']['relationship'] = 'package_id';
+  $handler->display->display_options['filters']['title']['operator'] = 'contains';
+  $handler->display->display_options['filters']['title']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['title']['expose']['operator'] = 'title_op';
+  $handler->display->display_options['filters']['title']['expose']['limit_operators'] = array();
+  $handler->display->display_options['filters']['title']['expose']['label'] = 'Package name';
+  $handler->display->display_options['filters']['title']['expose']['identifier'] = 'package';
+  $handler->display->display_options['filters']['title']['expose']['optional'] = TRUE;
+  $handler->display->display_options['filters']['title']['expose']['single'] = TRUE;
+  $handler->display->display_options['filters']['title']['case'] = 0;
+  /* Filter: Hosting Package: Type */
+  $handler->display->display_options['filters']['package_type']['id'] = 'package_type';
+  $handler->display->display_options['filters']['package_type']['table'] = 'hosting_package';
+  $handler->display->display_options['filters']['package_type']['field'] = 'package_type';
+  $handler->display->display_options['filters']['package_type']['relationship'] = 'package_id';
+  $handler->display->display_options['filters']['package_type']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['package_type']['expose']['operator'] = 'package_type_op';
+  $handler->display->display_options['filters']['package_type']['expose']['limit_operators'] = array();
+  $handler->display->display_options['filters']['package_type']['expose']['label'] = 'Type';
+  $handler->display->display_options['filters']['package_type']['expose']['identifier'] = 'package_type';
+  $handler->display->display_options['filters']['package_type']['expose']['reduce'] = 0;
   /* Filter: Hosting Package Instance: Status */
   $handler->display->display_options['filters']['status']['id'] = 'status';
   $handler->display->display_options['filters']['status']['table'] = 'hosting_package_instance';
@@ -226,9 +254,6 @@ function hosting_package_views_default_views() {
   $handler->display->display_options['filters']['status']['expose']['label'] = 'Status';
   $handler->display->display_options['filters']['status']['expose']['identifier'] = 'status';
   $handler->display->display_options['filters']['status']['expose']['reduce'] = 0;
-
-  /* Display: Page */
-  $handler = $view->new_display('page', 'Page', 'page_packages');
   $handler->display->display_options['path'] = 'node/%/packages';
   $handler->display->display_options['menu']['type'] = 'tab';
   $handler->display->display_options['menu']['title'] = 'Packages';
@@ -236,6 +261,7 @@ function hosting_package_views_default_views() {
 
   /* Display: Block: Sites */
   $handler = $view->new_display('block', 'Block: Sites', 'block_1');
+  $handler->display->display_options['display_description'] = 'Display a list of sites on which a package is enabled or available.';
   $handler->display->display_options['defaults']['style_plugin'] = FALSE;
   $handler->display->display_options['style_plugin'] = 'table';
   $handler->display->display_options['style_options']['row_class'] = '[status]';
@@ -278,6 +304,24 @@ function hosting_package_views_default_views() {
   $handler->display->display_options['defaults']['style_options'] = FALSE;
   $handler->display->display_options['defaults']['row_plugin'] = FALSE;
   $handler->display->display_options['defaults']['row_options'] = FALSE;
+  $handler->display->display_options['defaults']['header'] = FALSE;
+  /* Header: Global: Text area */
+  $handler->display->display_options['header']['area']['id'] = 'area';
+  $handler->display->display_options['header']['area']['table'] = 'views';
+  $handler->display->display_options['header']['area']['field'] = 'area';
+  $handler->display->display_options['header']['area']['empty'] = FALSE;
+  $handler->display->display_options['header']['area']['content'] = 'These sites have the <em>%1</em> package enabled.';
+  $handler->display->display_options['header']['area']['format'] = '1';
+  $handler->display->display_options['header']['area']['tokenize'] = 1;
+  $handler->display->display_options['defaults']['empty'] = FALSE;
+  /* Empty text: Global: Text area */
+  $handler->display->display_options['empty']['area']['id'] = 'area';
+  $handler->display->display_options['empty']['area']['table'] = 'views';
+  $handler->display->display_options['empty']['area']['field'] = 'area';
+  $handler->display->display_options['empty']['area']['empty'] = FALSE;
+  $handler->display->display_options['empty']['area']['content'] = 'No sites have the <em>%1</em> package enabled.';
+  $handler->display->display_options['empty']['area']['format'] = '1';
+  $handler->display->display_options['empty']['area']['tokenize'] = 1;
   $handler->display->display_options['defaults']['relationships'] = FALSE;
   /* Relationship: Hosting Package Instance: Package ID */
   $handler->display->display_options['relationships']['package_id']['id'] = 'package_id';
@@ -423,6 +467,16 @@ function hosting_package_views_default_views() {
   $handler->display->display_options['filters']['status']['expose']['label'] = 'Status';
   $handler->display->display_options['filters']['status']['expose']['identifier'] = 'status';
   $handler->display->display_options['filters']['status']['expose']['reduce'] = 0;
+  /* Filter: Hosting Site: Status */
+  $handler->display->display_options['filters']['status_1']['id'] = 'status_1';
+  $handler->display->display_options['filters']['status_1']['table'] = 'hosting_site';
+  $handler->display->display_options['filters']['status_1']['field'] = 'status';
+  $handler->display->display_options['filters']['status_1']['relationship'] = 'rid';
+  $handler->display->display_options['filters']['status_1']['value'] = array(
+    1 => '1',
+    -1 => '-1',
+  );
+  $handler->display->display_options['block_description'] = 'Hosting package: Sites';
 
   $views[$view->name] = $view;
 
