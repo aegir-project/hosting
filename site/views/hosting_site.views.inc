@@ -252,7 +252,7 @@ function hosting_site_views_data() {
 function hosting_site_views_handlers() {
   return array(
     'info' => array(
-      'path' => drupal_get_path('module', 'hosting_site'),
+      'path' => drupal_get_path('module', 'hosting_site') . '/views',
     ),
     'handlers' => array(
       // field handlers

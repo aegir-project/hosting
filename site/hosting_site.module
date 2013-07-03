@@ -653,7 +653,7 @@ function _hosting_site_list_class($node, $verified = null) {
 function hosting_site_views_api() {
   return array(
     'api' => 3,
-    'path' => drupal_get_path('module', 'hosting_site'),
+    'path' => drupal_get_path('module', 'hosting_site') . '/views',
   );
 }
 
