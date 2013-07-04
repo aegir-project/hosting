@@ -9,5 +9,7 @@
  */
 function hosting_task_drush_init() {
   // Update a task's status after Drush operations are complete.
-  register_shutdown_function('_hosting_task_update_status');
+  if (function_exists('_hosting_task_update_status')) {
+    register_shutdown_function('_hosting_task_update_status');
+  }
 }
