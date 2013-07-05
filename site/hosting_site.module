@@ -89,6 +89,12 @@ function hosting_site_theme() {
       'html' => FALSE,
     ),
   );
+  $items['hosting_site_goto_link'] = array(
+    'arguments' => array(
+      'title' => NULL,
+      'url' => NULL,
+    ),
+  );
 
   return $items;
 }
@@ -134,8 +140,18 @@ function _hosting_site_goto_link($node) {
   else {
     $title = t("Go to !url" , array('!url' => $node->title));
   }
+  $url = "node/" . $node->nid . "/goto_site";
+
+  return theme('hosting_site_goto_link', $title, $url);
+}
+
+/**
+ * Theme function for site link.
+ */
+function theme_hosting_site_goto_link($title, $url) {
   $options['attributes']['class'] = 'hosting-goto-site-link';
-  return l($title, "node/" . $node->nid . "/goto_site", $options); 
+  $options['attributes']['target'] = '_blank';
+  return l($title, $url, $options);
 }
 
 /**
