@@ -249,20 +249,29 @@ function hosting_package_views_plugins() {
  *
  * @param $type
  *   The display plugin.
+ * @param $display
+ *   The display ID (machine_name).
  * @param $account
  *   The current user.
  */
-function hosting_package_views_access($type, $account = NULL) {
+function hosting_package_views_access($type, $display, $account = NULL) {
   switch ($type) {
     case 'page':
       $path = explode('/', drupal_get_normal_path($_GET['q']));
       $nid = $path['1'];
       if (is_numeric($nid)) {
         $node = node_load($nid);
-        if (!is_null($account)) {
-          return user_access('view package', $account) && node_access('view', $node, $account);
+        if (!is_null($account) && (!user_access('view package', $account) || !node_access('view', $node, $account))) {
+          return FALSE;
         }
-        return ($node->type == 'site' && $node->site_status != -2) || ($node->type == 'platform' && $node->platform_status != -2);
+        switch ($display) {
+          case 'page_packages_site':
+            return $node->type == 'site' && $node->site_status != -2;
+            break;
+          case 'page_packages_platform':
+            return $node->type == 'platform' && $node->platform_status != -2;
+            break;
+        }
       }
       break;
     case 'block':
