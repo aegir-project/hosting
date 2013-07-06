@@ -14,12 +14,19 @@
  * This mimics Drupal's module and theme override
  * functionality, in that only the top most item
  * will be referenced to the node.
+ *
+ * @param $rid
+ * The task reference ID, either the platform or site nid.
  */
 function hosting_package_instance_sync($rid) {
   db_query("UPDATE {hosting_package_instance} SET status = -1 WHERE rid = %d", $rid);
   $map = _hosting_package_plural_map();
   $args = func_get_args();
   $rid = array_shift($args);
+
+  // Figure out the platform nid
+  $node = node_load($rid);
+  $platform = $node->type == 'platform' ? $rid : $node->platform;
 
   foreach ($map as $plural => $key) {
     $merged = array();
@@ -49,6 +56,7 @@ function hosting_package_instance_sync($rid) {
       else {
         $instance->status = 0;
       }
+      $instance->platform = isset($package['platform']) ? $package['platform'] : $platform;
       hosting_package_instance_save($instance);
     }
   }
@@ -70,10 +78,10 @@ function _hosting_package_instance_languages($instance) {
 function hosting_package_instance_update(&$instance) {
   db_query("UPDATE {hosting_package_instance} SET
     rid = %d, package_id = %d, filename = '%s',
-    schema_version = %d, version = '%s', version_code = %f, status = %d
+    schema_version = %d, version = '%s', version_code = %f, status = %d, platform = %d
     WHERE iid = %d",
     $instance->rid, $instance->package_id, $instance->filename,
-    $instance->schema_version, $instance->version, $instance->version_code, $instance->status,
+    $instance->schema_version, $instance->version, $instance->version_code, $instance->status, $instance->platform,
     $instance->iid);
 
   _hosting_package_instance_languages($instance);
@@ -85,7 +93,7 @@ function hosting_package_instance_create(&$instance) {
       schema_version, version, version_code, status)
       VALUES (%d, %d, '%s', %d, '%s', %f, %d)",
       $instance->rid, $instance->package_id, $instance->filename,
-      $instance->schema_version, $instance->version, $instance->version_code, $instance->status);
+      $instance->schema_version, $instance->version, $instance->version_code, $instance->status, $instance->platform);
    $instance->iid = db_last_insert_id('hosting_package_instance', 'iid');
    _hosting_package_instance_languages($instance);
 }
@@ -141,7 +149,7 @@ function _hosting_package_instances_load($param, $multiple = FALSE) {
   $result = db_query("SELECT
       n.title, r.type, p.package_type, p.nid,
       i.iid, i.version, i.version_code, i.schema_version,
-      i.status, p.description, p.short_name, p.old_short_name, i.rid,
+      i.status, i.platform, p.description, p.short_name, p.old_short_name, i.rid,
       i.package_id
       FROM {hosting_package_instance} i
         LEFT JOIN {hosting_package} p ON p.nid=i.package_id
@@ -291,7 +299,7 @@ function _hosting_package_temporary_table($ref) {
     $names[$ref] = '_hosting_comparision_' . trim($ref);
 
     // Create the temporary table.
-    db_query("CREATE TEMPORARY TABLE %s AS SELECT p.nid, p.short_name, p.old_short_name, i.version_code, i.schema_version, i.version, i.status FROM {hosting_package} p LEFT JOIN {hosting_package_instance} i on p.nid = i.package_id WHERE i.rid = %d", $names[$ref], $ref);
+    db_query("CREATE TEMPORARY TABLE %s AS SELECT p.nid, p.short_name, p.old_short_name, i.version_code, i.schema_version, i.version, i.status FROM {hosting_package} p LEFT JOIN {hosting_package_instance} i on p.nid = i.package_id WHERE i.rid = %d and i.platform != -1", $names[$ref], $ref);
   }
 
 
