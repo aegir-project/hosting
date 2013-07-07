@@ -70,13 +70,9 @@ function hosting_package_instance_sync($rid, $type) {
       $instance->version = isset($package['version']) ? $package['version'] : 'Unknown';
       $instance->version_code = hosting_package_instance_version_code($package['version']);
       $instance->schema_version = isset($package['schema_version']) ? $package['schema_version'] : NULL;
-      if (array_key_exists('status', $package)) {
-        $instance->status = $package['status'];
-      }
-      else {
-        $instance->status = 0;
-      }
+      $instance->status = array_key_exists('status', $package) ? $package['status'] : 0;
       $instance->platform = isset($package['platform']) ? $package['platform'] : $platform;
+
       hosting_package_instance_save($instance);
     }
   }
@@ -110,8 +106,8 @@ function hosting_package_instance_update(&$instance) {
 function hosting_package_instance_create(&$instance) {
    db_query("INSERT INTO {hosting_package_instance} (
       rid, package_id, filename,
-      schema_version, version, version_code, status)
-      VALUES (%d, %d, '%s', %d, '%s', %f, %d)",
+      schema_version, version, version_code, status, platform)
+      VALUES (%d, %d, '%s', %d, '%s', %f, %d, %d)",
       $instance->rid, $instance->package_id, $instance->filename,
       $instance->schema_version, $instance->version, $instance->version_code, $instance->status, $instance->platform);
    $instance->iid = db_last_insert_id('hosting_package_instance', 'iid');
