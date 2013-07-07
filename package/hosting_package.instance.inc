@@ -16,17 +16,37 @@
  * will be referenced to the node.
  *
  * @param $rid
- * The task reference ID, either the platform or site nid.
+ *   The nid of the entity on which we are operating.
+ * @param $type
+ *   The type of the entity on which we are operating (platform, site or
+ *   profile.
  */
-function hosting_package_instance_sync($rid) {
+function hosting_package_instance_sync($rid, $type) {
   db_query("UPDATE {hosting_package_instance} SET status = -1 WHERE rid = %d", $rid);
   $map = _hosting_package_plural_map();
   $args = func_get_args();
   $rid = array_shift($args);
+  // We need to pass in $type, since there's a possibility of collision b/w a
+  // profile's iid, and the nid of a site or platform.
+  $type = array_shift($args);
 
   // Figure out the platform nid
-  $node = node_load($rid);
-  $platform = $node->type == 'platform' ? $rid : $node->platform;
+  if ($type == 'platform') {
+    $platform = $rid;
+  }
+  elseif ($type == 'site') {
+    $node = node_load($rid);
+    $platform = $node->platform;
+  }
+  elseif ($type == 'profile') {
+    $sql = 'SELECT rid
+            FROM {hosting_package_instance}
+            WHERE iid = %d';
+    $platform = db_result(db_query($sql, $rid));
+  }
+  else {
+    watchdog('[HOSTING PACKAGE]', 'Unrecognized entity type (' . $type . ') passed to hosting_package_instance_sync().', array(), WATCHDOG_WARNING);
+  }
 
   foreach ($map as $plural => $key) {
     $merged = array();
