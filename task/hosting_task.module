@@ -816,29 +816,34 @@ function _hosting_task_log_table($vid) {
 }
 
 /**
- * Map entry statuses to coincide.
+ * Map entry statuses to coincide with our CSS classes.
  *
  * @todo make this irrelevant.
+ * @see _drush_print_log().
  */
 function _hosting_task_log_class($type) {
   switch (strtolower($type)) {
-    case "warning":
-      $type = "warning";
+    case 'warning':
+    case 'cancel':  // aegir-specific
+      $type = 'warning';
       break;
-    case "error":
-    case "failed":
-      $type = "error";
+    case 'failed':
+    case 'error':
+      $type = 'error';
       break;
-    case "queue":
-      $type = "queue";
+    case 'queue':   // aegir-specific
+      $type = 'queue';
       break;
-    case "command":
-    case "notice":
-      $type = "info";
-      break;
-    default:
+    case 'ok':
+    case 'completed':
+    case 'success':
       $type = 'success';
       break;
+    case 'notice':
+    case 'info':
+    case 'message':
+    default:
+      $type = 'info';
   }
 
   return 'hosting-' . $type;
@@ -1307,7 +1312,7 @@ function hosting_task_update_status($task = NULL) {
  */
 function _hosting_task_update_status() {
   $message = _hosting_parse_error_code(hosting_task_update_status());
-  drush_log(dt('Updated task status to "!log"', array('!log' => $message)), strtolower($message));
+  drush_log(dt('Updated task status to "!log"', array('!log' => $message)), str_replace('ful', '', strtolower($message)));
 }
 
 /**
@@ -1322,7 +1327,7 @@ function hosting_task_parse_log($vid) {
   $update = HOSTING_TASK_SUCCESS;
   $result = db_query('SELECT type FROM {hosting_task_log} WHERE vid = %d', $vid);
   while ($status = db_result($result)) {
-    if ($status == 'error') {
+    if ($status == 'error' || $status == 'failed') {
       $update = HOSTING_TASK_ERROR;
     }
     // Don't override a pre-existing error
