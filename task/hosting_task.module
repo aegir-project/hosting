@@ -824,7 +824,7 @@ function _hosting_task_log_table($vid) {
 function _hosting_task_log_class($type) {
   switch (strtolower($type)) {
     case 'warning':
-    case 'cancel':  // aegir-specific
+    case 'cancel':
       $type = 'warning';
       break;
     case 'failed':
@@ -1312,7 +1312,7 @@ function hosting_task_update_status($task = NULL) {
  */
 function _hosting_task_update_status() {
   $message = _hosting_parse_error_code(hosting_task_update_status());
-  drush_log(dt('Updated task status to "!log"', array('!log' => $message)), str_replace('ful', '', strtolower($message)));
+  drush_log(dt('Updated task status to "!log"', array('!log' => $message)), 'info');
 }
 
 /**
