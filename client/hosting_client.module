@@ -233,20 +233,28 @@ function theme_hosting_client_form($form) {
  * Implementation of hook_validate() .
  */
 function hosting_client_validate(&$node) {
+  // We don't allow duplicate client names
+  $title = $node->form_id == 'hosting_signup_form' ? 'client_name' : 'title';
+  $node_nid = db_result(db_query("SELECT nid FROM {node} WHERE title = '%s'", $node->title));
+  if ($node_nid && $node->nid != $node_nid) {
+    form_set_error($title, t("Client internal name already in use, try %suggestion.",
+                              array('%suggestion' => hosting_client_validate_suggest($node->title))));
+    return;
+  }
+
+  // We don't allow duplicate internal client names
   if ($node->uname) {
     $node->uname = hosting_client_sanitize($node->uname);
   } else {
     $node->uname = hosting_client_sanitize($node->title);
   }
-  $nid = db_result(db_query("SELECT nid FROM {hosting_client} WHERE uname LIKE '%s'", addcslashes($node->uname, '\%_')));
+  $nid = db_result(db_query("SELECT nid FROM {hosting_client} WHERE uname = '%s'", $node->uname));
   if ($nid && $node->nid != $nid) {
-    $suggestion = hosting_client_validate_suggest($node);
-    if ($suggestion) {
-      form_set_error('title', t("Client name already in use, try %suggestion.", array('%suggestion' => $suggestion)));
-    } else {
-      form_set_error('title', t("Client name already in use."));
-    }
+    form_set_error('uname', t("Client internal name already in use, try %suggestion.",
+                              array('%suggestion' => hosting_client_validate_suggest($node->uname, TRUE))));
+    return;
   }
+
   if (!$node->nid && $node->email) {
     $user = user_load(array('mail' => $node->email));
     if ($user) {
@@ -262,22 +270,28 @@ function hosting_client_validate(&$node) {
 }
 
 /**
- * Helper for hosting_client_validate to suggest a new client title.
+ * Helper for hosting_client_validate to suggest a new client name.
  *
  * @see hosting_client_validate()
- * @param $node
- *   The node being validated
+ * @param $name
+ *   The client name being validated.
+ * @param $internal
+ *   Whether this is an internal client name.
  */
-function hosting_client_validate_suggest($node) {
+function hosting_client_validate_suggest($name, $internal = FALSE) {
   $suggestion = FALSE;
-  for ($i = 0; $i < 10; $i++) {
-    $nid = db_result(db_query("SELECT nid FROM {hosting_client} WHERE uname LIKE '%s%%'", addcslashes(hosting_client_sanitize($node->title) . $i, '\%_')));
+  $table = $internal ? 'hosting_client' : 'node';
+  $field = $internal ? 'uname' : 'title';
+  $name = $internal ? hosting_client_sanitize($name) : $name;
+
+  $counter = 0;
+  while (TRUE) {
+    $nid = db_result(db_query("SELECT nid FROM {%s} WHERE %s = '%s'", $table, $field, $name . $counter));
     if (!$nid) {
-      $suggestion = $node->title . $i;
-      break;
+      return $name . $counter;
     }
+    $counter++;
   }
-  return $suggestion;
 }
 
 /**
