@@ -7,10 +7,13 @@
 
 /**
  * Make sure Aegir is ready to be upgraded.
- *
- * @todo wait for tasks to complete
  */
 function drush_hosting_pause_validate($url) {
+  // Wait for the task queue to be processed and tasks to complete.
+  while (hosting_task_count() + hosting_task_count_running() > 0) {
+    drush_log('Waiting for the task queue to be processed and tasks to complete.');
+    sleep 1;
+  }
 }
 
 /**
@@ -21,7 +24,4 @@ function drush_hosting_pause_validate($url) {
 function drush_hosting_pause($url) {
   // wipe out cron entry
   exec('crontab -r');
-  // we can't rely on update.php because it runs too late
-  // @deprecated this can be removed in 0.5 and above
-  provision_backend_invoke(drush_get_option('site_name'), 'sqlq', array("UPDATE {system} SET weight = 0 WHERE type='module' AND name='hosting';"));
 }
