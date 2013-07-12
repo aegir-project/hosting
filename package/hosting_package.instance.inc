@@ -45,7 +45,7 @@ function hosting_package_instance_sync($rid, $type) {
     $platform = db_result(db_query($sql, $rid));
   }
   else {
-    watchdog('[HOSTING PACKAGE]', 'Unrecognized entity type (' . $type . ') passed to hosting_package_instance_sync().', array(), WATCHDOG_WARNING);
+    watchdog('hosting_package', 'Unrecognized entity type (' . $type . ') passed to hosting_package_instance_sync().', array(), WATCHDOG_WARNING);
   }
 
   foreach ($map as $plural => $key) {

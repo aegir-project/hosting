@@ -471,6 +471,5 @@ function hosting_package_update_6200() {
 function hosting_package_update_6201() {
   $ret = array();
   db_add_field(&$ret, 'hosting_package_instance', 'platform', array('type' => 'int', 'not null' => TRUE, 'default' => 0));
-  //TODO: Rebuild the 'hosting_package_instance' table. That is, drop it, and then trigger 'verify' tasks on all platforms and sites.
   return $ret;
 }
