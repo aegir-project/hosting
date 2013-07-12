@@ -8,13 +8,14 @@
  */
 function hosting_task_menu() {
   $items = array();
-  foreach (array('site', 'platform', 'server') as $type) {
-    if (!($tasks = hosting_available_tasks($type))) {
+  $tasks = hosting_available_tasks();
+  foreach ($tasks as $type => $type_tasks) {
+    if (empty($type_tasks)) {
       // this is to workaround problems in the upgrade path where the
       // hook returns nothing (e.g. for server)
       continue;
     }
-    foreach ($tasks as $task => $info) {
+    foreach ($type_tasks as $task => $info) {
       if (empty($info['hidden'])) {
         $path = sprintf("node/%%hosting_%s_node/%s_%s", $type, $type, $task);
         $items[$path] = array(
