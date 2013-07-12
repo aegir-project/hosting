@@ -189,20 +189,20 @@ function hosting_get_packages_by_type($type) {
 }
 
 function hosting_get_default_profile($default = NULL) {
-  if ($p = hosting_get_package(variable_get('hosting_default_profile', 'standard'))) {
+  if ($p = hosting_get_package(variable_get('hosting_default_profile', 'standard'), 'profile')) {
     return $p->nid;
   }
-  elseif ($p = hosting_get_package('standard')) {
+  elseif ($p = hosting_get_package('standard', 'profile')) {
     return $p->nid;
   }
-  elseif ($p = hosting_get_package('default')) {
+  elseif ($p = hosting_get_package('default', 'profile')) {
     return $p->nid;
   }
   return $default;
 }
 
-function hosting_get_package($short_name) {
-  $result = db_query("SELECT nid FROM {hosting_package} WHERE short_name = '%s'", $short_name);
+function hosting_get_package($short_name, $type) {
+  $result = db_query("SELECT nid FROM {hosting_package} WHERE short_name = '%s' AND package_type = '%s'", $short_name, $type);
   if ($nid = db_result($result)) {
     return node_load($nid);
   }
@@ -333,7 +333,7 @@ function hosting_package_sync(&$data) {
     $type = _hosting_package_plural_map($plural);
     foreach ($packages as $short_name => $file) {
       $name = isset($file['info']['name']) ? $file['info']['name'] : $short_name;
-      if (!($package = hosting_get_package($short_name))) {
+      if (!($package = hosting_get_package($short_name, $type))) {
         // Create a new package.
         $package = new stdClass();
         $package->type = 'package';
