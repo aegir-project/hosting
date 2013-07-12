@@ -338,7 +338,8 @@ function hosting_site_update_6202() {
 function hosting_platform_update_6203() {
   $ret = array();
 
-  // Enable Acstions permissions, and temporarily Install Profile API module to load includes.
+  // Enable Acstions permissions, and temporarily Install Profile API
+  // module to load permission CRUD functions
   module_enable(array('actions_permissions', 'install_profile_api'));
   module_load_include('inc', 'install_profile_api', 'core/user');
 
