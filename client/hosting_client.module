@@ -239,7 +239,6 @@ function hosting_client_validate(&$node) {
   if ($node_nid && $node->nid != $node_nid) {
     form_set_error($title, t("Client internal name already in use, try %suggestion.",
                               array('%suggestion' => hosting_client_validate_suggest($node->title))));
-    return;
   }
 
   // We don't allow duplicate internal client names
@@ -252,7 +251,6 @@ function hosting_client_validate(&$node) {
   if ($nid && $node->nid != $nid) {
     form_set_error('uname', t("Client internal name already in use, try %suggestion.",
                               array('%suggestion' => hosting_client_validate_suggest($node->uname, TRUE))));
-    return;
   }
 
   if (!$node->nid && $node->email) {
@@ -285,7 +283,7 @@ function hosting_client_validate_suggest($name, $internal = FALSE) {
   $name = $internal ? hosting_client_sanitize($name) : $name;
 
   $counter = 0;
-  while (TRUE) {
+  while ($counter < 20 ) {
     $nid = db_result(db_query("SELECT nid FROM {%s} WHERE %s = '%s'", $table, $field, $name . $counter));
     if (!$nid) {
       return $name . $counter;
