@@ -825,6 +825,7 @@ function _hosting_task_log_class($type) {
   switch (strtolower($type)) {
     case 'warning':
     case 'cancel':
+    case 'rollback':   // aegir-specific
       $type = 'warning';
       break;
     case 'failed':
