@@ -282,13 +282,11 @@ function hosting_client_validate_suggest($name, $internal = FALSE) {
   $field = $internal ? 'uname' : 'title';
   $name = $internal ? hosting_client_sanitize($name) : $name;
 
-  $counter = 0;
-  while ($counter < 20 ) {
-    $nid = db_result(db_query("SELECT nid FROM {%s} WHERE %s = '%s'", $table, $field, $name . $counter));
+  for ($i = 0; $i < 20; $i++) {
+    $nid = db_result(db_query("SELECT nid FROM {%s} WHERE %s = '%s'", $table, $field, $name . $i));
     if (!$nid) {
-      return $name . $counter;
+      return $name . $i;
     }
-    $counter++;
   }
 }
 
