@@ -109,6 +109,8 @@ function hosting_platform_post_hosting_delete_task($task, $data) {
   node_save($task->ref);
   hosting_context_delete($task->ref->nid);
   db_query("DELETE FROM {hosting_platform_client_access} WHERE pid = %d", $task->ref->nid);
+  // Clean up package instances
+  hosting_package_instance_sync($task->ref->nid);
 }
 
 function hosting_platform_post_hosting_lock_task($task, $data) {

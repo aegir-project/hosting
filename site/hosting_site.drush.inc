@@ -168,6 +168,9 @@ function hosting_site_post_hosting_delete_task($task, $data) {
     // Record the backup created during delete.
     $task->task_args['description'] = t('Pre-delete backup');
     hosting_site_post_hosting_backup_task($task, $data);
+
+    // Clean up package instances
+    hosting_package_instance_sync($task->ref->nid);
   }
 }
 
