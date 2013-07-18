@@ -27,7 +27,7 @@ function hosting_ssl_hosting_service() {
  * Implementation of hook_perm()
  */
 function hosting_ssl_perm() {
-  return array('administer ssl');
+  return array('create ssl certificate');
 }
 
 /**
