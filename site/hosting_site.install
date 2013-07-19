@@ -365,7 +365,8 @@ function hosting_site_update_6204() {
 
   // Enable blocks.
   $theme = 'eldir';
-  install_set_block('views', 'hosting_site_list-block_client2' , $theme, 'content_bottom', 0, 2, "<?php\nglobal \$user;\$node = menu_get_object();\nif (!empty(\$node)) {\n  return \$node->type == 'client' && $user->uid != 1;\n}\n?>");
+  install_set_block('views', 'hosting_site_list-block_client2', $theme, 'content_bottom', 0, 2, "<?php\nglobal \$user;\$node = menu_get_object();\n\$menu_item = menu_get_item();\nif (!empty(\$node)) && \$menu_item['number_parts'] == 2) {\n  return \$node->type == 'client' && $user->uid != 1;\n}\n?>");
+  install_set_block('views', 'hosting_site_list-block_client', $theme, 'content_bottom', 0, 2, "<?php\n\$node = menu_get_object();\n\$menu_item = menu_get_item();\nif (!empty(\$node) && \$menu_item['number_parts'] == 2) {\n  return \$node->type == 'client';\n}\n?>");
 
   module_disable(array('install_profile_api'));
 
