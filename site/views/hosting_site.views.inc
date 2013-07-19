@@ -252,7 +252,7 @@ function hosting_site_views_data() {
 function hosting_site_views_handlers() {
   return array(
     'info' => array(
-      'path' => drupal_get_path('module', 'hosting_site'),
+      'path' => drupal_get_path('module', 'hosting_site') . '/views',
     ),
     'handlers' => array(
       // field handlers
@@ -264,4 +264,85 @@ function hosting_site_views_handlers() {
       ),
     ),
   );
+}
+
+/**
+ * Implementation of hook_views_plugins
+ */
+function hosting_site_views_plugins() {
+  $plugins = array(
+    'access' => array(
+      'parent' => array(
+        'no ui' => TRUE,
+        'handler' => 'views_plugin_access',
+        'parent' => '',
+      ),
+      'site' => array(
+        'title' => t('Hosting site'),
+        'help' => t('Manage site access.'),
+        'handler' => 'views_plugin_access_hosting_site',
+        'path' => drupal_get_path('module', 'hosting_site') . '/views',
+      ),
+    ),
+  );
+
+  return $plugins;
+}
+
+/**
+ * Views access callback.
+ *
+ * @param $type
+ *   The display plugin.
+ * @param $display
+ *   The display ID (machine_name).
+ * @param $account
+ *   The current user.
+ */
+function hosting_site_views_access($type, $display, $account = NULL) {
+  switch ($type) {
+    case 'page':
+      // TODO: Figure out why this always appears to deny access.
+      return TRUE;
+      break;
+    case 'block':
+      switch ($display) {
+        case 'block_1':
+          $node = menu_get_object();
+          $menu_item = menu_get_item();
+          if (!empty($node) && $menu_item['number_parts'] == 2) {
+            return $node->type == 'platform';
+          }
+          break;
+        case 'block_profile':
+          $node = menu_get_object();
+          if (!empty($node)) {
+            return $node->package_type == 'profile';
+          }
+          break;
+        case 'block_client':
+          $node = menu_get_object();
+          $menu_item = menu_get_item();
+          if (!empty($node) && $menu_item['number_parts'] == 2) {
+            return $node->type == 'client' && user_access('create site', $account);
+
+          }
+          break;
+        case 'block_client2':
+          $node = menu_get_object();
+          $menu_item = menu_get_item();
+          if (!empty($node) && $menu_item['number_parts'] == 2) {
+            return $node->type == 'client' && user_access('view site', $account) && !user_access('create site', $account);
+
+          }
+          break;
+        default:
+          return FALSE;
+      }
+      break;
+    default:
+      return FALSE;
+  }
+
+  return FALSE;
 }

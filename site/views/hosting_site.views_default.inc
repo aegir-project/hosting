@@ -24,8 +24,7 @@ function hosting_site_views_default_views() {
   $handler = $view->new_display('default', 'Defaults', 'default');
   $handler->display->display_options['title'] = 'Sites';
   $handler->display->display_options['use_ajax'] = TRUE;
-  $handler->display->display_options['access']['type'] = 'perm';
-  $handler->display->display_options['access']['perm'] = 'view site';
+  $handler->display->display_options['access']['type'] = 'site';
   $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['exposed_form']['type'] = 'basic';
@@ -415,9 +414,233 @@ function hosting_site_views_default_views() {
   $handler->display->display_options['filters']['title_1']['expose']['single'] = TRUE;
   $handler->display->display_options['filters']['title_1']['case'] = 1;
 
-  /* Display: Page */
-  $handler = $view->new_display('page', 'Page', 'page_1');
-  $handler->display->display_options['exposed_block'] = TRUE;
+  /* Display: Page admin */
+  $handler = $view->new_display('page', 'Page admin', 'page_1');
+  $handler->display->display_options['defaults']['access'] = FALSE;
+  $handler->display->display_options['access']['type'] = 'perm';
+  $handler->display->display_options['access']['perm'] = 'create site';
+  $handler->display->display_options['defaults']['style_plugin'] = FALSE;
+  $handler->display->display_options['style_plugin'] = 'bulk';
+  $handler->display->display_options['style_options']['row_class'] = '[status]';
+  $handler->display->display_options['style_options']['columns'] = array(
+    'status' => 'status',
+    'title' => 'title',
+    'title_3' => 'title_3',
+    'created' => 'created',
+    'title_2' => 'title_2',
+  );
+  $handler->display->display_options['style_options']['default'] = '-1';
+  $handler->display->display_options['style_options']['info'] = array(
+    'status' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'desc',
+      'align' => '',
+      'separator' => '',
+    ),
+    'title' => array(
+      'sortable' => 1,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
+    'title_3' => array(
+      'sortable' => 1,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
+    'created' => array(
+      'sortable' => 1,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
+    'title_2' => array(
+      'sortable' => 1,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
+  );
+  $handler->display->display_options['style_options']['override'] = 1;
+  $handler->display->display_options['style_options']['sticky'] = 0;
+  $handler->display->display_options['style_options']['empty_table'] = 0;
+  $handler->display->display_options['style_options']['operations'] = array(
+    'node_assign_owner_action' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'views_bulk_operations_delete_node_action' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'node_mass_update-a27b9efabcd054685a549378b174ad11' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'system_message_action' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'views_bulk_operations_action' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'views_bulk_operations_script_action' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'node_make_sticky_action' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'node_make_unsticky_action' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'node_mass_update-c4d3b28efb86fd703619a50b74d43794' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'views_bulk_operations_argument_selector_action' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'hosting_platform_op_delete' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'hosting_platform_op_lock' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'hosting_platform_op_unlock' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'hosting_platform_op_verify' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'node_promote_action' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'node_mass_update-14de7d028b4bffdf2b4a266562ca18ac' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'node_mass_update-9c585624b9b3af0b4687d5f97f35e047' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'node_publish_action' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'system_goto_action' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'node_unpromote_action' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'node_mass_update-8ce21b08bb8e773d10018b484fe4815e' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'node_save_action' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'system_send_email_action' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'hosting_site_op_backup' => array(
+      'selected' => 1,
+      'skip_confirmation' => 1,
+      'label' => 'Backup',
+    ),
+    'hosting_site_op_delete_backup' => array(
+      'selected' => 1,
+      'skip_confirmation' => 0,
+      'label' => 'Delete backup',
+    ),
+    'hosting_site_op_delete' => array(
+      'selected' => 1,
+      'skip_confirmation' => 0,
+      'label' => 'Delete',
+    ),
+    'hosting_site_op_disable' => array(
+      'selected' => 1,
+      'skip_confirmation' => 0,
+      'label' => 'Disable',
+    ),
+    'hosting_site_op_enable' => array(
+      'selected' => 1,
+      'skip_confirmation' => 1,
+      'label' => 'Enable',
+    ),
+    'hosting_site_op_login_reset' => array(
+      'selected' => 1,
+      'skip_confirmation' => 1,
+      'label' => 'Reset Password',
+    ),
+    'hosting_site_op_verify' => array(
+      'selected' => 1,
+      'skip_confirmation' => 1,
+      'label' => 'Verify',
+    ),
+    'node_mass_update-0ccad85c1ebe4c9ceada1aa64293b080' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'node_unpublish_action' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+    'node_unpublish_by_keyword_action' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'label' => '',
+    ),
+  );
+  $handler->display->display_options['style_options']['execution_type'] = '1';
+  $handler->display->display_options['style_options']['display_type'] = '0';
+  $handler->display->display_options['style_options']['display_result'] = 0;
+  $handler->display->display_options['style_options']['merge_single_action'] = 1;
+  $handler->display->display_options['style_options']['hide_selector'] = 0;
+  $handler->display->display_options['style_options']['preserve_selection'] = 1;
+  $handler->display->display_options['defaults']['style_options'] = FALSE;
+  $handler->display->display_options['defaults']['row_plugin'] = FALSE;
+  $handler->display->display_options['defaults']['row_options'] = FALSE;
   $handler->display->display_options['defaults']['empty'] = FALSE;
   /* Empty text: Global: Text area */
   $handler->display->display_options['empty']['area']['id'] = 'area';
@@ -434,11 +657,78 @@ function hosting_site_views_default_views() {
   $handler->display->display_options['menu']['weight'] = '2';
   $handler->display->display_options['menu']['name'] = 'primary-links';
 
-  /* Display: Block: Platform */
-  $handler = $view->new_display('block', 'Block: Platform', 'block_1');
+  /* Display: Page list */
+  $handler = $view->new_display('page', 'Page list', 'page_2');
   $handler->display->display_options['defaults']['access'] = FALSE;
   $handler->display->display_options['access']['type'] = 'perm';
-  $handler->display->display_options['access']['perm'] = 'view platform';
+  $handler->display->display_options['access']['perm'] = 'view site';
+  $handler->display->display_options['defaults']['style_plugin'] = FALSE;
+  $handler->display->display_options['style_plugin'] = 'table';
+  $handler->display->display_options['style_options']['row_class'] = '[status]';
+  $handler->display->display_options['style_options']['columns'] = array(
+    'status' => 'status',
+    'title' => 'title',
+    'title_3' => 'title_3',
+    'created' => 'created',
+    'title_2' => 'title_2',
+  );
+  $handler->display->display_options['style_options']['default'] = '-1';
+  $handler->display->display_options['style_options']['info'] = array(
+    'status' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
+    'title' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
+    'title_3' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
+    'created' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
+    'title_2' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
+  );
+  $handler->display->display_options['style_options']['override'] = 1;
+  $handler->display->display_options['style_options']['sticky'] = 0;
+  $handler->display->display_options['style_options']['empty_table'] = 0;
+  $handler->display->display_options['defaults']['style_options'] = FALSE;
+  $handler->display->display_options['defaults']['row_plugin'] = FALSE;
+  $handler->display->display_options['defaults']['row_options'] = FALSE;
+  $handler->display->display_options['defaults']['empty'] = FALSE;
+  /* Empty text: Global: Text area */
+  $handler->display->display_options['empty']['area']['id'] = 'area';
+  $handler->display->display_options['empty']['area']['table'] = 'views';
+  $handler->display->display_options['empty']['area']['field'] = 'area';
+  $handler->display->display_options['empty']['area']['empty'] = FALSE;
+  $handler->display->display_options['empty']['area']['content'] = 'No sites have been created.';
+  $handler->display->display_options['empty']['area']['format'] = '1';
+  $handler->display->display_options['empty']['area']['tokenize'] = 0;
+  $handler->display->display_options['path'] = 'hosting/sites';
+  $handler->display->display_options['menu']['type'] = 'normal';
+  $handler->display->display_options['menu']['title'] = 'Sites';
+  $handler->display->display_options['menu']['description'] = 'List of sites';
+  $handler->display->display_options['menu']['weight'] = '2';
+  $handler->display->display_options['menu']['name'] = 'primary-links';
+
+  /* Display: Block: Platform */
+  $handler = $view->new_display('block', 'Block: Platform', 'block_1');
   $handler->display->display_options['defaults']['empty'] = FALSE;
   /* Empty text: Global: Text area */
   $handler->display->display_options['empty']['area']['id'] = 'area';
@@ -491,9 +781,6 @@ function hosting_site_views_default_views() {
 
   /* Display: Block: Profile */
   $handler = $view->new_display('block', 'Block: Profile', 'block_profile');
-  $handler->display->display_options['defaults']['access'] = FALSE;
-  $handler->display->display_options['access']['type'] = 'perm';
-  $handler->display->display_options['access']['perm'] = 'view package';
   $handler->display->display_options['defaults']['empty'] = FALSE;
   /* Empty text: Global: Text area */
   $handler->display->display_options['empty']['area']['id'] = 'area';
@@ -544,11 +831,109 @@ function hosting_site_views_default_views() {
   $handler->display->display_options['filters']['status_1']['field'] = 'status';
   $handler->display->display_options['filters']['status_1']['value'] = '1';
 
-  /* Display: Block: Client */
-  $handler = $view->new_display('block', 'Block: Client', 'block_client');
-  $handler->display->display_options['defaults']['access'] = FALSE;
-  $handler->display->display_options['access']['type'] = 'perm';
-  $handler->display->display_options['access']['perm'] = 'view client';
+  /* Display: Block: Client list */
+  $handler = $view->new_display('block', 'Block: Client list', 'block_client2');
+  $handler->display->display_options['defaults']['style_plugin'] = FALSE;
+  $handler->display->display_options['style_plugin'] = 'table';
+  $handler->display->display_options['style_options']['row_class'] = '[status]';
+  $handler->display->display_options['style_options']['columns'] = array(
+    'status' => 'status',
+    'title' => 'title',
+    'title_3' => 'title_3',
+    'created' => 'created',
+    'title_2' => 'title_2',
+  );
+  $handler->display->display_options['style_options']['default'] = '-1';
+  $handler->display->display_options['style_options']['info'] = array(
+    'status' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
+    'title' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
+    'title_3' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
+    'created' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
+    'title_2' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
+  );
+  $handler->display->display_options['style_options']['override'] = 1;
+  $handler->display->display_options['style_options']['sticky'] = 0;
+  $handler->display->display_options['style_options']['empty_table'] = 0;
+  $handler->display->display_options['defaults']['style_options'] = FALSE;
+  $handler->display->display_options['defaults']['row_plugin'] = FALSE;
+  $handler->display->display_options['defaults']['row_options'] = FALSE;
+  $handler->display->display_options['defaults']['empty'] = FALSE;
+  /* Empty text: Global: Text area */
+  $handler->display->display_options['empty']['area']['id'] = 'area';
+  $handler->display->display_options['empty']['area']['table'] = 'views';
+  $handler->display->display_options['empty']['area']['field'] = 'area';
+  $handler->display->display_options['empty']['area']['empty'] = FALSE;
+  $handler->display->display_options['empty']['area']['content'] = 'No sites have been created for this client.';
+  $handler->display->display_options['empty']['area']['format'] = '1';
+  $handler->display->display_options['empty']['area']['tokenize'] = 0;
+  $handler->display->display_options['defaults']['arguments'] = FALSE;
+  /* Argument: Node: Nid */
+  $handler->display->display_options['arguments']['nid']['id'] = 'nid';
+  $handler->display->display_options['arguments']['nid']['table'] = 'node';
+  $handler->display->display_options['arguments']['nid']['field'] = 'nid';
+  $handler->display->display_options['arguments']['nid']['relationship'] = 'client';
+  $handler->display->display_options['arguments']['nid']['default_action'] = 'default';
+  $handler->display->display_options['arguments']['nid']['style_plugin'] = 'default_summary';
+  $handler->display->display_options['arguments']['nid']['default_argument_type'] = 'node';
+  $handler->display->display_options['arguments']['nid']['default_argument_skip_url'] = 0;
+  $handler->display->display_options['arguments']['nid']['validate_type'] = 'node';
+  $handler->display->display_options['arguments']['nid']['validate_options']['types'] = array(
+    'client' => 'client',
+  );
+  $handler->display->display_options['arguments']['nid']['validate_options']['access'] = 0;
+  $handler->display->display_options['arguments']['nid']['break_phrase'] = 0;
+  $handler->display->display_options['arguments']['nid']['not'] = 0;
+  $handler->display->display_options['defaults']['filters'] = FALSE;
+  /* Filter: Node: Type */
+  $handler->display->display_options['filters']['type']['id'] = 'type';
+  $handler->display->display_options['filters']['type']['table'] = 'node';
+  $handler->display->display_options['filters']['type']['field'] = 'type';
+  $handler->display->display_options['filters']['type']['value'] = array(
+    'site' => 'site',
+  );
+  $handler->display->display_options['filters']['type']['expose']['operator'] = FALSE;
+  /* Filter: Hosting Site: Status */
+  $handler->display->display_options['filters']['status']['id'] = 'status';
+  $handler->display->display_options['filters']['status']['table'] = 'hosting_site';
+  $handler->display->display_options['filters']['status']['field'] = 'status';
+  $handler->display->display_options['filters']['status']['operator'] = 'not in';
+  $handler->display->display_options['filters']['status']['value'] = array(
+    -2 => '-2',
+  );
+  $handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+  /* Filter: Node: Published */
+  $handler->display->display_options['filters']['status_1']['id'] = 'status_1';
+  $handler->display->display_options['filters']['status_1']['table'] = 'node';
+  $handler->display->display_options['filters']['status_1']['field'] = 'status';
+  $handler->display->display_options['filters']['status_1']['value'] = '1';
+
+  /* Display: Block: Client admin */
+  $handler = $view->new_display('block', 'Block: Client admin', 'block_client');
   $handler->display->display_options['defaults']['empty'] = FALSE;
   /* Empty text: Global: Text area */
   $handler->display->display_options['empty']['area']['id'] = 'area';
