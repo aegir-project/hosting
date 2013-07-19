@@ -628,6 +628,7 @@ function hosting_client_menu() {
  */
 function _hosting_client_platform_access($node) {
   return $node->type == 'platform' &&
+         $node->platform_status != HOSTING_PLATFORM_DELETED &&
          node_access('update', $node) &&
          user_access('administer clients');
 }

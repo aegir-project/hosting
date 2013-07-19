@@ -422,7 +422,7 @@ function hosting_site_op_login_reset($nodes) {
  * Access callback for Site add by platform.
  */
 function hosting_site_add_by_platform_access($node) {
-  return $node->type == 'platform' && node_access('create', 'site');
+  return $node->type == 'platform' && $node->platform_status == HOSTING_PLATFORM_ENABLED && node_access('create', 'site');
 }
 
 /**
