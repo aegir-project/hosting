@@ -335,10 +335,10 @@ function hosting_site_update_6202() {
 /**
  * Add new Action permissions.
  */
-function hosting_platform_update_6203() {
+function hosting_site_update_6203() {
   $ret = array();
 
-  // Enable Acstions permissions, and temporarily Install Profile API module to load includes.
+  // Enable Actions permissions, and temporarily Install Profile API module to load includes.
   module_enable(array('actions_permissions', 'install_profile_api'));
   module_load_include('inc', 'install_profile_api', 'core/user');
 
