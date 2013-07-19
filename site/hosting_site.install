@@ -335,7 +335,7 @@ function hosting_site_update_6202() {
 /**
  * Add new Action permissions.
  */
-function hosting_site_update_6203() {
+function hosting_platform_update_6203() {
   $ret = array();
 
   // Enable Acstions permissions, and temporarily Install Profile API module to load includes.
@@ -350,30 +350,3 @@ function hosting_site_update_6203() {
 
   return $ret;
 }
-
-/**
- * Remove PHP block visibility for Views access control, and add a couple blocks.
- */
-function hosting_site_update_6204() {
-  $ret = array();
-
-  // Temporarily enable Install Profile API module and load includes.
-  module_enable(array('install_profile_api'));
-  drupal_load('module', 'install_profile_api');
-  install_include(array('block'));
-
-  // Enable blocks.
-  $theme = 'eldir';
-  install_set_block('views', 'hosting_site_list-block_platform' , $theme, 'content_bottom', 0);
-  install_set_block('views', 'hosting_site_list-block_profile' , $theme, 'content_bottom', 0);
-  install_set_block('views', 'hosting_site_list-block_client' , $theme, 'content_bottom', 0);
-  install_set_block('views', 'hosting_site_list-block_client2' , $theme, 'content_bottom', 0);
-
-  install_add_permissions(install_get_rid('aegir account manager'), array('view site'));
-
-  module_disable(array('install_profile_api'));
-
-  return $ret;
-}
-
-

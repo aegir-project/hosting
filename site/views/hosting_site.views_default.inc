@@ -832,7 +832,7 @@ function hosting_site_views_default_views() {
   $handler->display->display_options['filters']['status_1']['value'] = '1';
 
   /* Display: Block: Client list */
-  $handler = $view->new_display('block', 'Block: Client list', 'block_client2');
+  $handler = $view->new_display('block', 'Block: Client list', 'block_client_list');
   $handler->display->display_options['defaults']['style_plugin'] = FALSE;
   $handler->display->display_options['style_plugin'] = 'table';
   $handler->display->display_options['style_options']['row_class'] = '[status]';
