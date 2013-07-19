@@ -17,8 +17,16 @@ function hosting_package_views_handlers() {
       'views_handler_field_hosting_package_status' => array(
         'parent' => 'views_handler_field_hosting_site_status',
       ),
+      'views_handler_field_hosting_package_site_count' => array(
+        'parent' => 'views_handler_field',
+      ),
+      // filter handlers
       'views_handler_filter_hosting_package_status' => array(
         'parent' => 'views_handler_filter_in_operator',
+      ),
+      // sort handlers
+      'views_handler_sort_hosting_package_site_count' => array(
+        'parent' => 'views_handler_sort',
       ),
     ),
   );
@@ -103,6 +111,19 @@ function hosting_package_views_data() {
     ),
     'argument' => array(
       'handler' => 'views_handler_argument_node_nid',
+    ),
+  );
+
+  $data['hosting_package_instance']['site_count'] = array(
+    'title' => t('Site count'),
+    'help' => t('A count of sites using a package.'),
+    'field' => array(
+      'field' => 'platform',
+      'handler' => 'views_handler_field_hosting_package_site_count',
+      'click sortable' => TRUE,
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort_hosting_package_site_count',
     ),
   );
 
