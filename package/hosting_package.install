@@ -93,6 +93,11 @@ function hosting_package_schema() {
         'not null' => TRUE,
         'default' => 0,
       ),
+      'platform' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
     ),
     'primary key' => array('iid'),
     'indexes' => array('hosting_package_rid_idx' => array('rid'), 'hosting_package_id_idx' => array('package_id')),
@@ -457,5 +462,14 @@ function hosting_package_update_6200() {
 
   module_disable(array('install_profile_api'));
 
+  return $ret;
+}
+
+/**
+ * Allow the tracking of site-specific packages.
+ */
+function hosting_package_update_6201() {
+  $ret = array();
+  db_add_field($ret, 'hosting_package_instance', 'platform', array('type' => 'int', 'not null' => TRUE, 'default' => 0));
   return $ret;
 }
