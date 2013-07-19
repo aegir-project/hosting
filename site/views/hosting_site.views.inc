@@ -328,7 +328,7 @@ function hosting_site_views_access($type, $display, $account = NULL) {
 
           }
           break;
-        case 'block_client_list':
+        case 'block_client2':
           $node = menu_get_object();
           $menu_item = menu_get_item();
           if (!empty($node) && $menu_item['number_parts'] == 2) {

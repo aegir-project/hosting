@@ -350,3 +350,24 @@ function hosting_site_update_6203() {
 
   return $ret;
 }
+
+/**
+ * Place new block.
+ */
+function hosting_site_update_6204() {
+  $ret = array();
+
+  // Temporarily enable Install Profile API module and load includes.
+  module_enable(array('install_profile_api'));
+  drupal_load('module', 'install_profile_api');
+  install_include(array('block'));
+
+  // Enable blocks.
+  $theme = 'eldir';
+  install_set_block('views', 'hosting_site_list-block_client2' , $theme, 'content_bottom', 0, 2, "<?php\nglobal \$user;\$node = menu_get_object();\nif (!empty(\$node)) {\n  return \$node->type == 'client' && $user->uid != 1;\n}\n?>");
+
+  module_disable(array('install_profile_api'));
+
+  return $ret;
+}
+
