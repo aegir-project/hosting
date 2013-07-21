@@ -101,8 +101,8 @@ function hosting_platform_hosting_tasks() {
     'title' => t('Lock'),
     'description' => t('Locking this platform will not delete or disable it or its sites, but will
         prevent any new sites from being created on it. This may be useful when you have sites that
-        cannot be migrated onto a newer platform, but you wish to prevent other administrators or
-        clients from continuing to provision on this platform. The platform can be unlocked later.
+        cannot be migrated onto a newer platform, but you wish to prevent other users or clients
+        from continuing to provision on this platform. The platform can be unlocked later.
         Are you really sure you want to lock this platform?'),
     'weight' => 10,
   );
@@ -121,6 +121,10 @@ function hosting_platform_hosting_tasks() {
  */
 function hosting_platform_permission() {
   return array(
+    'administer platforms' => array(
+      'title' => t('administer platforms'),
+      'description' => t('TODO Add a description for \'administer platforms\''),
+    ),
     'create platform' => array(
       'title' => t('create platform'),
       'description' => t('TODO Add a description for \'create platform\''),
@@ -141,13 +145,23 @@ function hosting_platform_permission() {
       'title' => t('view locked platforms'),
       'description' => t('TODO Add a description for \'view locked platforms\''),
     ),
+    'create sites on locked platforms' => array(
+      'title' => t('create sites on locked platforms'),
+      'description' => t('TODO Add a description for \'create sites on locked platforms\''),
+    ),
   );
 }
 
 /**
  * Implements hook_node_access().
+ * @todo: switch to node access constants
  */
 function hosting_platform_node_access($node, $op, $account) {
+  if ($op != 'create' && hosting_feature('client')) {
+    // we rely on hosting_node_grants() instead of global configuration
+    return NULL;
+  }
+
   switch ($op) {
     case 'create':
       return user_access('create platform', $account);
@@ -155,16 +169,93 @@ function hosting_platform_node_access($node, $op, $account) {
     case 'update':
       return user_access('edit platform', $account);
       break;
+    case 'view':
+      return user_access('view platform', $account);
+      break;
   }
 }
 
 /**
- * Small helper function to get platforms that haven't been deleted.
+ * Implements hook_node_operations().
+ */
+function hosting_platform_node_operations() {
+  $operations = array();
+
+  $operations['hosting-platform-verify'] = array(
+    'label' => t('Platform: Verify'),
+    'callback' => 'hosting_platform_op_verify',
+   );
+  $operations['hosting-platform-lock'] = array(
+    'label' => t('Platform: Lock'),
+    'callback' => 'hosting_platform_op_lock',
+   );
+  $operations['hosting-platform-unlock'] = array(
+    'label' => t('Platform: Unlock'),
+    'callback' => 'hosting_platform_op_unlock',
+   );
+  $operations['hosting-platform-delete'] = array(
+    'label' => t('Platform: Delete'),
+    'callback' => 'hosting_platform_op_delete',
+   );
+
+  return $operations;
+}
+
+/**
+ * Callback for platform verify operation.
+ */
+function hosting_platform_op_verify($nodes) {
+  foreach ($nodes as $nid) {
+    hosting_add_task($nid, 'verify');
+  }
+}
+
+/**
+ * Callback for platform lock operation.
+ */
+function hosting_platform_op_lock() {
+  foreach ($nodes as $nid) {
+    hosting_add_task($nid, 'lock');
+  }
+}
+
+/**
+ * Callback for platform unlock operation.
+ */
+function hosting_platform_op_unlock($nodes) {
+  foreach ($nodes as $nid) {
+    hosting_add_task($nid, 'unlock');
+  }
+}
+
+/**
+ * Callback for platform delete operation.
+ */
+function hosting_platform_op_delete($nodes) {
+  foreach ($nodes as $nid) {
+    hosting_add_task($nid, 'delete');
+  }
+}
+
+/**
+ * Helper function to get platforms that haven't been deleted.
  */
 function _hosting_get_platforms() {
   $return = array();
-  $result = db_query("SELECT n.nid, n.title FROM {node} n LEFT JOIN {hosting_platform} h ON n.nid = h.nid
-                      WHERE n.type = :type AND n.status = :nstatus AND h.status <> :hstatus ORDER BY n.title", array(':type' => 'platform', ':nstatus' => 1, ':hstatus' => HOSTING_PLATFORM_DELETED));
+  $result = db_query("SELECT n.nid, n.title
+                      FROM {node} n
+                      LEFT JOIN {hosting_platform} h
+                      ON n.nid = h.nid
+                      WHERE n.type = :type
+                      AND n.status = :nstatus
+                      AND h.status <> :hstatus
+                      ORDER BY n.title
+                     ", array(
+                       ':type' => 'platform',
+                       ':nstatus' => 1, //@todo: remove magic number?
+                       ':hstatus' => HOSTING_PLATFORM_DELETED,
+                     )
+                   );
   while ($server = $result->fetch()) {
     $return[$server->nid] = $server->title;
   }
@@ -172,12 +263,24 @@ function _hosting_get_platforms() {
 }
 
 /**
- * Small helper function to get platforms that haven't been deleted or locked.
+ * Helper function to get platforms that haven't been deleted or locked.
  */
 function _hosting_get_enabled_platforms() {
   $return = array();
-  $result = db_query("SELECT n.nid, n.title FROM {node} n LEFT JOIN {hosting_platform} h ON n.nid = h.nid
-                      WHERE n.type = :n.type AND n.status = :n.status AND h.status <> :h.status ORDER BY n.title", array(':n.type' => 'platform', ':n.status' => 1, ':h.status' => HOSTING_PLATFORM_LOCKED));
+  $result = db_query("SELECT n.nid, n.title
+                      FROM {node} n
+                      LEFT JOIN {hosting_platform} h
+                      ON n.nid = h.nid
+                      WHERE n.type = :n.type
+                      AND n.status = :n.status
+                      AND h.status <> :h.status
+                      ORDER BY n.title
+                     ", array(
+                       ':n.type' => 'platform',
+                       ':n.status' => 1, //@todo: remove magic number?
+                       ':h.status' => HOSTING_PLATFORM_LOCKED,
+                     )
+                   );
   while ($server = $result->fetch()) {
     $return[$server->nid] = $server->title;
   }
@@ -185,12 +288,24 @@ function _hosting_get_enabled_platforms() {
 }
 
 /**
- * Small helper function to get platforms that have been locked.
+ * Helper function to get platforms that have been locked.
  */
 function _hosting_get_locked_platforms() {
   $return = array();
-  $result = db_query("SELECT n.nid, n.title FROM {node} n LEFT JOIN {hosting_platform} h ON n.nid = h.nid
-                      WHERE n.type = :n.type AND n.status = :n.status AND h.status = :h.status ORDER BY n.title", array(':n.type' => 'platform', ':n.status' => 1, ':h.status' => HOSTING_PLATFORM_LOCKED));
+  $result = db_query("SELECT n.nid, n.title
+                      FROM {node} n
+                      LEFT JOIN {hosting_platform} h
+                      ON n.nid = h.nid
+                      WHERE n.type = :n.type
+                      AND n.status = :n.status
+                      AND h.status = :h.status
+                      ORDER BY n.title
+                     ", array(
+                       ':n.type' => 'platform',
+                       ':n.status' => 1, //@todo: remove magic number?
+                       ':h.status' => HOSTING_PLATFORM_LOCKED,
+                     )
+                   );
   while ($server = $result->fetch()) {
     $return[$server->nid] = $server->title;
   }
@@ -198,7 +313,7 @@ function _hosting_get_locked_platforms() {
 }
 
 /**
- * Small helper function to check if a platform is locked.
+ * Helper function to check if a platform is locked.
  */
 function _hosting_platform_is_locked($node) {
   if (in_array($node, array_keys(_hosting_get_locked_platforms()))) {
@@ -307,7 +422,7 @@ function hosting_platform_form(&$node) {
  * @see http://drupal.org/node/1354
  */
 function hosting_platform_form_platform_after_build($form) {
-
+  // @todo: what are the ifs for when we react the same either way?
   drupal_add_js(drupal_get_path('module', 'hosting_platform') . '/hosting_platform.js');
   if (isset($form['makefile']['#attributes']['class'])) {
     $form['makefile']['#attributes']['class'][] = ' hosting-platform-working-copy-source';
@@ -331,11 +446,15 @@ function hosting_platform_form_platform_after_build($form) {
  */
 function hosting_platform_form_alter(&$form, &$form_state, $form_id) {
   // Remove delete button from platform edit form, unless the platform's already been deleted via the Delete task
-  if ($form_id == 'platform_node_form') {
+  if  ($form_id == 'platform_node_form') {
     $node = $form['#node'];
     if (isset($node->platform_status) && $node->platform_status !== '-2') {
       $form['action']['delete']['#type'] = 'hidden';
     }
+  }
+  // Override the 'Bulk operations' title.
+  if ($form_id == 'views_bulk_operations_form_hosting_platform_list_page_platforms') {
+    $form['select']['#title'] = 'Platform operations';
   }
 }
 
@@ -525,7 +644,7 @@ function hosting_platform_view($node, $teaser = FALSE, $page = FALSE) {
   $node->content['info']['status'] = array(
     '#type' => 'item',
     '#title' => t('Status'),
-    '#markup' => _hosting_platform_status($node),
+    '#markup' => _hosting_platform_status($node->platform_status),
   );
 
   if ($node->makefile) {
@@ -546,33 +665,24 @@ function hosting_platform_view($node, $teaser = FALSE, $page = FALSE) {
     );
   }
 
-  if ($page) {
-    $node->content['sites_view'] = array(
+  // Task list
+  if ($page && $node->nid) {
+    $node->content['tasks_view'] = array(
       '#type' => 'item',
-      '#markup' => drupal_render(drupal_get_form('hosting_site_list_form', 'platform', $node->nid)),
-      '#prefix' => '<div id="hosting-site-list">',
+      '#markup' => hosting_task_table($node),
+      '#prefix' => '<div id="hosting-task-list">',
       '#suffix' => '</div>',
-      '#weight' => 10,
+      '#weight' => 9,
     );
+    $settings['hostingTaskRefresh'] = array(
+      'nid' => $node->nid,
+      'changed' => $node->changed,
+    );
+    drupal_add_js($settings, array('type' => 'setting', 'scope' => JS_DEFAULT));
 
-    // Task list
-    if ($node->nid) {
-      $node->content['tasks_view'] = array(
-        '#type' => 'item',
-        '#markup' => hosting_task_table($node),
-        '#prefix' => '<div id="hosting-task-list">',
-        '#suffix' => '</div>',
-        '#weight' => 9,
-      );
-      $settings['hostingTaskRefresh'] = array(
-        'nid' => $node->nid,
-        'changed' => $node->changed,
-      );
-      drupal_add_js($settings, array('type' => 'setting', 'scope' => JS_DEFAULT));
-
-      drupal_add_js(drupal_get_path('module', 'hosting_task') . '/hosting_task.js');
-    }
+    drupal_add_js(drupal_get_path('module', 'hosting_task') . '/hosting_task.js');
   }
+
   return $node;
 }
 
@@ -583,14 +693,38 @@ function hosting_platform_hosting_site_site_list_filters() {
   return array('platform');
 }
 
-function _hosting_platform_status($node) {
-  static $labels = array(
-    HOSTING_PLATFORM_QUEUED => "Queued",
-    HOSTING_PLATFORM_ENABLED => "Enabled",
-    HOSTING_PLATFORM_DELETED => "Deleted",
-    HOSTING_PLATFORM_LOCKED => "Locked",
+/**
+ * @todo document this function
+ */
+function _hosting_platform_status_codes() {
+  $codes = array(
+    HOSTING_PLATFORM_QUEUED => array(
+      'label' => 'Queued',
+      'class' => 'hosting-queue',
+    ),
+    HOSTING_PLATFORM_ENABLED => array(
+      'label' => 'Enabled',
+      'class' => 'hosting-success',
+    ),
+    HOSTING_PLATFORM_DELETED => array(
+      'label' => 'Deleted',
+      'class' => 'hosting-error',
+    ),
+    HOSTING_PLATFORM_LOCKED => array(
+      'label' => 'Locked',
+      'class' => 'hosting-disable',
+    ),
   );
-  return $labels[$node->platform_status];
+  return $codes;
+}
+
+/**
+ * @todo document this function
+ */
+function _hosting_platform_status($status) {
+  static $labels;
+  $labels = _hosting_platform_status_codes();
+  return is_object($status) ? $labels[$status->platform_status]['label'] : $labels[$status]['label'];
 }
 
 /**
@@ -619,23 +753,18 @@ function hosting_platform_views_api() {
   );
 }
 
-
 /**
  * Define the classes that correspond to the platform status.
  */
-function _hosting_platform_list_class($node) {
-  static $labels = array(
-    HOSTING_PLATFORM_QUEUED => "hosting-queue",
-    HOSTING_PLATFORM_ENABLED => "hosting-success",
-    HOSTING_PLATFORM_DELETED => "hosting-error",
-    HOSTING_PLATFORM_LOCKED => "hosting-warning",
-  );
-
-  return $labels[$node->platform_status];
+function _hosting_platform_list_class($status) {
+  static $labels;
+  $labels = _hosting_platform_status_codes();
+  return is_object($status) ? $labels[$status->platform_status]['class'] : $labels[$status]['class'];
 }
 
 /**
  * Simple list for top level navigation.
+ * @todo: remove this?
  */
 function hosting_platform_listing() {
   $platforms = _hosting_get_platforms();
@@ -660,7 +789,7 @@ function hosting_platform_listing() {
     $row[] = $count;
     $rows[] = array(
       'data' => $row,
-      'class' => array(_hosting_platform_list_class($node)),
+      'class' => array(_hosting_platform_list_class($node->platform_status)),
     );
   }
   $row = array();

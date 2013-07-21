@@ -35,9 +35,9 @@ function hosting_ssl_hosting_service() {
  */
 function hosting_ssl_permission() {
   return array(
-    'administer ssl' => array(
-      'title' => t('administer ssl'),
-      'description' => t('TODO Add a description for \'administer ssl\''),
+    'create ssl certificate' => array(
+      'title' => t('create ssl certificate'),
+      'description' => t('TODO Add a description for \'create ssl certificate\''),
     ),
   );
 }

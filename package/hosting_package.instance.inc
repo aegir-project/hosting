@@ -14,17 +14,45 @@
  * This mimics Drupal's module and theme override
  * functionality, in that only the top most item
  * will be referenced to the node.
+ *
+ * @param $rid
+ *   The nid of the entity on which we are operating.
+ * @param $type
+ *   The type of the entity on which we are operating (platform, site or
+ *   profile.
  */
-function hosting_package_instance_sync($rid) {
+function hosting_package_instance_sync($rid, $type) {
   db_update('hosting_package_instance')
     ->fields(array(
-      'status' => -1,
+      'status' => -1, // @todo remove magic number?
     ))
     ->condition('rid', $rid)
     ->execute();
+
   $map = _hosting_package_plural_map();
   $args = func_get_args();
   $rid = array_shift($args);
+  // We need to pass in $type, since there's a possibility of collision b/w a
+  // profile's iid, and the nid of a site or platform.
+  $type = array_shift($args);
+
+  // Figure out the platform nid
+  if ($type == 'platform') {
+    $platform = $rid;
+  }
+  elseif ($type == 'site') {
+    $node = node_load($rid);
+    $platform = $node->platform;
+  }
+  elseif ($type == 'profile') {
+    $sql = 'SELECT rid
+            FROM {hosting_package_instance}
+            WHERE iid = %d';
+    $platform = db_result(db_query($sql, $rid));
+  }
+  else {
+    watchdog('hosting_package', 'Unrecognized entity type (' . $type . ') passed to hosting_package_instance_sync().', array(), WATCHDOG_WARNING);
+  }
 
   foreach ($map as $plural => $key) {
     $merged = array();
@@ -47,20 +75,17 @@ function hosting_package_instance_sync($rid) {
       $instance->languages = isset($package['info']['languages']) ? $package['info']['languages'] : array();
       $instance->filename = isset($package['filename']) ? $package['filename'] : '';
       $instance->version = isset($package['version']) ? $package['version'] : 'Unknown';
-      $instance->version_code = hosting_package_instance_version_code($package['version']);
       $instance->schema_version = isset($package['schema_version']) ? $package['schema_version'] : 0;
-      if (array_key_exists('status', $package)) {
-        $instance->status = $package['status'];
-      }
-      else {
-        $instance->status = 0;
-      }
+      $instance->version_code = hosting_package_instance_version_code($instance->version);
+      $instance->status = array_key_exists('status', $package) ? $package['status'] : 0;
+      $instance->platform = isset($package['platform']) ? $package['platform'] : $platform;
+
       hosting_package_instance_save($instance);
     }
   }
   db_delete('hosting_package_instance')
     ->condition('rid', $rid)
-    ->condition('status', -1)
+    ->condition('status', -1) // @todo remove magic number?
     ->execute();
 }
 
@@ -97,6 +122,7 @@ function hosting_package_instance_update(&$instance) {
       'version' => $instance->version,
       'version_code' => $instance->version_code,
       'status' => $instance->status,
+      'platform' => $instance->platform
     ))
     ->condition('iid', $instance->iid)
     ->execute();
@@ -118,6 +144,7 @@ function hosting_package_instance_create(&$instance) {
       'version' => $instance->version,
       'version_code' => $instance->version_code,
       'status' => $instance->status,
+      'platform' => $instance->platform
     ))
     ->execute();
   $instance->iid = $id;
@@ -246,7 +273,6 @@ function hosting_package_instance_delete($instance) {
     ->condition('iid', $instance->iid)
     ->execute();
 }
-
 
 /**
  * Turn package version string into a number
@@ -379,9 +405,15 @@ function _hosting_package_temporary_table($ref) {
     $names[$ref] = '_hosting_comparision_' . trim($ref);
 
     // Create the temporary table.
-    db_query("CREATE TEMPORARY TABLE %s AS SELECT p.nid, p.short_name, p.old_short_name, i.version_code, i.schema_version, i.version, i.status FROM {hosting_package} p LEFT JOIN {hosting_package_instance} i on p.nid = i.package_id WHERE i.rid = %d", $names[$ref], $ref);
+    db_query("CREATE TEMPORARY TABLE %s
+              AS SELECT p.nid, p.short_name, p.old_short_name, i.version_code, i.schema_version, i.version, i.status
+              FROM {hosting_package} p
+              LEFT JOIN {hosting_package_instance} i
+              ON p.nid = i.package_id
+              WHERE i.rid = %d and i.platform != -1", // @todo remove magic number
+              $names[$ref], $ref);
   }
-
 
   return $names[$ref];
 }
+

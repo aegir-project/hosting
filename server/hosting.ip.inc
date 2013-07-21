@@ -1,5 +1,4 @@
 <?php
-// $Id$
 /**
  * @file General IP address CRUD routines.
  */
@@ -35,7 +34,7 @@ function hosting_ip_save($node, $update = FALSE) {
     }
   }
 
-  $ips = is_array($node->new_ip_addresses) ? $node->ip_addresses : array();
+  $ips = isset($node->new_ip_addresses) ? $node->new_ip_addresses : array();
   foreach ($ips as $id => $ip) {
     if (!empty($ip)) {
       // new entries are prefixed with the string 'new', insert those
@@ -72,7 +71,6 @@ function hosting_ip_validate($node) {
     }
   }
 }
-
 
 /**
  * IP Utility function for hook_load.
@@ -114,18 +112,64 @@ function hosting_ip_allocate($cert, $site) {
   db_query("LOCK TABLES {hosting_ssl_cert_ips} WRITE, {hosting_ip_addresses} WRITE");
   $platform = node_load($site->platform);
   $server = node_load($platform->web_server);
-  // guess the next available IP
-  $ip = db_query("SELECT hosting_ip_addresses.id FROM {hosting_ip_addresses}
-                             LEFT JOIN {hosting_ssl_cert_ips} ON hosting_ip_addresses.id = hosting_ssl_cert_ips.ip_address
-                             WHERE hosting_ssl_cert_ips.ip_address IS NULL AND nid = :nid LIMIT 1;", array(':nid' => $server->nid))->fetchField();
-  if ($ip) {
-    $id = db_insert('hosting_ssl_cert_ips')
+
+  // IP allocation for master server
+  $ips = array();
+
+  // IP allocation for nodes in the cluster
+  // XXX: this should be in classes, see below
+  switch ($server->services['http']->type) {
+    case 'pack':
+      foreach ($server->services['http']->master_servers as $s) {
+        $ips[] = hosting_server_ip_allocate($s);
+      }
+      foreach ($server->services['http']->slave_servers as $s) {
+        $ips[] = hosting_server_ip_allocate($s);
+      }
+      break;
+    case 'cluster':
+      foreach ($server->services['http']->web_servers as $s) {
+        $ips[] = hosting_server_ip_allocate($s);
+      }
+      break;
+    default:
+      $ips = array(hosting_server_ip_allocate($server->nid));
+  }
+  foreach ($ips as $ip) {
+    if (!$ip) {
+      // IP allocation failed, unlock tables and return false
+      db_query("UNLOCK TABLES");
+      return $ip;
+    }
+  }
+  // IP allocation succeeded, actually insert all required entries
+  foreach ($ips as $ip) {
+    if ($ip) {
+     $id = db_insert('hosting_ssl_cert_ips')
       ->fields(array(
         'cid' => $cert->cid,
         'ip_address' => $ip,
       ))
       ->execute();
+    }
   }
   db_query("UNLOCK TABLES");
-  return $ip;
+  return $ips;
+}
+
+/**
+ * Allocate a single IP for a single server.
+ *
+ * XXX: this should be in the 'server' class (which doesn't exist yet)
+ * or at least in the services class
+ */
+function hosting_server_ip_allocate($server) {
+  // guess the next available IP
+  return db_query("SELECT hosting_ip_addresses.id
+                   FROM {hosting_ip_addresses}
+                   LEFT JOIN {hosting_ssl_cert_ips}
+                   ON hosting_ip_addresses.id = hosting_ssl_cert_ips.ip_address
+                   WHERE hosting_ssl_cert_ips.ip_address IS NULL
+                   AND nid = :nid LIMIT 1;
+                  ", array(':nid' => $server))->fetchField();
 }

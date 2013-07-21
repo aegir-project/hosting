@@ -25,7 +25,6 @@ function hosting_server_node_info() {
   return $types;
 }
 
-
 /**
  * Implements hook_menu().
  */
@@ -59,20 +58,7 @@ function hosting_server_menu() {
 }
 
 /**
- * Implements hook_hosting_feature().
- */
-function hosting_server_hosting_feature() {
-  $features['server'] = array(
-    'title' => t('Server administration'),
-    'description' => t('Manage multiple servers.'),
-    'status' => HOSTING_FEATURE_ENABLED,
-    'node' => 'server',
-  );
-  return $features;
-}
-
-/**
- * Implements hook_hosting_tasks().
+ * Implementation of hook_hosting_tasks()
  */
 function hosting_server_hosting_tasks() {
   $tasks = array();
@@ -99,6 +85,10 @@ function hosting_server_hosting_tasks() {
  */
 function hosting_server_permission() {
   return array(
+    'administer server' => array(
+      'title' => t('administer server'),
+      'description' => t('TODO Add a description for \'administer server\''),
+    ),
     'create server' => array(
       'title' => t('create server'),
       'description' => t('TODO Add a description for \'create server\''),
@@ -122,6 +112,7 @@ function hosting_server_permission() {
  * Implements hook_node_access().
  */
 function hosting_server_node_access($node, $op, $account) {
+  //@todo Verify that this ought not be going through node_grants()
   if (!hosting_feature('server')) {
     return FALSE;
   }
@@ -283,6 +274,7 @@ function hosting_server_form($node, &$form_state) {
 
   if (!isset($node->nid)) {
     $node->services = array();
+    $node->ip_addresses = array();
   }
 
   // taken mostly from the hosting_site alias stuff
@@ -306,6 +298,7 @@ function hosting_server_form($node, &$form_state) {
   // Get the list of existing IPs
   $ips = $node->ip_addresses;
   $ips_count = max(3, empty($ips) ? 3 : count($ips) + 1);
+
   // Add alias textfields
   foreach ($ips as $id => $ip) {
     $form['ips_wrapper']['ip_addresses'][$id] = array(
@@ -584,6 +577,7 @@ function hosting_server_view(&$node, $teaser = FALSE, $page = FALSE) {
 
 /**
  * Output a table of servers with their enabled services.
+ * @todo: replace with a view
  */
 function hosting_server_listing() {
   $services = hosting_server_services();
@@ -657,4 +651,14 @@ function hosting_get_servers($service) {
   }
   drupal_alter('hosting_servers_titles', $return, $service);
   return $return;
+}
+
+/**
+ * Views integration
+ */
+function hosting_server_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'hosting_server'),
+  );
 }

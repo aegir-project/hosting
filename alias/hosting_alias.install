@@ -82,3 +82,23 @@ function hosting_alias_update_6203() {
   db_change_field($ret, 'hosting_site_alias', 'redirection', 'redirection', $spec);
   return $ret;
 }
+
+/**
+* Fixup redirection data after table change in hosting_alias_update_6203()
+*/
+function hosting_alias_update_6204() {
+  $ret = array();
+  $result = db_query("SELECT `nid` FROM {hosting_site_alias} WHERE `redirection`=1");
+  while ($obj = db_fetch_object($result)) {
+    $node = node_load($obj->nid);
+    if (is_object($node)) {
+      $node->redirection = $node->title;
+      hosting_alias_update($node);
+
+      // Run a verify task to update the vhost
+      hosting_add_task($node->nid, 'verify');
+    }
+  }
+
+  return $ret;
+}

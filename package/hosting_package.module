@@ -38,54 +38,10 @@ function hosting_package_node_info() {
 }
 
 /**
- * Implements hook_menu().
+ * @todo document this function
  */
-function hosting_package_menu() {
-  $items = array();
-
-  $items['node/%hosting_package_wildcard/packages'] = array(
-    'title' => 'Packages',
-    'description' => 'List of packages available for this platform',
-    'page callback' => 'hosting_package_list',
-    'page arguments' => array(1),
-    'type' => MENU_LOCAL_TASK,
-    'access arguments' => array('view package'),
-    'weight' => 1,
-  );
-  $items['node/%hosting_package_wildcard/packages/all'] = array(
-    'title' => 'All packages',
-    'description' => 'List of all packages',
-    'page callback' => 'hosting_package_list',
-    'page arguments' => array(1),
-    'access arguments' => array('view package'),
-    'type' => MENU_DEFAULT_LOCAL_TASK,
-    'weight' => -1,
-  );
-  $x = 0;
-  foreach (_hosting_package_types() as $type => $description) {
-    $items['node/%hosting_package_wildcard/packages/' . $type] = array(
-      'title' => $description,
-      'description' => $description,
-      'page callback' => 'hosting_package_list',
-      'page arguments' => array(1, $type),
-      'access arguments' => array('view package'),
-      'type' => MENU_LOCAL_TASK,
-      'weight' => $x++,
-    );
-  }
-  return $items;
-}
-
-/**
- * Menu wildcard loader callback.
- *
- * Loads a hosting_site or hosting_platform node.
- * @see hosting_package_menu().
- *
- * @arg $arg a numeric nid
- */
-function hosting_package_wildcard_load($arg) {
-  if (!is_numeric($arg)) {
+function hosting_package_node_load($arg) {
+ if (!is_numeric($arg)) {
     return FALSE;
   }
   if ($node = node_load($arg)) {
@@ -122,6 +78,7 @@ function hosting_package_permission() {
 
 /**
  * Implements hook_node_access().
+ * @todo: check that we don't want to manage this through node_grants.
  */
 function hosting_package_node_access($node, $op, $account) {
   switch ($op) {
@@ -142,6 +99,9 @@ function hosting_package_node_access($node, $op, $account) {
   }
 }
 
+/**
+ * @todo document this function
+ */
 function hosting_get_profiles($platform = NULL, $field = 'title') {
   $profiles = array();
   if (!is_null($platform)) {
@@ -170,6 +130,9 @@ function hosting_get_profiles($platform = NULL, $field = 'title') {
   return $profiles;
 }
 
+/**
+ * @todo document this function
+ */
 function hosting_get_profile_platforms($profile, $check_old_short_name = FALSE) {
   $defaults = array('default', 'standard', 'minimal', 'testing');
 
@@ -206,6 +169,9 @@ function hosting_get_profile_platforms($profile, $check_old_short_name = FALSE) 
   return $platforms;
 }
 
+/**
+ * @todo document this function
+ */
 function hosting_get_profile_languages($profile = NULL, $platform = NULL) {
   $languages['en'] = _hosting_language_name('en');
   if ($profile && $platform) {
@@ -256,6 +222,9 @@ function _hosting_package_load($param) {
   return NULL;
 }
 
+/**
+ * @todo document this function
+ */
 function hosting_get_packages_by_type($type) {
   $result = db_query("SELECT nid FROM {hosting_package} WHERE package_type = :package_type", array(':package_type' => $type));
 
@@ -265,21 +234,35 @@ function hosting_get_packages_by_type($type) {
   return FALSE;
 }
 
+/**
+ * @todo document this function
+ */
 function hosting_get_default_profile($default = NULL) {
-  if ($p = hosting_get_package(variable_get('hosting_default_profile', 'standard'))) {
+  if ($p = hosting_get_package(variable_get('hosting_default_profile', 'standard'), 'profile')) {
     return $p->nid;
   }
-  elseif ($p = hosting_get_package('standard')) {
+  elseif ($p = hosting_get_package('standard', 'profile')) {
     return $p->nid;
   }
-  elseif ($p = hosting_get_package('default')) {
+  elseif ($p = hosting_get_package('default', 'profile')) {
     return $p->nid;
   }
   return $default;
 }
 
-function hosting_get_package($short_name) {
-  $result = db_query("SELECT nid FROM {hosting_package} WHERE short_name = :short_name", array(':short_name' => $short_name));
+/**
+ * @todo document this function
+ */
+function hosting_get_package($short_name, $type) {
+  $result = db_query("SELECT nid
+                      FROM {hosting_package}
+                      WHERE short_name = :short_name
+                      AND package_type = :type
+                     ", array(
+                       ':short_name' => $short_name,
+                       ':type' => $type,
+                      )
+                    );
   if ($nid = $result->fetchField()) {
     return node_load($nid);
   }
@@ -327,6 +310,9 @@ function hosting_package_update($node) {
   }
 }
 
+/**
+ * @todo document this function
+ */
 function hosting_nodeapi_package_delete_revision(&$node) {
   db_delete('hosting_package')
     ->condition('vid', $node->vid)
@@ -380,99 +366,7 @@ function hosting_package_view($node, $teaser = FALSE, $page = FALSE) {
   }
   $node->content['info']['#suffix'] = '</div>';
 
-  if ($node->package_type == 'profile') {
-    $node->content['sites_view'] = array(
-      '#type' => 'item',
-      '#markup' => drupal_render(drupal_get_form('hosting_site_list_form', 'profile', $node->nid)),
-      '#prefix' => '<div id="hosting-site-list">',
-      '#suffix' => '</div>',
-      '#weight' => 10,
-    );
-  }
-  else { // For modules & themes
-    $node->content['hosting-package-usage'] = array(
-      '#prefix' => '<div id="hosting-package-usage">',
-      '#suffix' => '</div>',
-      '#markup' => drupal_render(_hosting_package_list_package_usage($node)),
-      '#weight' => 99,
-    );
-  }
   return $node;
-}
-
-/**
- * Return a themed table showing where a package is used.
- */
-function _hosting_package_list_package_usage($node) {
-  $header = array(
-    array(
-      'data' => t('Package version'),
-      'field' => 'package_version',
-      'sort' => 'DESC',
-    ),
-    array(
-      'data' => t('Platform'),
-      'field' => 'platform_name',
-    ),
-    array(
-      'data' => t('Site'),
-      'field' => 'site_name',
-    ),
-  );
-/*
-  $sql = "SELECT s.client AS client_nid,
-            n2.title AS platform_name,
-            s.platform AS platform_nid,
-            n.title AS site_name,
-            n.nid AS site_nid,
-            pi.version AS package_version
-          FROM {node} AS n
-            LEFT JOIN {hosting_package_instance} AS pi ON (pi.rid = n.nid)
-            LEFT JOIN {hosting_package} AS p ON (p.nid = pi.package_id)
-            LEFT JOIN {hosting_site} AS s ON (s.nid = n.nid)
-            LEFT JOIN {node} AS n2 ON (n2.nid = s.platform)
-          WHERE pi.status=1 AND s.status >= " . HOSTING_SITE_DISABLED . " AND pi.package_id=%d";
-
-  $sql .= tablesort_sql($header);
-  $result = pager_query(db_rewrite_sql($sql, 'n'), 100, 2, null, array($node->nid));
-*/
-  // TODO: Validate conversion to DBTNG.
-  $query = db_select('node', 'n')
-    ->extend('PagerDefault')
-    ->extend('TableSort');
-  $query->join('hosting_package_instance', 'pi', 'pi.rid = n.nid');
-  $query->join('hosting_package', 'p', 'p.nid = pi.package_id');
-  $query->join('hosting_site', 's', 's.nid = n.nid');
-  $query->join('node', 'n2', 'n2.nid = s.platform');
-  $query = $query->element(2);
-  $query->addField('s', 'client', 'client_nid');
-  $query->addField('n2', 'title', 'platform_name');
-  $query->addField('s', 'platform', 'platform_nid');
-  $query->addField('n', 'title', 'site_name');
-  $query->addField('n', 'nid', 'site_nid');
-  $query->addField('pi', 'version', 'package_version');
-  $query = $query
-    ->condition('pi.status', 1)
-    ->condition('s.status', HOSTING_SITE_DISABLED, '>=')
-    ->condition('pi.package_id', $node->nid)
-    ->limit(100)
-    ->orderByHeader($header)
-    ->addTag('node_access');
-  $result = $query->execute();
-
-  if (!$result) {
-    return t('No packages are associated with @reference', array('@reference' => $node->title));
-  }
-  $rows = array();
-  while ($package = $result->fetch()) {
-    $rows[] = array('data' => array(
-        $package->package_version,
-        l(filter_xss($package->platform_name), 'node/' . $package->platform_nid),
-        l(filter_xss($package->site_name), 'node/' . $package->site_nid),
-      ));
-  }
-
-  return theme('table', array('header' => $header, 'rows' => $rows)) . theme('pager', array('tags' => NULL, 'element' => 2));
 }
 
 /**
@@ -493,13 +387,18 @@ function _hosting_language_names($languages) {
   return $return;
 }
 
+/**
+ * @todo document this function
+ */
 function _hosting_language_name($language) {
   include_once DRUPAL_ROOT . '/includes/iso.inc';
   $locales = _locale_get_predefined_list();
   return $locales[$language][0] . (isset($locales[$language][1]) ? ' ' . t('(@language)', array('@language' => $locales[$language][1])) : '');
 }
 
-
+/**
+ * @todo document this function
+ */
 function _hosting_package_plural_map($key = NULL) {
   static $plural_map = array(
     'modules' => 'module',
@@ -525,7 +424,7 @@ function hosting_package_sync(&$data) {
     $type = _hosting_package_plural_map($plural);
     foreach ($packages as $short_name => $file) {
       $name = isset($file['info']['name']) ? $file['info']['name'] : $short_name;
-      if (!($package = hosting_get_package($short_name))) {
+      if (!($package = hosting_get_package($short_name, $type))) {
         // Create a new package.
         $package = new stdClass();
         $package->type = 'package';
@@ -555,96 +454,11 @@ function hosting_package_sync(&$data) {
 }
 
 /**
- * Display a list of packages associated to a node
- * @TODO Add ability to filter by additional fields
- * @TODO Add paging.
- */
-function hosting_package_list($ref, $type = NULL) {
-  drupal_set_title(t('Packages on @reference', array('@reference' => $ref->title)), PASS_THROUGH);
-  $header = array(
-    array(
-      'data' => t('Status'),
-      'field' => 'status',
-      'sort' => 'DESC',
-    ),
-    array(
-      'data' => t('Package'),
-      'field' => 'short_name',
-    ),
-    array(
-      'data' => t('Release'),
-      'field' => 'version',
-    ),
-    array(
-      'data' => t('Package type'),
-      'field' => 'package_type',
-    ),
-  );
-/*
-  $args[] = $ref->nid;
-
-  if (!is_null($type)) {
-    $cond = " AND h.package_type = '%s'";
-    $args[] = $type;
-  }
-
-  $sql = "SELECT h.nid as 'package', i.status, h.short_name, i.version, h.package_type, i.status FROM {hosting_package} h
-    LEFT JOIN {hosting_package_instance} i ON i.package_id=h.nid WHERE i.rid=%d" . $cond;
-  $sql .= tablesort_sql($header);
-  $result = pager_query(db_rewrite_sql($sql, 'h'), 25, 2, null, $args);
-*/
-  // TODO: Validate conversion to DBTNG.
-  $query = db_select('hosting_package', 'h')
-    ->extend('PagerDefault')
-    ->extend('TableSort');
-  $query->join('hosting_package_instance', 'i', 'i.package_id=h.nid');
-  $query = $query->element(2);
-  $query->addField('h', 'nid', 'package');
-  $query = $query
-    ->fields('i', array('status', 'version'))
-    ->fields('h', array('short_name', 'package_type'))
-    ->condition('i.rid', $ref->nid);
-  if (!is_null($type)) {
-    $query = $query->condition('h.package_type', $type);
-  }
-  $query = $query
-    ->limit(25)
-    ->orderByHeader($header)
-    ->addTag('node_access');
-  // @TODO hide deleted sites
-  $result = $query->execute();
-
-  $view_package_perm = user_access('view package');
-
-  if (!$result) {
-    return t('No packages are associated with @reference', array('@reference' => $ref->title));
-  }
-  $rows = array();
-  while ($package = $result->fetch()) {
-    $row_class = ($package->status == 1) ? 'hosting-success' : 'hosting-info';
-    $row = array();
-    $row[] =  array(
-      'data' => ($package->status) ? t('Enabled') : t('Available'),
-      'class' => array('hosting-status'),
-    );
-    $row[] =  ($view_package_perm) ? l(filter_xss($package->short_name), 'node/' . $package->package) : $package->short_name;
-    $row[] =  $package->version;
-    $row[] = filter_xss($package->package_type);
-    $rows[] = array(
-      'data' => $row,
-      'class' => array($row_class),
-    );
-  }
-
-  return theme('table', array('header' =>   $header, 'rows' => $rows, 'attributes' => array('class' => array('hosting-table')))) . theme('pager', array('tags' => NULL, 'element' => 2));
-}
-
-/**
  * Implements hook_views_api().
  */
 function hosting_package_views_api() {
   return array(
-    'api' => 2,
-    'path' => drupal_get_path('module', 'hosting_package'),
+    'api' => 3,
+    'path' => drupal_get_path('module', 'hosting_package') . '/views',
   );
 }

@@ -196,19 +196,21 @@ function hosting_client_disabling($set = NULL) {
   return $disabling;
 }
 
-
 /**
  * Implements hook_node_grants().
  */
-function hosting_node_grants($account, $op) {
+function hosting_client_node_grants($account, $op) {
   $account->client_id = hosting_get_client_from_user($account->uid);
-  $types = array_merge(hosting_feature_node_types(), array('site', 'task', 'package', 'client'));
+  $types = hosting_feature_node_types();
   foreach ($types as $type) {
-    if (user_access("administer {$type}s")) {
-      $grants["hosting {$type}"] = array(1);
+    if (user_access('administer ' . $type . 's', $account)) {
+      $grants['hosting ' . $type] = array(1);
     }
-    elseif (user_access("$op $type")) {
+    elseif (user_access($op . ' ' . $type, $account)) {
       // TODO: restrict access to certain op-type based on the user relationship to this client - see content of $client_relations
+      $grants['hosting ' . $type] = array_keys($account->client_id);
+    }
+    elseif ($op == 'update' && user_access('edit ' . $type, $account)) {
       $grants['hosting ' . $type] = array_keys($account->client_id);
     }
   }
@@ -254,15 +256,13 @@ function hosting_client_node_access_records($node) {
       break;
     case 'platform':
       $base_grant['gid'] = HOSTING_ADMIN_CLIENT;
-      /*
-       if (sizeof($node->clients)) {
-       foreach ($node->clients as $cid => $client) {
-       if ($cid != HOSTING_ADMIN_CLIENT) {
-       $grants[] = array_merge($base_grant, array('gid' => $cid, 'grant_update' => 0));
-       }
-       }
-       }
-       */
+      if (isset($node->clients)) {
+        foreach ($node->clients as $cid => $client) {
+          if ($cid != HOSTING_ADMIN_CLIENT) {
+            $grants[] = array_merge($base_grant, array('gid' => $cid, 'grant_update' => FALSE));
+          }
+        }
+      }
       break;
     default:
       //Not hosting node, don't change access.

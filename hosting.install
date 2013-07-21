@@ -390,3 +390,106 @@ function hosting_update_6015(&$sandbox) {
 
   return $ret;
 }
+
+/**
+ * Replace lists with Views.
+ */
+function hosting_update_6201() {
+  $ret = array();
+
+  // Remove menu links that will be replaced by Views
+  menu_link_delete(NULL, 'hosting/platforms');
+  menu_link_delete(NULL, 'hosting/sites');
+
+  // Enable and install Views and Views Bulk operations.
+  drupal_install_modules(array('views', 'views_bulk_operations'));
+
+  // Flush all Drupal caches.
+  drupal_flush_all_caches();
+
+  // Temporarily enable Install Profile API module and load includes.
+  module_enable(array('install_profile_api'));
+  drupal_load('module', 'install_profile_api');
+  install_include(array('block'));
+
+  // Enable blocks.
+  $theme = 'eldir';
+  install_set_block('views', 'hosting_task_list-block' , $theme, 'right', 0);
+  install_set_block('views', '-exp-hosting_site_list-page_sites' , $theme, 'content_top', 0, 1, 'hosting/sites');
+  install_set_block('views', 'hosting_site_list-block_platform' , $theme, 'content_bottom', 0, 1, 'hosting/c/platform_*');
+  install_set_block('views', 'hosting_site_list-block_profile' , $theme, 'content_bottom', 0, 2, "<?php\n\$node = menu_get_object();\nif (!empty(\$node)) {\n  return \$node->package_type == 'profile';\n}\n?>");
+  install_set_block('views', 'hosting_site_list-block_client' , $theme, 'content_bottom', 0, 2, "<?php\n\$node = menu_get_object();\nif (!empty(\$node)) {\n  return \$node->type == 'client';\n}\n?>");
+
+  module_disable(array('install_profile_api'));
+
+  return $ret;
+}
+
+/**
+ * Provide a welcome message for anonymous users.
+ */
+function hosting_update_6202() {
+  $ret = array();
+
+  // Flush the menu cache.
+  menu_rebuild();
+
+  return $ret;
+}
+
+/**
+ * Delete hosting features junk variables.
+ */
+function hosting_update_6203() {
+  $ret = array();
+
+  $features = hosting_get_features(TRUE);
+  foreach ($features as $feature => $info) {
+    if (variable_get($feature, FALSE) != FALSE) {
+      variable_del($feature);
+    }
+  }
+}
+
+/**
+ * Create new roles.
+ */
+function hosting_update_6204() {
+  $ret = array();
+
+  // Temporarily enable Install Profile API module and load includes.
+  module_enable(array('install_profile_api'));
+  module_load_include('inc', 'install_profile_api', 'core/user');
+
+  install_remove_permissions(install_get_rid('aegir client'), array('access all views'));
+
+  install_add_role('aegir platform manager');
+  install_add_permissions(install_get_rid('aegir platform manager'), array('create clone task', 'create migrate task', 'create platform', 'delete platform', 'edit platform', 'view locked platforms', 'view platform', 'create site', 'delete site', 'edit site', 'view site', 'access task logs', 'create lock task', 'create unlock task', 'view revisions', 'search content', 'use advanced search'));
+  install_add_role('aegir administrator');
+  install_add_permissions(install_get_rid('aegir administrator'), array('access disabled sites', 'access hosting wizard', 'administer hosting', 'administer hosting features', 'administer hosting queues', 'administer hosting settings', 'administer hosting aliases', 'create site aliases', 'administer clients', 'create client', 'delete own client', 'edit client uname', 'edit client users', 'edit own client', 'view client', 'create clone task', 'create migrate task', 'create package', 'delete package', 'edit package', 'view package', 'create platform', 'delete platform', 'edit platform', 'view locked platforms', 'view platform', 'edit all quotas', 'view all quotas', 'view own quota', 'create server', 'delete server', 'edit server', 'view server', 'access hosting signup form', 'administer sites', 'create site', 'delete site', 'edit site', 'view site', 'create ssl certificate', 'access task logs', 'administer tasks', 'cancel own tasks', 'create backup task', 'create backup-delete task', 'create delete task', 'create disable task', 'create enable task', 'create lock task', 'create login-reset task', 'create restore task', 'create unlock task', 'create verify task', 'retry failed tasks', 'view own tasks', 'view task'));
+
+  module_disable(array('install_profile_api'));
+
+  return $ret;
+}
+
+/**
+ * Add permissions to roles.
+ */
+function hosting_update_6205() {
+  $ret = array();
+
+  // Temporarily enable Install Profile API module and load includes.
+  module_enable(array('install_profile_api'));
+  module_load_include('inc', 'install_profile_api', 'core/user');
+
+  install_add_permissions(install_get_rid('aegir client'), array('view own quota', 'create site aliases', 'create verify task', 'create clone task', 'create migrate task', 'create ssl certificate', 'access task logs', 'view package', 'view platform', 'view revisions', 'edit site'));
+  install_add_permissions(install_get_rid('aegir account manager'), array('administer clients', 'access content', 'access user profiles', 'edit all quotas', 'view all quotas', 'view own quota', 'edit client uname', 'view_site'));
+  install_add_permissions(install_get_rid('aegir platform manager'), array('view package', 'administer platforms', 'cancel own tasks', 'view own tasks', 'access content', 'view task', 'administer sites', 'create verify task', 'retry failed tasks', 'administer clients', 'administer tasks'));
+  install_add_permissions(install_get_rid('aegir administrator'), array('access administration menu', 'administer platforms', 'administer servers', 'access content', 'view revisions', 'administer hosting aliases', 'create site aliases', 'edit all quotas', 'view all quotas', 'view own quota', 'access hosting signup form', 'create ssl certificate', 'access user profiles', 'update status of tasks'));
+
+  module_disable(array('install_profile_api'));
+
+  return $ret;
+}
+

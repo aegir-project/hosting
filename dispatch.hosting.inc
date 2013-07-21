@@ -43,7 +43,7 @@ function drush_hosting_dispatch() {
             }
             else {
               drush_log(dt("found @running running tasks, starting @count out of @max items", array('@running' => $info['running_items'], '@count' => $count, '@max' => $info['calc_items'])));
-              drush_invoke_process('@self', "hosting-" . $queue, array(), array('items' => $count, 'invoke' => TRUE), array('fork' => TRUE));
+              drush_invoke_process('@self', "hosting-" . $queue, array(), array('items' => $count, 'strict' => FALSE), array('fork' => TRUE));
             }
           }
           else {

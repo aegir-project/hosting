@@ -8,13 +8,14 @@
  */
 function hosting_task_menu() {
   $items = array();
-  foreach (array('site', 'platform', 'server') as $type) {
-    if (!($tasks = hosting_available_tasks($type))) {
+  $tasks = hosting_available_tasks();
+  foreach ($tasks as $type => $type_tasks) {
+    if (empty($type_tasks)) {
       // this is to workaround problems in the upgrade path where the
       // hook returns nothing (e.g. for server)
       continue;
     }
-    foreach ($tasks as $task => $info) {
+    foreach ($type_tasks as $task => $info) {
       if (empty($info['hidden'])) {
         $path = sprintf("hosting_confirm/%%hosting_%s_wildcard/%s_%s", $type, $type, $task);
         $items[$path] = array(
@@ -97,16 +98,12 @@ function hosting_task_log_ajax($node, $last_position, $id) {
     $url = url('hosting/task/log/ajax/' . $node->nid . '/' . $last_position);
   }
 
-
   if (!empty($table)) {
     unset($table['#header']);
     $commands[] = hosting_task_ajax_command_hosting_table_append('#' . $id, drupal_render($table));
   }
 
-
   $commands[] = hosting_task_ajax_command_hosting_table_check('#' . $id, $url);
-
-
 
   return array(
     '#type' => 'ajax',
@@ -149,8 +146,12 @@ function hosting_task_ajax_list($node) {
  * @see http://drupal.org/node/1354
  */
 function hosting_task_ajax_queue() {
-  $return['markup'] = hosting_task_queue_block();
-  drupal_json_output($return);
+  $view = views_get_view('hosting_task_list');
+  $view->set_display('block');
+  $view->pre_execute();
+  $return['markup'] = $view->render('block');
+
+  drupal_json($return);
   exit();
 }
 
@@ -332,7 +333,12 @@ function hosting_task_node_info() {
  * Implements hook_node_access().
  */
 function hosting_task_node_access($node, $op, $account) {
-  if (user_access('administer tasks', $account)) {
+  if (hosting_feature('client')) {
+    // we rely on hosting_node_grants() instead of global configuration
+    return NULL;
+  }
+
+  if(user_access('administer tasks', $account)) {
     return NODE_ACCESS_ALLOW;
   }
 }
@@ -405,6 +411,10 @@ function hosting_task_permission() {
     'cancel own tasks' => array(
       'title' => t('cancel own tasks'),
       'description' => t('TODO Add a description for \'cancel own tasks\''),
+    ),
+    'update status of tasks' => array(
+      'title' => t('update status of tasks'),
+      'description' => t('TODO Add a description for \'update status of tasks\''),
     ),
   );
 }
@@ -489,6 +499,15 @@ function hosting_add_task($nid, $type, $args = NULL, $status = HOSTING_TASK_QUEU
 
   $task = hosting_get_most_recent_task($nid, $type);
 
+  // Guard against destructive tasks run on the hostmaster site
+  // @todo confirm that we're just getting the nid field back, and not an object
+  $hostmaster_nid = db_query('SELECT site.nid FROM hosting_site site JOIN hosting_package_instance pkgi ON pkgi.rid=site.nid JOIN hosting_package pkg ON pkg.nid=pkgi.package_id WHERE pkg.short_name="hostmaster"')->fetch();
+  if ($nid == $hostmaster_nid && in_array($type, array('delete', 'disable'))) {
+    drupal_set_message(t('You cannot !task the Hostmaster site.', array('!task' => $type)), 'warning');
+    watchdog('hostmaster', t('Attempt to !task the Hostmaster site blocked.', array('!task' => $type)), array(), WATCHDOG_WARNING);
+    return FALSE;
+  }
+
   $node = db_query("SELECT nid, uid, title FROM {node} WHERE nid = :nid", array(':nid' => $nid))->fetch();
   if (!$task) {
     $task = new stdClass();
@@ -555,7 +574,8 @@ function hosting_task_confirm_form($form, $form_state, $node, $task) {
     $form['#func_param_2'] = $task;
   }
   $question = t("Are you sure you want to @task @object?", array('@task' => $task, '@object' => $node->title));
-  $form = confirm_form($form, $question, 'node/' . $node->nid, '', $tasks[$task]['title']);
+  $path = !empty($_REQUEST['destination'])? $_REQUEST['destination']: 'node/' . $node->nid;
+  $form = confirm_form($form, $question, $path, '', $tasks[$task]['title']);
 
   // add an extra class to the actions to allow us to disable the cancel link via javascript for the modal dialog
 
@@ -648,7 +668,7 @@ function hosting_tasks_queue($count = 20) {
   drush_log(dt("Running tasks queue"));
   $tasks = _hosting_get_new_tasks($count);
   foreach ($tasks as $task) {
-    drush_invoke_process('@self', "hosting-task", array($task->nid), array('invoke' => TRUE), array('fork' => TRUE));
+    drush_invoke_process('@self', "hosting-task", array($task->nid), array('strict' => FALSE), array('fork' => TRUE));
   }
 }
 
@@ -878,6 +898,33 @@ function hosting_task_retry_form_submit($form, &$form_state) {
 }
 
 /**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
+function hosting_task_update_status_form($form_state, $vid) {
+  $form['#prefix'] = '<div class="hosting-task-retry">';
+  $form['task'] = array(
+    '#type' => 'hidden',
+    '#default_value' => $vid
+  );
+  $form['update-status'] = array(
+    '#type' => 'submit',
+    '#value' => t('Update status')
+  );
+  $form['#suffix'] = '</div>';
+  return $form;
+}
+
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
+function hosting_task_update_status_form_submit($form, &$form_state) {
+  hosting_task_update_status($form_state['values']['task']);
+  overlay_close_dialog();
+}
+
+/**
  * Implements hook_view().
  */
 function hosting_task_view($node, $teaser = FALSE, $page = FALSE) {
@@ -946,6 +993,14 @@ function hosting_task_view($node, $teaser = FALSE, $page = FALSE) {
   if (user_access('retry failed tasks') && ($node->task_status == HOSTING_TASK_ERROR)) {
     $node->content['retry'] = array(
       'form' => drupal_get_form('hosting_task_retry_form', $node->nid),
+      '#weight' => 5,
+    );
+  }
+
+  if (user_access('update status of tasks') && ($node->task_status == HOSTING_TASK_PROCESSING)) {
+    $node->content['update-status'] = array(
+      '#type' => 'markup',
+      '#value' => drupal_get_form('hosting_task_update_status_form', $node->vid),
       '#weight' => 5,
     );
   }
@@ -1024,29 +1079,35 @@ function _hosting_task_log_table($node, $last_position = 0) {
 }
 
 /**
- * Map entry statuses to coincide.
+ * Map entry statuses to coincide with our CSS classes.
  *
  * @todo make this irrelevant.
+ * @see _drush_print_log().
  */
 function _hosting_task_log_class($type) {
   switch (strtolower($type)) {
-    case "warning":
-      $type = "warning";
+    case 'warning':
+    case 'cancel':
+    case 'rollback':   // aegir-specific
+      $type = 'warning';
       break;
-    case "error":
-    case "failed":
-      $type = "error";
+    case 'failed':
+    case 'error':
+      $type = 'error';
       break;
-    case "queue":
-      $type = "queue";
+    case 'queue':   // aegir-specific
+      $type = 'queue';
       break;
-    case "command":
-    case "notice":
-      $type = "info";
-      break;
-    default:
+    case 'ok':
+    case 'completed':
+    case 'success':
       $type = 'success';
       break;
+    case 'notice':
+    case 'info':
+    case 'message':
+    default:
+      $type = 'info';
   }
 
   return 'hosting-' . $type;
@@ -1119,7 +1180,19 @@ function hosting_get_tasks($filter_by = NULL, $filter_value = NULL, $count = 5, 
  */
 function _hosting_get_new_tasks($limit = 20) {
   $return = array();
-  $result = db_query_range("SELECT t.nid FROM {hosting_task} t INNER JOIN {node} n ON t.vid = n.vid WHERE t.task_status = :task_status GROUP BY t.rid ORDER BY n.changed, n.nid ASC", 0, $limit, array(':task_status' => 0));
+  $result = db_query_range("SELECT t.nid
+    FROM {hosting_task} t
+    INNER JOIN {node} n
+    ON t.vid = n.vid
+    WHERE t.task_status = :task_status
+    GROUP BY t.rid
+    ORDER BY n.changed, n.nid ASC
+    LIMIT :limit",
+    array(
+      ':task_status' => HOSTING_TASK_QUEUED,
+      ':limit' => $limit,
+    )
+  );
   foreach ($result as $node) {
     $return[$node->nid] = node_load($node->nid);
   }
@@ -1137,7 +1210,6 @@ function _hosting_get_new_tasks($limit = 20) {
  * The task is being processed
  */
 define('HOSTING_TASK_PROCESSING', -1);
-
 
 /**
  * The task is queued
@@ -1161,7 +1233,6 @@ define('HOSTING_TASK_ERROR', 2);
  */
 define('HOSTING_TASK_WARNING', 3);
 
-
 /**
  * @} End of "name Error status definitions".
  */
@@ -1169,14 +1240,22 @@ define('HOSTING_TASK_WARNING', 3);
 /**
  * Turn bitmask integer error code into associative array
  */
-function _hosting_parse_error_code($code) {
-  $messages = array(
+function _hosting_task_error_codes() {
+  $codes = array(
     HOSTING_TASK_SUCCESS => t('Successful'),
     HOSTING_TASK_QUEUED => t('Queued'),
     HOSTING_TASK_ERROR => t('Failed'),
     HOSTING_TASK_PROCESSING => t('Processing'),
     HOSTING_TASK_WARNING => t('Warning'),
   );
+  return $codes;
+}
+
+/**
+ * Turn bitmask integer error code into translatable label.
+ */
+function _hosting_parse_error_code($code) {
+  $messages = _hosting_task_error_codes();
   return $messages[$code];
 }
 
@@ -1250,7 +1329,6 @@ function hosting_task_queue_block() {
       'class' => array('hosting-status'),
     );
 
-
     $log_button = _hosting_task_button(t('View'), 'hosting/task/' . $node->nid, t("Display the task log"), 'hosting-button-log', isset($node->nid) &&  user_access('access task logs'), TRUE, FALSE);
 
     $row['actions'] = array(
@@ -1276,7 +1354,6 @@ function hosting_task_queue_block() {
  */
 function hosting_task_table($node) {
   $output = '';
-
 
   $headers[] = t('Task');
   $headers[] = array(
@@ -1322,6 +1399,10 @@ function hosting_task_table($node) {
   return $output;
 }
 
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function _hosting_task_button($title, $link, $description, $class = '', $status = TRUE, $dialog = FALSE, $add_token = TRUE) {
   global $user;
 
@@ -1505,7 +1586,7 @@ function hosting_task_status_class($status = NULL) {
  */
 function hosting_task_views_api() {
   return array(
-    'api' => 2,
+    'api' => 3,
     'path' => drupal_get_path('module', 'hosting_task'),
   );
 }
@@ -1524,3 +1605,80 @@ function hosting_task_overlay_paths() {
   );
   return $paths;
 }
+
+/**
+ * Implements hook_preprocess_views_view_table().
+ */
+function hosting_task_preprocess_views_view_table(&$vars) {
+  $id = "{$vars['view']->name}-{$vars['view']->current_display}";
+
+  switch ($id) {
+    case 'hosting_task_list-block':
+      modalframe_parent_js();
+      drupal_add_js(drupal_get_path('module','hosting_task') . '/hosting_task.js');
+
+      $settings['hostingTaskRefresh'] = array(
+        'queueBlock' => 1
+      );
+      drupal_add_js($settings, 'setting');
+      break;
+  }
+}
+
+/**
+ * Set a task's status according to its log.
+ *
+ * @param (optional) A task object or the revision ID of a task node.
+ *
+ * @return The task's status error code.
+ */
+function hosting_task_update_status($task = NULL) {
+  if (is_null($task)) {
+    $task = drush_get_context('HOSTING_TASK');
+  }
+  if (is_numeric($task)) {
+    $vid = $task;
+  }
+  else {
+    $vid = $task->vid;
+  }
+
+  $update = hosting_task_parse_log($vid);
+  db_query('UPDATE {hosting_task} SET task_status=%d WHERE vid = %d', $update, $vid);
+  return $update;
+}
+
+/**
+ * Post task's status update
+ */
+function _hosting_task_update_status() {
+  $task = drush_get_context('HOSTING_TASK');
+  if (!empty($task)) {
+    $message = _hosting_parse_error_code(hosting_task_update_status());
+    drush_log(dt('Updated task status to "!log"', array('!log' => $message)), 'info');
+  }
+}
+
+/**
+ * Parse a task's log, and return its status accordingly.
+ *
+ * @param The revision ID of a task node.
+ *
+ * @return The task's status error code.
+ */
+function hosting_task_parse_log($vid) {
+  // Assume the best
+  $update = HOSTING_TASK_SUCCESS;
+  $result = db_query('SELECT type FROM {hosting_task_log} WHERE vid = %d', $vid);
+  while ($status = db_result($result)) {
+    if ($status == 'error' || $status == 'failed') {
+      $update = HOSTING_TASK_ERROR;
+    }
+    // Don't override a pre-existing error
+    elseif ($update != HOSTING_TASK_ERROR && $status == 'warning') {
+      $update = HOSTING_TASK_WARNING;
+    }
+  }
+  return $update;
+}
+

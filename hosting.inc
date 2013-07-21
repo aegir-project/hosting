@@ -30,8 +30,28 @@ function _hosting_valid_ip($hostname) {
  *   valid.
  */
 function _hosting_valid_fqdn($fqdn) {
-  # regex is an implementation of RFC1035
+  // regex is an implementation of RFC1035, a little relaxed to allow
+  // commonly registered hostnames (e.g. domaines starting with digits)
   return preg_match("/^([a-z0-9]([a-z0-9-]*[a-z0-9])?\.?)+$/i", $fqdn);
+}
+
+/**
+ * Check if the FQDN provided is valid.
+ *
+ * This is a different function because wildcards are not part of the
+ * RFC and may not be allowed everywhere. For example, the main site
+ * title shouldn't have a wildcard entry.
+ *
+ * @param $fqdn
+ *   The Fully Qualified Domain Name (FQDN) to validate.
+ * @return
+ *   An integer greater than 0 if the $fqdn is valid, or 0 or FALSE if it not
+ *   valid.
+ */
+function _hosting_valid_fqdn_wildcard($fqdn) {
+  // regex is an implementation of RFC1035, but allows "star" for wildcards
+  return preg_match("/^(\*\.)?([a-z0-9]([a-z0-9-]*[a-z0-9])?\.?)+$/i", $fqdn) &&
+    !preg_match("/^(\*\.)[^.]*$/", $fqdn); // don't allow wildcards on TLDs
 }
 
 /**

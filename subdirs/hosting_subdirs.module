@@ -1,0 +1,52 @@
+<?php
+
+/**
+ * @file
+ *   Allow sites to be installed in subdirectories.
+ */
+
+/**
+ * Implements hook_form_alter().
+ */
+function hosting_subdirs_form_alter(&$form, &$form_state, $form_id) {
+  if($form_id == 'site_node_form') {
+    $form['aliases_wrapper']['#description'] .= 'To create a site using a subdirectory, enter one of more aliases here (e.g., example.com/foo, example.com/bar). Redirection to one of these will also work. This is useful if you do not want the site to be accessible from its subdomain (e.g., foo.example.com).';
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function hosting_subdirs_form_site_node_form_alter(&$form, &$form_state) {
+  $form['title']['#description'] = 'To create a site using a subdirectory, name it using a subdomain (e.g., foo.example.com), and then enter an alias below for the desired subdirectory (e.g., example.com/foo). <strong>N.B. The root domain (e.g., example.com) cannot be in use for a subdirectory to work.</strong>';
+}
+
+/**
+ * Implementation of hook_nodeapi().
+ */
+function hosting_subdirs_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+  if ($node->type == 'site') {
+    switch ($op) {
+      case 'validate' :
+        $aliases = $node->aliases;
+        $subdirs = array();
+        foreach ($aliases as $alias) {
+          // If we're adding a subdirectory alias, it can't begin with '/'.
+          if (@strpos($alias, '/', 1)) {
+            $subdirs[$alias] = explode('/', $alias, 2);
+            hosting_alias_validate_alias($node, $subdirs[$alias][0]);
+            // We only support one level of subdirectories, for now.
+            if (@strpos($subdirs[$alias][1], '/')) {
+              form_set_error('aliases', t('Multi-level subdirectories are not currently supported. Check the subdirectory for <em>@alias</em>, which is set to <em>@subdir</em>.', array('@alias' => $alias, '@subdir' => $subdirs[$alias][1])));
+            }
+          }
+          else {
+            // No subdirectory in use, so validate normally.
+            hosting_alias_validate_alias($node, $alias);
+          }
+        }
+        break;
+    }
+  }
+}
+

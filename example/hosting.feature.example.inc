@@ -21,10 +21,13 @@ function hosting_example_hosting_feature() {
     'status' => HOSTING_FEATURE_DISABLED,
     // module to enable/disable alongside feature
     'module' => 'hosting_example',
+    // Callback functions to execute on enabling or disabling this feature
+    'enable' => 'hosting_example_feature_enable_callback',
+    'disable' => 'hosting_example_feature_disable_callback',
     // associate with a specific node type.
     //  'node' => 'nodetype',
-    // which group to display in ( null , experimental )
-    'group' => 'experimental',
-  );
+    // which group to display in ( null , experimental , required )
+    'group' => 'experimental'
+    );
   return $features;
 }

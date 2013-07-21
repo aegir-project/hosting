@@ -42,6 +42,13 @@ function hosting_menu() {
     'type' => MENU_CALLBACK,
   );
 
+  $items['welcome'] = array(
+    'title' => 'Welcome',
+    'page callback' => 'hosting_welcome',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+
   $items['admin/hosting'] = array(
     'title' => 'Hosting',
     'description' => 'Configure and manage the hosting system',
@@ -427,6 +434,33 @@ function hosting_init() {
 
   // Moved from hook_menu()
   drupal_add_css(drupal_get_path('module', 'hosting') . '/hosting.css');
+
+  // Redirect anonymous users to our default welcome page
+  global $user;
+  if (!user_is_logged_in() && php_sapi_name() != 'cli' && drupal_is_front_page()) {
+    drupal_goto('welcome');
+  }
+}
+
+/**
+ * Provide a welcome page for anonymous users.
+ *
+ * To override this page, users should simply change the site_frontpage
+ * setting to point to another page. The translation system can also be used.
+ */
+function hosting_welcome() {
+  drupal_set_title(t('Welcome to Aegir'));
+  $links = array(
+    '@www' => url("http://www.aegirproject.org"),
+    '@libre' => url("https://en.wikipedia.org/wiki/Free_software"),
+    '@community' => url("http://community.aegirproject.org"),
+    '@faq' => url("http://community.aegirproject.org/faq"),
+    '@handbook' => url("http://community.aegirproject.org/handbook"),
+    '@help' => url("http://community.aegirproject.org/help"),
+    '@team' => url("http://community.aegirproject.org/maintainers"),
+    '@irc' => url("irc://irc.freenode.net/aegir"),
+  );
+  return '<div>' . t("The <a href=\"@www\" target=\"_blank\">Aegir hosting system</a> allows developers and site administrators to automate many of the common tasks associated with deploying and managing large websites. Aegir makes it easy to install, upgrade, deploy, and backup an entire network of Drupal sites.<br /><br /> Aegir is a <a href=\"@libre\" target=\"_blank\">free (libre) software</a> project. On the <a href=\"@community\" target=\"_blank\">community site</a> you can find answers to <a href=\"@faq\" target=\"_blank\">frequently asked questions</a>, extensive <a href=\"@handbook\" target=\"_blank\">documentation</a> and other <a href=\"@help\" target=\"_blank\">support resources</a>. The <a href=\"@team\" target=\"_blank\">core team</a> and other users are often available to chat via IRC in <a href=\"@irc\" target=\"_blank\">#aegir</a>.", $links) . '</div>';
 }
 
 /**
@@ -437,6 +471,14 @@ function hosting_theme() {
     'hosting_queues_configure' => array(
       'file' => 'hosting.module',
       'render element' => 'form',
+    ),
+    'hosting_feature_dependencies' => array(
+      'file' => 'hosting.features.inc',
+      'arguments' => array (
+        'dependencies' => NULL,
+        'prefix' => NULL,
+        'features' => NULL,
+      ),
     ),
   );
 }
@@ -503,6 +545,8 @@ function hosting_block_view($delta) {
         'content' => hosting_queue_summary_block(),
       );
   }
+
+  // @todo where is 'hosting_summary'?
 }
 
 /**
@@ -536,25 +580,6 @@ function hosting_queue_summary_block() {
         $disp[] = $title . ": " . $info[$key];
       }
       $output .= theme('item_list', array('items' => $disp, 'title' => $info['name']));
-    }
-    return $output;
-  }
-}
-
-/**
- * Build a block of the hosting queues.
- *
- * @see hosting_TASK_SINGULAR_summary()
- */
-function hosting_queue_block() {
-  if (user_access('access task logs')) {
-    $queues = hosting_get_queues();
-    $output = '';
-    foreach ($queues as $queue => $info) {
-      $func = 'hosting_' . $info['singular'] . '_summary';
-      if (function_exists($func)) {
-        $output .= $func();
-      }
     }
     return $output;
   }
@@ -950,13 +975,25 @@ function hosting_form_alter(&$form, &$form_state, $form_id) {
       // Because these aren't really posts, 'preview' doesn't make sense in
       // this context.
       $form['actions']['preview']['#access'] = FALSE;
+
+      // Add message that verify is required for changes to take effect.
+      if (in_array($type, array('site', 'platform', 'server'))){
+        $form['#submit'][] = 'hosting_form_verify_reqd_submit';
+      }
     }
   }
 }
 
 /**
- * Hosting version of menu_rebuild() from Drupal 6.15.
- *
+ * Submit handler to add a message that verify is required for changes to take effect.
+ * See: https://drupal.org/node/1761932
+ */
+function hosting_form_verify_reqd_submit() {
+  drupal_set_message('Any changes will take effect once the scheduled Verify task has been processed.');
+}
+
+/**
+ * Hosting version of menu_rebuild() from Drupal 6.15
  * This is needed for the upgrade path of a hostmaster platform from
  * 6.15 to 6.16. The Hosting module calls update hooks that run
  * menu_rebuild() which break on a 6.16 platform as the semaphore
@@ -964,6 +1001,8 @@ function hosting_form_alter(&$form, &$form_state, $form_id) {
  * It is considered safe enough to ignore the new locking checks in
  * 6.16's menu_rebuild() to get us past this step to successfully
  * complete the hostmaster-migrate task.
+ *
+ * @todo deprecated? remove?
  */
 function hosting_menu_rebuild() {
   variable_del('menu_rebuild_needed');
@@ -1096,7 +1135,7 @@ function hosting_settings($form, &$form_state) {
   $profiles = array();
   foreach (hosting_get_profiles() as $id => $name) {
     $profile = hosting_package_instance_load(array('p.nid' => $id));
-    $profiles[$profile->short_name] = "{$name} ({$profile->short_name})";
+    $profiles[$profile->short_name] = theme('hosting_site_profile', $profile);
     // Don't allow a site to be provisioned with hostslave or hostmaster profile
     if (in_array($name, array('Hostslave', 'Hostmaster'))) {
       unset($profiles[$profile->short_name]);
@@ -1116,6 +1155,12 @@ function hosting_settings($form, &$form_state) {
     '#title' => t('Hide platforms with non-default profiles'),
     '#description' => t('When selecting a Drupal core profile, hide platforms that also contain other profiles (i.e intended as distributions). Warning: requires a platform other than the Hostmaster platform.'),
     '#default_value' => variable_get('hosting_ignore_default_profiles', FALSE),
+  );
+  $form['hosting_lock_platforms_by_default'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Lock platforms by default on initial creation'),
+    '#description' => t('When verifying a new platform, set its initial state to \'Locked\'. This can avoid having sites created on a new platform before there has been a chance to test it. Those users with the \'create sites on locked platforms\' permission (e.g., with the \'platform manager\' role) will still be able to build sites.'),
+    '#default_value' => variable_get('hosting_lock_platforms_by_default', FALSE),
   );
   $form['hosting_require_disable_before_delete'] = array(
     '#type' => 'checkbox',

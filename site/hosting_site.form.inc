@@ -94,7 +94,7 @@ function _hosting_site_form_pre_render($elements) {
  * fields are available for selection.
  *
  */
-function hosting_site_available_options($node) {
+function hosting_site_available_options($node, $platform = NULL) {
   // cast to object if it's an array.
   $node = (is_array($node)) ? (object) $node : clone $node;
 
@@ -141,11 +141,19 @@ function hosting_site_available_options($node) {
                           ':status' => HOSTING_PLATFORM_ENABLED
                         )
                       );
-    $allowed_plats = _hosting_get_allowed_platforms($user->uid);
+    if (is_null($platform)) {
+      $allowed_plats = _hosting_get_allowed_platforms($user->uid);
+    }
+    else {
+      $allowed_plats = array($platform => $platform);
+    }
     $access_check = FALSE;
 
     foreach ($result as $row) {
-      if (array_key_exists($row->nid, $allowed_plats)) {
+      if (!is_null($platform) && array_key_exists($row->nid, $allowed_plats)) {
+        $platform_profiles[$id] = $name;
+      }
+      elseif (array_key_exists($row->nid, $allowed_plats)) {
         $access_check = TRUE;
       }
       // open access if no platform access has been set
@@ -163,6 +171,9 @@ function hosting_site_available_options($node) {
       unset($profiles[$id]);
     }
   }
+  if (!is_null($platform)) {
+    $profiles = $platform_profiles;
+  }
   reset($profiles);
   $return['profile'] = array_keys($profiles);
 
@@ -171,20 +182,26 @@ function hosting_site_available_options($node) {
   }
 
   // filter the available platforms based on which clients the user has access to.
-  $options = array();
-  $platforms = hosting_get_profile_platforms($node->profile, isset($node->check_profile_migrations) ? $node->check_profile_migrations : FALSE);
-  if (sizeof($platforms)) {
-    foreach ($platforms as $nid => $title) {
-      $platform = node_load($nid);
+  if (!is_null($platform)) {
+    $node->profile = $return['profile'][0];
+    $return['platform'] = array($platform);
+  }
+  else {
+    $options = array();
+    $platforms = hosting_get_profile_platforms($node->profile, isset($node->check_profile_migrations) ? $node->check_profile_migrations : FALSE);
+    if (sizeof($platforms)) {
+      foreach ($platforms as $nid => $title) {
+        $platform = node_load($nid);
 
-      if ($platform->platform_status != HOSTING_PLATFORM_LOCKED) {
-        if (!isset($platform->clients) || sizeof(array_intersect(array_keys($user->client_id), $platform->clients)) || $user->uid == 1) {
-          $options[] = $nid;
+        if ($platform->platform_status != HOSTING_PLATFORM_LOCKED || user_access('create sites on locked platforms')) {
+          if (!isset($platform->clients) || sizeof(array_intersect(array_keys($user->client_id), $platform->clients)) || $user->uid == 1) {
+            $options[] = $nid;
+          }
         }
       }
-    }
 
-    $return['platform'] = $options;
+      $return['platform'] = $options;
+    }
   }
 
   if (!isset($node->platform) || !in_array($node->platform, $return['platform'])) {
@@ -224,24 +241,30 @@ function hosting_site_form($node) {
   ));
 
   $editable = ((!isset($node->client) || $node->nid) || user_access('administer sites')) && hosting_feature('client');
+  $add_client_text = '';
+  if (user_access('administer clients') || user_access('create client')) {
+    $add_client_text = t(' Click !here to add a new client.', array('!here' => l('here', 'node/add/client', array('attributes' => array('target' => '_blank')))));
+  }
   _hosting_site_field($form, $node, 'client', array(
     '#type' => 'textfield',
     '#required' => TRUE,
     '#title' => t('Client'),
     '#default_value' => _hosting_client_site_default($node),
-    '#description' => t('The client who this site belongs to.'),
+    '#description' => t('The client to whom this site belongs.') . $add_client_text,
     '#autocomplete_path' => 'hosting_client/autocomplete/client',
   ), 'filter_xss', $editable);
 
   // Install profiles
   $profiles = hosting_get_profiles();
   foreach ($profiles as $id => $name) {
+    $profile = hosting_package_instance_load(array('p.nid' => $id));
+    $profiles[$id] = theme('hosting_site_profile', $profile, TRUE);
     // Don't allow a site to be provisioned with hostslave or hostmaster profile
     if (in_array($name, array('Hostslave', 'Hostmaster'))) {
       unset($profiles[$id]);
     }
   }
-  asort($profiles);
+  natcasesort($profiles);
   reset($profiles);
 
   _hosting_site_field($form, $node, 'profile', array(
@@ -254,8 +277,6 @@ function hosting_site_form($node) {
     '#required' => TRUE,
     '#attributes' => array('class' => array("hosting-site-form-profile-options")),
   ), '_hosting_node_link');
-
-
 
   _hosting_site_field($form, $node, 'platform', array(
     '#type' => 'radios',
@@ -359,8 +380,19 @@ function hosting_site_form_alter(&$form, &$form_state, $form_id) {
   // Remove delete button from site edit form, unless the site's already been deleted via the Delete task
   if ($form_id == 'site_node_form') {
     $node = $form['#node'];
+    //@todo: Remove magic number
     if (isset($node->site_status) && $node->site_status !== '-2') {
       $form['buttons']['delete']['#type'] = 'hidden';
     }
   }
+  // Override the 'Bulk operations' title.
+  if (in_array($form_id, array(
+    'views_bulk_operations_form_hosting_site_list_block_client',
+    'views_bulk_operations_form_hosting_site_list_page_1',
+    'views_bulk_operations_form_hosting_site_list_block_1',
+    'views_bulk_operations_form_hosting_site_list_block_profile',
+  ))) {
+    $form['select']['#title'] = 'Site operations';
+  }
 }
+

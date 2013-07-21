@@ -68,6 +68,18 @@ td.hosting-actions .hosting-button-disabled {
 }
 
 /**
+ * Hosting queue list.
+ */
+
+.view-hosting-task-list .views-field-task-type {
+  text-transform: capitalize;
+}
+
+.view-hosting-task-list .views-field-task-type a {
+  text-transform: none;
+}
+
+/**
  * Status icons, colors.
  */
 
@@ -113,6 +125,8 @@ tr.hosting-processing,
   background-color: #e0e8f0 !important;
 }
 
+tr.hosting-disable { background-color: #e0e8f0 !important; }
+
 tr.hosting-info { background-color: #f8f8f8 !important; }
 
 tr.hosting-success,
@@ -130,6 +144,9 @@ tr.hosting-info .hosting-status { background-image: url(images/icon-notice.png);
 tr.hosting-queue .hosting-status,
 td.hosting-package-same {
   background-image: url(images/icon-queue.png);
+}
+
+tr.hosting-disable .hosting-status { background-image: url(images/icon-disable.png);
 }
 
 tr.hosting-processing .hosting-status {
@@ -152,6 +169,7 @@ tr.hosting-warning td,
 tr.hosting-info td,
 tr.hosting-error td,
 tr.hosting-queue td,
+tr.hosting-disable td,
 tr.hosting-success td {
   background-color:transparent !important;
 }
@@ -212,7 +230,7 @@ div.hosting-site-field-description {
   -webkit-border-radius: 3px;
 }
 
-div#hosting-task-list, div#hosting-task-queue-block { position: relative }
+div#hosting-task-list, div.view-hosting-task-list .view-content { position: relative }
 div.modalframe-page-wrapper { background: white }
 
 

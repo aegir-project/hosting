@@ -374,6 +374,47 @@ function hosting_site_update_6202() {
 }
 
 /**
+ * Add new Action permissions.
+ */
+function hosting_site_update_6203() {
+  $ret = array();
+
+  // Enable Actions permissions, and temporarily Install Profile API
+  // module to load permission CRUD functions
+  module_enable(array('actions_permissions', 'install_profile_api'));
+  module_load_include('inc', 'install_profile_api', 'core/user');
+
+  install_add_permissions(install_get_rid('aegir administrator'), array('execute Site: Backup (hosting_site_op_backup)', 'execute Site: Delete (hosting_site_op_delete)', 'execute Site: Disable (hosting_site_op_disable)', 'execute Site: Enable (hosting_site_op_enable)', 'execute Site: Reset password (hosting_site_op_login_reset)', 'execute Site: Verify (hosting_site_op_verify)'));
+  install_add_permissions(install_get_rid('aegir platform manager'), array('execute Site: Delete (hosting_site_op_delete)', 'execute Site: Disable (hosting_site_op_disable)', 'execute Site: Enable (hosting_site_op_enable)', 'execute Site: Verify (hosting_site_op_verify)'));
+  install_add_permissions(install_get_rid('aegir client'), array('execute Site: Backup (hosting_site_op_backup)', 'execute Site: Delete (hosting_site_op_delete)', 'execute Site: Disable (hosting_site_op_disable)', 'execute Site: Enable (hosting_site_op_enable)', 'execute Site: Reset password (hosting_site_op_login_reset)', 'execute Site: Verify (hosting_site_op_verify)'));
+
+  module_disable(array('install_profile_api'));
+
+  return $ret;
+}
+
+/**
+ * Place new block.
+ */
+function hosting_site_update_6204() {
+  $ret = array();
+
+  // Temporarily enable Install Profile API module and load includes.
+  module_enable(array('install_profile_api'));
+  drupal_load('module', 'install_profile_api');
+  install_include(array('block'));
+
+  // Enable blocks.
+  $theme = 'eldir';
+  install_set_block('views', 'hosting_site_list-block_client2', $theme, 'content_bottom', 0, 2, "<?php\nglobal \$user;\$node = menu_get_object();\n\$menu_item = menu_get_item();\nif (!empty(\$node)) && \$menu_item['number_parts'] == 2) {\n  return \$node->type == 'client' && $user->uid != 1;\n}\n?>");
+  install_set_block('views', 'hosting_site_list-block_client', $theme, 'content_bottom', 0, 2, "<?php\n\$node = menu_get_object();\n\$menu_item = menu_get_item();\nif (!empty(\$node) && \$menu_item['number_parts'] == 2) {\n  return \$node->type == 'client';\n}\n?>");
+
+  module_disable(array('install_profile_api'));
+
+  return $ret;
+}
+
+/**
  * Allow NULLs in 'db_name' column in 'hosting_site' table.
  */
 function hosting_site_update_7200() {
@@ -382,3 +423,4 @@ function hosting_site_update_7200() {
   );
   throw new DrupalUpdateException('Something with a database schema change. If you SQL-fu is up for it, consider running the following query on you Aegir site database: `ALTER hosting_site MODIFY db_name varchar(64) null;`');
 }
+

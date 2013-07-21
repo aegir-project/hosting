@@ -105,8 +105,10 @@ function hosting_alias_form_data(&$form, &$form_state) {
     if (isset($form_state['aliases'])) {
       $aliases = array_filter($form_state['aliases']);
     }
-    else {
-      $aliases = array_filter(isset($form['#node']->aliases) ? $form['#node']->aliases : array());
+    elseif (isset($form['#node']->aliases)) {
+      $aliases = array_filter($form['#node']->aliases);
+    } else {
+      $aliases = array();
     }
 
     // Figure out the alias count
@@ -143,7 +145,9 @@ function hosting_alias_form_data(&$form, &$form_state) {
     // Redirection Domain
     $options = array();
     $options[0] = t('No redirection');
-    $options[$form['#node']->title] = $form['#node']->title;
+    if (isset($form['#node']->title)) {
+      $options[$form['#node']->title] = $form['#node']->title;
+    }
     if (!empty($aliases)) {
       $options += array_combine($aliases, $aliases);
     }
@@ -279,7 +283,7 @@ function hosting_alias_insert($node) {
     }
     if (sizeof($automatic)) {
       foreach ($automatic as $alias) {
-        if (($alias = trim($alias)) && _hosting_valid_fqdn($alias)) {
+        if (($alias = trim($alias)) && _hosting_valid_fqdn_wildcard($alias)) {
           $id = db_insert('hosting_site_alias')
             ->fields(array(
               'vid' => $node->vid,
@@ -376,19 +380,36 @@ function hosting_alias_node_revision_delete($node) {
  */
 function hosting_alias_node_validate($node, $form, &$form_state) {
   if ($node->type == 'site') {
-    $aliases = explode("\n", $node->aliases);
+    $aliases = $node->aliases;
     foreach ($aliases as $alias) {
       if ($alias = trim($alias)) {
-        if (!hosting_domain_allowed($alias, array('nid' => $node->nid)) || $alias == $node->title) {
-          form_set_error('aliases', t('The domain name @alias is already in use', array('@alias' => $alias)));
-        }
-        if (!_hosting_valid_fqdn($alias)) {
-          form_set_error('aliases', t('The domain name @alias is not a valid url', array('@alias' => $alias)));
+        if (!module_exists('hosting_subdirs')) {
+          hosting_alias_validate_alias($node, $alias);
         }
       }
     }
   }
 }
+
+/**
+ * Ensure that an alias is valid, and not already in use.
+ *
+ * @param object $site
+ *   A Hosting site node.
+ * @param string $alias
+ *   An alias to have point to the site.
+ */
+function hosting_alias_validate_alias($site, $alias) {
+  if ($alias = trim($alias)) {
+    if (!hosting_domain_allowed($alias, array('nid' => $site->nid)) || $alias == $site->title) {
+      form_set_error('aliases', t('The domain name @alias is already in use', array('@alias' => $alias)));
+    }
+    if (!_hosting_valid_fqdn_wildcard($alias)) {
+      form_set_error('aliases', t('The domain name @alias is not a valid url', array('@alias' => $alias)));
+    }
+  }
+}
+
 
 /**
  * Implements hook_node_load().

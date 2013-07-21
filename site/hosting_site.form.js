@@ -168,7 +168,7 @@ Drupal.hosting.siteFormCheck = function(element) {
 
   $.ajax({
     type: 'POST',
-    url: Drupal.settings.hosting.site.form_check_url,
+    url: Drupal.settings.hosting.site.form_check_url + window.location.search,
     data: post_data,
     // Handle the success callback.
     success: function(data) {

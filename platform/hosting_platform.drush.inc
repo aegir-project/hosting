@@ -50,7 +50,13 @@ function hosting_platform_post_hosting_verify_task($task, $data) {
     $context = $data['context'];
     $packages = $context['packages'];
 
+    // Lock platforms by default
+    if ($node->verified == 0 && variable_get('hosting_lock_platforms_by_default', FALSE)) {
+      $node->platform_status = HOSTING_PLATFORM_LOCKED;
+    }
+
     $node->verified = REQUEST_TIME; // set verified flag on platform, to let it know it has been checked.
+
     /**
      * If we are verifying a Locked platform (i.e if the publish_path has changed),
      * don't reset the status to Enabled. We don't need to check whether a platform
@@ -66,14 +72,14 @@ function hosting_platform_post_hosting_verify_task($task, $data) {
 
     hosting_package_sync($packages['base']);
     hosting_package_sync($packages['sites-all']);
-    hosting_package_instance_sync($node->nid, $packages['base'], $packages['sites-all']);
+    hosting_package_instance_sync($node->nid, $task->ref->type, $packages['base'], $packages['sites-all']);
     foreach ($context['profiles'] as $profile) {
       hosting_package_sync($packages['profiles'][$profile]);
       $instance = hosting_package_instance_load(
         array('p.short_name' => $profile, 'i.rid' => $node->nid, 'p.package_type' => 'profile'));
-      hosting_package_instance_sync($instance->iid, $packages['base'], $packages['profiles'][$profile], $packages['sites-all']);
+      hosting_package_instance_sync($instance->iid, $instance->package_type, $packages['base'], $packages['profiles'][$profile], $packages['sites-all']);
 
-      // @todo : package instances of modules to profiles.
+      // @todo : package instances of modules to profiles. <-- huh?
     }
 
     foreach ($context['sites'] as $url) {
@@ -89,7 +95,7 @@ function hosting_platform_post_hosting_verify_task($task, $data) {
         $site->db_server = HOSTING_DEFAULT_DB_SERVER;
         node_save($site);
         drush_log(dt("Imported existing site !domain", array('!domain' => _hosting_node_link($site->nid))));
-        hosting_package_instance_sync($site->nid, $packages['base']);
+        hosting_package_instance_sync($site->nid, $site->type, $packages['base']);
       }
     }
   }
@@ -106,6 +112,8 @@ function hosting_platform_post_hosting_delete_task($task, $data) {
   db_delete('hosting_platform_client_access')
     ->condition('pid', $task->ref->nid)
     ->execute();
+  // Clean up package instances
+  hosting_package_instance_sync($task->ref->nid, 'platform');
 }
 
 /**

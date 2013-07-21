@@ -3,6 +3,8 @@ description = Allow this Drupal site to deploy hosted sites.
 package = Hosting
 core = 7.x
 
+dependencies[] = views
+dependencies[] = views_bulk_operations
 #dependencies[] = hosting_task
 #dependencies[] = hosting_client
 #dependencies[] = hosting_db_server

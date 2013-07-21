@@ -23,16 +23,7 @@ function hosting_queued_drush_command() {
     'drupal dependencies' => array(
       'hosting_queued',
     ),
-    // We need this get around a drush bug, see: http://drupal.org/node/704848
-    // But we remove it below for Drush 4.5 and above.
-    'callback' => 'drush_hosting_queued',
-    'options' => array('onetime' => array('description' => dt('exit if there are no more tasks queued after the 1 second poll timeout.'))),
   );
-
-  // We don't need the callback defined for Drush > 4.4
-  if (defined('DRUSH_VERSION') && version_compare(DRUSH_VERSION, '4.4', '>')) {
-    unset($items['hosting-queued']['callback']);
-  }
 
   return $items;
 }
@@ -79,8 +70,29 @@ function drush_hosting_queued() {
       hosting_queued_restart();
     }
 
-    // Get some tasks to run
-    $tasks = _hosting_get_new_tasks();
+    // Check if there was a database error, so we can recover gracefully if needed.
+    // See: https://drupal.org/node/1992254.
+    if (db_error()) {
+      drush_log('Caught database error.', 'warning');
+      $db = drush_convert_db_from_db_url($GLOBALS['db_url']);
+      drush_log('Waiting for database to become available.', 'warning');
+      do {
+        // Give the database time to come back.
+        sleep(1);
+        // Check connection
+        $connect = @mysqli_connect($db['host'], $db['username'], $db['password']);
+        drush_log('.', 'warning');
+      } while (!$connect);
+      // Close connection
+      mysqli_close($connect);
+      drush_log('Restarting queue daemon.', 'warning');
+      hosting_queued_restart();
+    }
+    else {
+      // Get some tasks to run
+      $tasks = @_hosting_get_new_tasks();
+    }
+
     foreach ($tasks as $task) {
       // We sleep for a second just in case others want to run the task first.
       // This guards against other processes that want to add a hosting task
@@ -91,7 +103,7 @@ function drush_hosting_queued() {
       sleep(1);
 
       // Execute the task in the backend
-      drush_invoke_process('@self', 'hosting-task', array($task->nid));
+      drush_invoke_process('@self', 'hosting-task', array($task->nid), array('strict' => FALSE), array('interactive' => TRUE));
       drush_log(dt('Finished executing task.'));
 
       // Delay for a configurable amount of time.
