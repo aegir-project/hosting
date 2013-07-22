@@ -115,9 +115,6 @@ function hosting_features_form($form, &$form_state) {
       '#required' => hosting_feature($feature) == HOSTING_FEATURE_REQUIRED,
       '#disabled' => $locked,
     );
-    if (isset($info['group']) && $info['group'] == 'experimental') {
-      $experimental[$feature] = $element;
-    );
 
     // Add another fieldset based on contrib module package.
     $package = FALSE;
@@ -231,7 +228,7 @@ function hosting_features_form_submit($form, &$form_state) {
       '%feature' => implode(", ", $enable),
       '!plural' => count($enable) > 1 ? 's' : '',
     )));
-    drupal_install_modules(array_keys($enable));
+    module_enable(array_keys($enable));
     foreach ($enable as $module => $feature) {
       if (function_exists($callback = $features[$feature]['enable'])) {
         $callback();
@@ -296,7 +293,7 @@ function hosting_get_features($refresh = FALSE) {
     }
 
     // Add module dependencies, package and enabled status
-    $module_cache = module_rebuild_cache();
+    $module_cache = system_rebuild_module_data();
     $modules = array();
     foreach ($features as $feature => $info) {
       $features[$feature]['enabled'] = $module_cache[$info['module']]->status;
@@ -309,8 +306,7 @@ function hosting_get_features($refresh = FALSE) {
     // Add Hosting feature dependencies, keyed by module
     foreach ($features as $feature => $info) {
       foreach ($info['dependencies']['modules'] as $dependency) {
-        $feature_name = $modules[$dependency];
-        if (in_array($feature_name, array_keys($features))) {
+        if (array_key_exists($dependency, array_keys($modules)) && array_key_exists($modules[$dependency], $features)) {
           $features[$feature]['dependencies']['features'][$dependency] = $modules[$dependency];
           $features[$modules[$dependency]]['dependencies']['reverse'][$info['module']] = $feature;
         }
