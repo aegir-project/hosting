@@ -80,6 +80,10 @@ function hosting_task_menu() {
   return $items;
 }
 
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function hosting_task_log_ajax($node, $last_position, $id) {
   $commands = array();
 
@@ -111,6 +115,10 @@ function hosting_task_log_ajax($node, $last_position, $id) {
   );
 }
 
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function hosting_task_ajax_command_hosting_table_append($selector, $html, $settings = NULL) {
   return array(
     'command' => 'hosting_table_append',
@@ -120,6 +128,10 @@ function hosting_task_ajax_command_hosting_table_append($selector, $html, $setti
   );
 }
 
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function hosting_task_ajax_command_hosting_table_check($selector, $url, $settings = NULL) {
   return array(
     'command' => 'hosting_table_check',
@@ -535,6 +547,8 @@ function hosting_add_task($nid, $type, $args = NULL, $status = HOSTING_TASK_QUEU
   }
   node_save($task);
 
+  // @todo be more specific about the type. e.g. Task verify on site example.com...
+  // @todo only display the queue run info if the cron queue is running.
   drupal_set_message(t("Task %type was added to the queue. Next queue run is %date, server time is %time.", array('%type' => $type, '%date' => format_date(_hosting_queue_next_run('tasks'), 'custom', 'H:i:sO'), '%time' => format_date(REQUEST_TIME, 'custom', 'H:i:sO'))));
 
   return $task;
@@ -870,8 +884,7 @@ function hosting_task_load($nodes) {
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Adds a retry button to failed task nodes.
  */
 function hosting_task_retry_form($form, $form_state, $nid) {
   $form['#prefix'] = '<div class="hosting-task-retry">';
@@ -888,8 +901,7 @@ function hosting_task_retry_form($form, $form_state, $nid) {
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Submit handler for the task retry button.
  */
 function hosting_task_retry_form_submit($form, &$form_state) {
   hosting_task_retry($form_state['values']['task']);
@@ -897,8 +909,7 @@ function hosting_task_retry_form_submit($form, &$form_state) {
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Adds button to update the status of task nodes stuck in the 'processing' state.
  */
 function hosting_task_update_status_form($form_state, $vid) {
   $form['#prefix'] = '<div class="hosting-task-retry">';
@@ -915,8 +926,7 @@ function hosting_task_update_status_form($form_state, $vid) {
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Submit handler for the 'update status' button.
  */
 function hosting_task_update_status_form_submit($form, &$form_state) {
   hosting_task_update_status($form_state['values']['task']);
