@@ -586,6 +586,25 @@ function hosting_queue_summary_block() {
 }
 
 /**
+ * Build a block of the hosting queues.
+ *
+ * @see hosting_TASK_SINGULAR_summary()
+ */
+function hosting_queue_block() {
+  if (user_access('access task logs')) {
+    $queues = hosting_get_queues();
+    $output = '';
+    foreach ($queues as $queue => $info) {
+      $func = 'hosting_'.$info['singular'].'_summary';
+      if (function_exists($func)) {
+        $output .= $func();
+      }
+    }
+    return $output;
+  }
+}
+
+/**
  * Check site URL is allowed.
  *
  * This function hooks into hook_allow_domain to let contrib modules
