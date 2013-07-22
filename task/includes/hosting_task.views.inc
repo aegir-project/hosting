@@ -9,7 +9,7 @@
 function hosting_task_views_handlers() {
   return array(
     'info' => array(
-      'path' => drupal_get_path('module', 'hosting_task'),
+      'path' => drupal_get_path('module', 'hosting_task') . '/includes',
     ),
     'handlers' => array(
       'hosting_task_handler_field_hosting_task_status' => array(

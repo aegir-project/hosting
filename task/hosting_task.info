@@ -4,4 +4,5 @@ package = Hosting
 dependencies[] = hosting
 core = 7.x
 
-files[] = hosting_task_handler_filter_hosting_task_type.inc
+files[] = includes/hosting_task_handler_filter_hosting_task_type.inc
+files[] = includes/hosting_task_handler_filter_hosting_task_status.inc
