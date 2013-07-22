@@ -805,7 +805,10 @@ function hosting_client_platform_access_form_submit($form, $form_state) {
   // Remove the selected client(s).
   foreach ($clients as $cid => $remove) {
     if ($remove) {
-      db_query("DELETE FROM {hosting_platform_client_access} WHERE pid = %d AND cid = %d", $platform, $cid);
+      db_delete('hosting_platform_client_access')
+        ->condition('pid', $platform)
+        ->condition('cid', $cid)
+        ->execute();
     }
   }
 
@@ -813,7 +816,12 @@ function hosting_client_platform_access_form_submit($form, $form_state) {
   if ($new_client) {
     $client = hosting_get_client($new_client);
     if ($client) {
-      db_query("INSERT INTO {hosting_platform_client_access} (pid, cid) VALUES (%d, %d)", $platform, $client->nid);
+      db_insert('hosting_platform_client_access')
+        ->fields(array(
+          'pid' => $platform,
+          'cid' => $client->nid,
+        ))
+        ->execute();
     }
     else {
       $add_client = '';
@@ -1023,7 +1031,7 @@ function hosting_client_block_info() {
   $blocks['hosting_clients'] = array(
     'info' => t('Hosting clients'),
     'status' => 1,
-    'region' => 'sidebar_last',
+    'region' => 'sidebar_second',
     'weight' => 10,
   );
   return $blocks;

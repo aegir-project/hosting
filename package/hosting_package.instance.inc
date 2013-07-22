@@ -47,8 +47,8 @@ function hosting_package_instance_sync($rid, $type) {
   elseif ($type == 'profile') {
     $sql = 'SELECT rid
             FROM {hosting_package_instance}
-            WHERE iid = %d';
-    $platform = db_result(db_query($sql, $rid));
+            WHERE iid = :rid';
+    $platform = db_query($sql, array(':rid' => $rid))->fetchField();
   }
   else {
     watchdog('hosting_package', 'Unrecognized entity type (' . $type . ') passed to hosting_package_instance_sync().', array(), WATCHDOG_WARNING);

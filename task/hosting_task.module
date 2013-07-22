@@ -911,7 +911,7 @@ function hosting_task_retry_form_submit($form, &$form_state) {
 /**
  * Adds button to update the status of task nodes stuck in the 'processing' state.
  */
-function hosting_task_update_status_form($form_state, $vid) {
+function hosting_task_update_status_form($form, &$form_state, $vid) {
   $form['#prefix'] = '<div class="hosting-task-retry">';
   $form['task'] = array(
     '#type' => 'hidden',
@@ -1008,8 +1008,7 @@ function hosting_task_view($node, $teaser = FALSE, $page = FALSE) {
 
   if (user_access('update status of tasks') && ($node->task_status == HOSTING_TASK_PROCESSING)) {
     $node->content['update-status'] = array(
-      '#type' => 'markup',
-      '#value' => drupal_get_form('hosting_task_update_status_form', $node->vid),
+      'form' => drupal_get_form('hosting_task_update_status_form', $node->vid),
       '#weight' => 5,
     );
   }
@@ -1195,13 +1194,12 @@ function _hosting_get_new_tasks($limit = 20) {
     ON t.vid = n.vid
     WHERE t.task_status = :task_status
     GROUP BY t.rid
-    ORDER BY n.changed, n.nid ASC
-    LIMIT :limit",
+    ORDER BY n.changed, n.nid ASC",
+    0,
+    $limit,
     array(
       ':task_status' => HOSTING_TASK_QUEUED,
-      ':limit' => $limit,
-    )
-  );
+    ));
   foreach ($result as $node) {
     $return[$node->nid] = node_load($node->nid);
   }
@@ -1653,7 +1651,12 @@ function hosting_task_update_status($task = NULL) {
   }
 
   $update = hosting_task_parse_log($vid);
-  db_query('UPDATE {hosting_task} SET task_status=%d WHERE vid = %d', $update, $vid);
+  db_update('hosting_task')
+  ->fields(array(
+    'task_status' => $update,
+  ))
+  ->condition('vid', $vid)
+  ->execute();
   return $update;
 }
 
@@ -1678,13 +1681,13 @@ function _hosting_task_update_status() {
 function hosting_task_parse_log($vid) {
   // Assume the best
   $update = HOSTING_TASK_SUCCESS;
-  $result = db_query('SELECT type FROM {hosting_task_log} WHERE vid = %d', $vid);
-  while ($status = db_result($result)) {
-    if ($status == 'error' || $status == 'failed') {
+  $result = db_query('SELECT type FROM {hosting_task_log} WHERE vid = :vid', array(':vid' => $vid));
+  foreach ($result as $status) {
+    if ($status->type == 'error' || $status->type == 'failed') {
       $update = HOSTING_TASK_ERROR;
     }
     // Don't override a pre-existing error
-    elseif ($update != HOSTING_TASK_ERROR && $status == 'warning') {
+    elseif ($update != HOSTING_TASK_ERROR && $status->type == 'warning') {
       $update = HOSTING_TASK_WARNING;
     }
   }

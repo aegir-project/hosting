@@ -28,9 +28,17 @@ function hosting_ip_save($node, $update = FALSE) {
     $ip = trim($ip);
     if (empty($ip)) {
       // empty fields are considered removed
-      db_query("DELETE FROM {hosting_ip_addresses} WHERE id=%d", $id);
-    } else {
-      db_query("UPDATE {hosting_ip_addresses} SET ip_address = '%s' WHERE id=%d", $ip, $id);
+      db_delete('hosting_ip_addresses')
+        ->condition('id', $id)
+        ->execute();
+    }
+    else {
+      $num_updated = db_update('hosting_ip_addresses')
+        ->fields(array(
+          'ip_address' => $ip,
+        ))
+        ->condition('id', $id)
+        ->execute();
     }
   }
 

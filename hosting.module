@@ -507,7 +507,7 @@ function hosting_block_info() {
     'info' => t('Hosting summary'),
     'enabled' => 1,
     'status' => 1,
-    'region' => 'sidebar_last',
+    'region' => 'sidebar_second',
     'weight' => 10,
   );
   $blocks['hosting_queues'] = array(
