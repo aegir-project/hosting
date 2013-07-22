@@ -500,8 +500,7 @@ function hosting_add_task($nid, $type, $args = NULL, $status = HOSTING_TASK_QUEU
   $task = hosting_get_most_recent_task($nid, $type);
 
   // Guard against destructive tasks run on the hostmaster site
-  // @todo confirm that we're just getting the nid field back, and not an object
-  $hostmaster_nid = db_query('SELECT site.nid FROM hosting_site site JOIN hosting_package_instance pkgi ON pkgi.rid=site.nid JOIN hosting_package pkg ON pkg.nid=pkgi.package_id WHERE pkg.short_name="hostmaster"')->fetch();
+  $hostmaster_nid = db_query('SELECT site.nid FROM hosting_site site JOIN hosting_package_instance pkgi ON pkgi.rid=site.nid JOIN hosting_package pkg ON pkg.nid=pkgi.package_id WHERE pkg.short_name=\'hostmaster\'')->fetchField();
   if ($nid == $hostmaster_nid && in_array($type, array('delete', 'disable'))) {
     drupal_set_message(t('You cannot !task the Hostmaster site.', array('!task' => $type)), 'warning');
     watchdog('hostmaster', t('Attempt to !task the Hostmaster site blocked.', array('!task' => $type)), array(), WATCHDOG_WARNING);
@@ -1614,7 +1613,7 @@ function hosting_task_preprocess_views_view_table(&$vars) {
 
   switch ($id) {
     case 'hosting_task_list-block':
-      modalframe_parent_js();
+      //modalframe_parent_js();
       drupal_add_js(drupal_get_path('module','hosting_task') . '/hosting_task.js');
 
       $settings['hostingTaskRefresh'] = array(

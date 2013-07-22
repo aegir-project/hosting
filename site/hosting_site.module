@@ -336,7 +336,6 @@ function hosting_site_permission() {
 /**
  * Implements hook_node_access().
  */
-<<<<<<< HEAD
 function hosting_site_node_access($node, $op, $account) {
   if ($op != 'create' && hosting_feature('client')) {
     // we rely on hosting_node_grants() instead of global configuration
