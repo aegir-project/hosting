@@ -584,6 +584,15 @@ function hosting_platform_load($nodes) {
                    )->fetchField();
     $additions->release = hosting_package_instance_load($iid);
     $additions->profiles = hosting_get_profiles($node->nid, 'short_name');
+
+    if (hosting_feature('client')) {
+      $result = db_query("SELECT cid FROM {hosting_platform_client_access} WHERE pid = :pid", array(':pid' => $node->nid));
+
+      foreach ($result as $record) {
+        $additions->clients[$record->cid] = $record->cid;
+      }
+    }
+
     foreach ($additions as $property => &$value) {
       $node->$property = $value;
     }
