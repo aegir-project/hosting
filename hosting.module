@@ -315,7 +315,8 @@ function hosting_init() {
 
   // Redirect anonymous users to our default welcome page
   global $user;
-  if (!user_is_logged_in() && php_sapi_name() != 'cli' && drupal_is_front_page()) {
+  $welcome = variable_get('hosting_welcome_page', TRUE);
+  if ($welcome && !user_is_logged_in() && php_sapi_name() != 'cli' && drupal_is_front_page()) {
     drupal_goto('welcome');
   }
 }
@@ -969,6 +970,12 @@ function hosting_settings() {
     '#title' => t('Require site to be disabled before deletion'),
     '#description' => t('Check if you wish for users to run the Disable task on a site prior to running the Delete task.'),
     '#default_value' => variable_get('hosting_require_disable_before_delete', TRUE),
+  );
+  $form['hosting_welcome_page'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Redirect anonymous users to the Welcome page'),
+    '#description' => t('By default, anonymous users will receive a 403 error, since they don\'t have the \'access content\' permission. This option will redirect them to the !welcome_page.', array('!welcome_page' => l('Welcome page', 'welcome'))),
+    '#default_value' => variable_get('hosting_welcome_page', TRUE),
   );
   if(hosting_feature('cron')) {
     $form['hosting_cron_use_backend'] = array(
