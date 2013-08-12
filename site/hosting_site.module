@@ -682,3 +682,41 @@ function theme_hosting_site_profile($profile, $html = FALSE) {
   }
   return "{$profile->title} ({$profile->short_name})";
 }
+
+/**
+ * Control block visibility.
+ */
+function hosting_site_client_list_block_visibility() {
+  global $user;
+  $node = menu_get_object();
+  $menu_item = menu_get_item();
+  if (!empty($node) && $menu_item['number_parts'] == 2) {
+    return $node->type == 'client' && !user_access('administer clients', $user);
+  }
+  return FALSE;
+}
+
+/**
+ * Control block visibility.
+ */
+function hosting_site_client_admin_block_visibility() {
+  global $user;
+  $node = menu_get_object();
+  $menu_item = menu_get_item();
+  if (!empty($node) && $menu_item['number_parts'] == 2) {
+    return $node->type == 'client' && user_access('administer clients', $user);
+  }
+  return FALSE;
+}
+
+/**
+ * Control block visibility.
+ */
+function hosting_site_profile_block_visibility() {
+  $node = menu_get_object();
+  $menu_item = menu_get_item();
+  if (!empty($node) && $menu_item['number_parts'] == 2) {
+    return $node->type == 'package' && $node->package_type == 'profile';
+  }
+  return FALSE;
+}

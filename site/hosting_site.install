@@ -405,3 +405,33 @@ function hosting_site_update_6205() {
 
   return $ret;
 }
+
+/**
+ * Place call custom functions for block visibility.
+ */
+function hosting_site_update_6206() {
+  $ret = array();
+
+  // Temporarily enable Install Profile API module and load includes.
+  module_enable(array('install_profile_api'));
+  drupal_load('module', 'install_profile_api');
+  install_include(array('block'));
+
+  // Set block visibility.
+  $theme = 'eldir';
+  install_set_block('views', 'hosting_site_list-block_client' , $theme, 'content_bottom', 0, 2, "<?php
+return hosting_site_client_admin_block_visibility();
+?>");
+  install_set_block('views', 'hosting_site_list-block_client2' , $theme, 'content_bottom', 0, 2, "<?php
+return hosting_site_client_list_block_visibility();
+?>");
+  install_set_block('views', 'hosting_site_list-block_profile' , $theme, 'content_bottom', 0, 2, "
+<?php
+return hosting_site_profile_block_visibility();
+?>");
+
+  module_disable(array('install_profile_api'));
+
+  return $ret;
+
+}
