@@ -178,7 +178,7 @@ function hosting_platform_op_verify($nodes) {
 /**
  * Callback for platform lock operation.
  */
-function hosting_platform_op_lock() {
+function hosting_platform_op_lock($nodes) {
   foreach ($nodes as $nid) {
     hosting_add_task($nid, 'lock');
   }
