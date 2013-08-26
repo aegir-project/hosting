@@ -20,7 +20,7 @@ function drush_hosting_clone_pre_hosting_task($task) {
       drush_set_error("HOSTING_NO_VALID_PROFILE", dt("There are no valid install profiles on the target platform to migrate to"));
     }
 
-    if ($site->db_server != $task->task_args['new_db_server']) {
+    if ($task->ref->db_server != $task->task_args['new_db_server']) {
       $task->options['new_db_server'] = hosting_context_name($task->task_args['new_db_server']);
     }
 
