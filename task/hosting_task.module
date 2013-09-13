@@ -85,7 +85,7 @@ function hosting_task_ajax_queue() {
 
 function hosting_task_cancel($node) {
   if ($node->type == 'task') {
-    if ($node->task_status == 0) {
+    if ($node->task_status == HOSTING_TASK_QUEUED) {
       $ref = node_load($node->rid);
 
       hosting_add_task($node->rid, $node->task_type, array(), HOSTING_TASK_ERROR);
