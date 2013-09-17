@@ -501,3 +501,11 @@ function hosting_update_6205() {
   return $ret;
 }
 
+/**
+ * Enable the jquery_update module.
+ */
+function hosting_update_6206() {
+  $ret = array();
+  module_enable(array('jquery_update'));
+  return $ret;
+}
