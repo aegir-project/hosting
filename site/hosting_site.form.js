@@ -2,7 +2,6 @@
 
 // Setup our namespace.
 Drupal.hosting = Drupal.hosting || {};
-
 // Obey the Drupal JS killswitch, almost entirely pointless though.
 if (Drupal.jsEnabled) {
   $(document).ready(function() {
@@ -67,7 +66,7 @@ Drupal.hosting.siteFormToggleOptions = function(settings) {
         for (var option in settings[key]) {
           // modify the definition to get the right css id
           var option_css_key = settings[key][option].toString().replace(/[\]\[\ _]/g, '-')
-          var $input_id = $('input[@name=' + key + '][@value=' + settings[key][option] + ']');
+          var $input_id = $('input[name=' + key + '][value=' + settings[key][option] + ']');
           $id.find('div.form-radios div#edit-' + css_key + '-' + option_css_key +'-wrapper').show();
 
           // one of the visible radio options has already been checked
@@ -76,12 +75,12 @@ Drupal.hosting.siteFormToggleOptions = function(settings) {
           }
         }
         if (!checked) {
-          $('input[@name=' + key + ']:visible:first').attr('checked', 'checked');
+          $('input[name=' + key + ']:visible:first').attr('checked', 'checked');
         }
       }
       else if (settings[key].length == 1) {
         // There is only one valid option, so we select it and display it as text.
-        var $input_id = $('input[@name=' + key + '][@value=' + settings[key][0] + ']');
+        var $input_id = $('input[name=' + key + '][value=' + settings[key][0] + ']');
         $input_id.attr("checked", "checked");
         $id.hide();
 
@@ -109,7 +108,7 @@ Drupal.hosting.siteFormToggleOptions = function(settings) {
       }
     }
     else if ($id.hasClass('hosting-site-field-textfield') || $id.hasClass('hosting-site-field-textarea')) {
-      var $input_id = $('input[@name=' + key + ']');
+      var $input_id = $('input[name=' + key + ']');
 
       if (settings[key] == null) {
         // we do not want the user to be able to manipulate this value,
@@ -154,7 +153,7 @@ Drupal.hosting.siteFormCheck = function(element) {
      var field = $(this).attr('id').replace('hosting-site-field-', '').replace(/-/g,'_');
 
      // generate an css id to retrieve the value, based on the field type.
-     var id = 'input[@name=' + field + ']';
+     var id = 'input[name=' + field + ']';
      if ($(this).hasClass('hosting-site-field-radios')) {
        id = id + ':checked';
      }
