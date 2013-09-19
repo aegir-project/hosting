@@ -897,12 +897,13 @@ function hosting_context_delete($nid) {
  *   The nid of the node to get the provision context name for.
  * @return
  *   The provision context name associated with the specified node, will be
- *   prefixed with '@'.
+ *   prefixed with '@' or FALSE if node doesnt exist.
  */
 function hosting_context_name($nid) {
   $node = node_load($nid);
   if (!$node) {
     drupal_set_message(t('Error: cannot load node id %nid to find its context', array('%nid' => $nid)), 'error');
+    return FALSE;
   }
   return '@' . $node->hosting_name;
 }
