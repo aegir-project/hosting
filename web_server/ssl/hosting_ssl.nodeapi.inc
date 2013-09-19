@@ -118,7 +118,12 @@ function hosting_ssl_get_key($cid) {
 }
 
 function hosting_ssl_get_ip($cid) {
-  return db_result(db_query("SELECT ips.ip_address FROM {hosting_ssl_cert_ips} cert INNER JOIN {hosting_ip_addresses} ips ON cert.ip_address = ips.id WHERE cid=%d", $cid));
+  $result = db_query("SELECT h.name AS server_name, ips.ip_address FROM {hosting_ssl_cert_ips} cert INNER JOIN {hosting_ip_addresses} ips ON cert.ip_address = ips.id INNER JOIN {hosting_context} h ON h.nid = ips.nid WHERE cid=%d", $cid);
+  $ip_addresses = array();
+  while ($row = db_fetch_object($result)) {
+    $ip_addresses[$row->server_name] = $row->ip_address;
+  }
+  return $ip_addresses;
 }
 
 function hosting_ssl_output_key($cid) {
