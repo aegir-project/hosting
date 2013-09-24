@@ -48,7 +48,8 @@ function hosting_ip_save($node, $update = FALSE) {
  * Validate that IP list is valid. IP utility function for hook_validate.
  */
 function hosting_ip_validate($node) { 
-  foreach ($node->ip_addresses as $id => $ip) {
+  $ips = is_array($node->ip_addresses) ? $node->ip_addresses : array();
+  foreach ($ips as $id => $ip) {
     $ip = trim($ip);
     if (empty($ip)) {
       // deletion, look if the IP is in use
@@ -60,7 +61,9 @@ function hosting_ip_validate($node) {
         '%ip' => $ip )));
     }
   }
-  foreach ($node->new_ip_addresses as $id => $ip) {
+
+  $ips = isset($node->new_ip_addresses) ? $node->new_ip_addresses : array();
+  foreach ($ips as $id => $ip) {
     if (!empty($ip) && !_hosting_valid_ip($ip)) {
       form_set_error("ip_addresses][$id", t('Invalid IP address: %ip.', array(
         '%ip' => $ip )));
