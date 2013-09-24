@@ -162,31 +162,12 @@ function hosting_queued_restart($signal = NULL) {
 
   // We need the PCNTL extension to be able to auto restart.
   if (function_exists('pcntl_exec')) {
-    $drush_command = drush_get_command();
-    // should be hosting-queued unless something is very wrong
-    $command = $drush_command['command'];
-
-    // Get the drush executable and any arguments it needs.
-    $args = hosting_queued_drush_find_drush();
+    $args = $_ENV['argv'];
     $drush = array_shift($args);
 
-    // Get the original options passed to this command.
-    $options = drush_get_context('cli');
-    // The 'php' option, if needed will be set in $args already.
-    unset($options['php']);
+    // Strip sub-array to avoid warning "Array to string conversion"
+    unset($_ENV['argv']);
 
-    // We need to reimplement _drush_escape_option() because it adds
-    // extra leading spaces.
-    foreach ($options as $key => $value) {
-      if ($value !== TRUE) {
-        $args[] = "--$key=" . escapeshellarg($value);
-      }
-      else {
-        $args[] = "--$key";
-      }
-    }
-
-    array_push($args, '@hostmaster', $command);
     watchdog('hosting_queued', 'Restarting queue daemon with @drush @args.', array('@drush' => $drush, '@args' => implode(" ", $args)));
     pcntl_exec($drush, $args, $_ENV);
     watchdog('hosting_queued', 'Could not restart the queue daemon, aborting.', array(), WATCHDOG_ERROR);
