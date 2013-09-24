@@ -37,11 +37,6 @@ function hosting_platform_schema() {
         'not null' => TRUE,
         'default' => 0,
       ),
-      'release_id' => array(
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
       'verified' => array(
         'type' => 'int',
         'not null' => TRUE,
@@ -212,5 +207,16 @@ function hosting_platform_update_6207() {
 
   module_disable(array('install_profile_api'));
 
+  return $ret;
+}
+
+/**
+ * Drop release_id from hosting_platform.
+ */
+function hosting_platform_update_6208() {
+  $ret = array();
+  if (db_column_exists('hosting_platform', 'release_id')) {
+    db_drop_field($ret, 'hosting_platform', 'release_id');
+  }
   return $ret;
 }
