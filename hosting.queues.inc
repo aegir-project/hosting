@@ -177,7 +177,7 @@ function _hosting_dispatch_cmd() {
 function hosting_queues_cron_cmd() {
   $command = _hosting_dispatch_cmd();
   $return = <<<END
-SHELL=/bin/bash
+SHELL=/bin/sh
 PATH=$_SERVER[PATH]
 */1 * * * * $command
 END;
