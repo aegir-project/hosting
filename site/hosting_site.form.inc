@@ -110,6 +110,7 @@ function hosting_site_available_options($node, $platform = NULL) {
 
   // Install profiles
   $profiles = hosting_get_profiles();
+  $platform_profiles = array();
   foreach ($profiles as $id => $name) {
 
     // Don't allow a site to be provisioned with hostslave or hostmaster profile

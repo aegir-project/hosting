@@ -104,8 +104,10 @@ function _hosting_site_form_check() {
   if (isset($_GET['platform'])) {
     $platform = $_GET['platform'];
   }
+
+  $result = hosting_site_available_options($_POST, $platform);
   drupal_json(
-    hosting_site_available_options($_POST, $platform)
+    $result
   );
   exit();
 }
