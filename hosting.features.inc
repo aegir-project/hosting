@@ -257,6 +257,10 @@ function hosting_features_form_submit($form, &$form_state) {
 
   // Rebuild menu.
   menu_rebuild();
+
+  // Record the enabled features in /var/aegir/.drush/drushrc.php
+  hosting_add_task(hosting_get_hostmaster_nid(), 'verify');
+
 }
 
 /**
