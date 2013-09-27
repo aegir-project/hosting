@@ -306,8 +306,7 @@ function hosting_get_features($refresh = FALSE) {
     // Add Hosting feature dependencies, keyed by module
     foreach ($features as $feature => $info) {
       foreach ($info['dependencies']['modules'] as $dependency) {
-        $feature_name = $modules[$dependency];
-        if (in_array($feature_name, array_keys($features))) {
+        if (array_key_exists($dependency, $modules) && in_array($modules[$dependency], array_keys($features))) {
           $features[$feature]['dependencies']['features'][$dependency] = $modules[$dependency];
           $features[$modules[$dependency]]['dependencies']['reverse'][$info['module']] = $feature;
         }
