@@ -89,3 +89,10 @@ function hosting_format_interval($ts) {
 function hosting_path_normalize($path) {
   return rtrim(preg_replace('/(\/\/*\.)?\/\/*/', '/', $path), '/');
 }
+
+/**
+ * Helper function to get the node ID of the Aegir front-end site.
+ */
+function hosting_get_hostmaster_nid() {
+  return db_result(db_query('SELECT site.nid FROM hosting_site site JOIN hosting_package_instance pkgi ON pkgi.rid=site.nid JOIN hosting_package pkg ON pkg.nid=pkgi.package_id WHERE pkg.short_name="hostmaster"'));
+}

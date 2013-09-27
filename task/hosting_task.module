@@ -355,7 +355,7 @@ function hosting_add_task($nid, $type, $args = null, $status = HOSTING_TASK_QUEU
  $task = hosting_get_most_recent_task($nid, $type);
 
  // Guard against destructive tasks run on the hostmaster site
- $hostmaster_nid = db_result(db_query('SELECT site.nid FROM hosting_site site JOIN hosting_package_instance pkgi ON pkgi.rid=site.nid JOIN hosting_package pkg ON pkg.nid=pkgi.package_id WHERE pkg.short_name="hostmaster"'));
+ $hostmaster_nid = hosting_get_hostmaster_nid();
  if ($nid == $hostmaster_nid && in_array($type, array('delete', 'disable'))) {
    drupal_set_message(t('You cannot !task the Hostmaster site.', array('!task' => $type)), 'warning');
    watchdog('hostmaster', t('Attempt to !task the Hostmaster site blocked.', array('!task' => $type)), array(), WATCHDOG_WARNING);
