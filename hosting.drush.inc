@@ -153,4 +153,25 @@ function hosting_drush_import($alias) {
   return $node->nid;
 }
 
-
+/**
+ * Implements drush_hook_post_COMMAND().
+ *
+ * Update backend Hosting Features registry when modules are enabled via Drush.
+ */
+function drush_hosting_post_pm_enable() {
+  // Generate a list of features keyed by module name
+  foreach (hosting_get_features() as $feature => $info) {
+    $features[] = $info['module'];
+  }
+  // Check if any of the recently enabled modules is a Hosting Feature.
+  // N.B. We're ignoring that the first argument is actually 'pm-enable' or 'en',
+  // since it won't match anyway.
+  foreach (drush_get_arguments() as $module) {
+    if (in_array($module, $features)) {
+      // Trigger verify of the hostmaster site to record the enabled features
+      // in /var/aegir/.drush/drushrc.php
+      hosting_add_task(hosting_get_hostmaster_nid(), 'verify');
+      return;
+    }
+  }
+}
