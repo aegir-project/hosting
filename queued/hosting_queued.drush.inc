@@ -64,15 +64,16 @@ function drush_hosting_queued() {
   watchdog('hosting_queued', 'Started Hosting queue daemon, waiting for new tasks');
 
   while (TRUE) {
-    // Should we terminate.
-    if (REQUEST_TIME > $end_time) {
-      // Restart the daemon to recycle leaked memory
-      hosting_queued_restart();
+    try {
+      // Should we terminate.
+      if (REQUEST_TIME > $end_time) {
+        // Restart the daemon to recycle leaked memory
+        hosting_queued_restart();
+      }
     }
-
-    // Check if there was a database error, so we can recover gracefully if needed.
-    // See: https://drupal.org/node/1992254.
-    if (db_error()) {
+    catch (Exception $e) {
+      // Check if there was a database error, so we can recover gracefully if needed.
+      // See: https://drupal.org/node/1992254.
       drush_log('Caught database error.', 'warning');
       $db = drush_convert_db_from_db_url($GLOBALS['db_url']);
       drush_log('Waiting for database to become available.', 'warning');
@@ -88,10 +89,9 @@ function drush_hosting_queued() {
       drush_log('Restarting queue daemon.', 'warning');
       hosting_queued_restart();
     }
-    else {
-      // Get some tasks to run
-      $tasks = @_hosting_get_new_tasks();
-    }
+
+    // Get some tasks to run
+    $tasks = @_hosting_get_new_tasks();
 
     foreach ($tasks as $task) {
       // We sleep for a second just in case others want to run the task first.
