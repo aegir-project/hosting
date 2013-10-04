@@ -309,6 +309,12 @@ function hosting_site_validate($node, &$form) {
     form_set_error('title', t("You have not specified a valid url for this site."));
   }
 
+  $length = strlen($url);
+  if ($length > HOSTING_MAX_ALIAS_LENGTH) {
+    $long = $length - HOSTING_MAX_ALIAS_LENGTH;
+    form_set_error("title", t('The url your provided is @long character(s) too long. Please shorten.', array('@long' => $long)));
+  }
+
   if (!$node->new_client) {
     $client = hosting_get_client($node->client);
     if (!$node->client || !$client) {

@@ -25,7 +25,7 @@ function hosting_schema() {
       ),
       'name' => array(
         'type' => 'varchar',
-        'length' => 50,
+        'length' => HOSTING_MAX_ALIAS_LENGTH,
         'not null' => TRUE,
       ),
     ),
@@ -507,5 +507,22 @@ function hosting_update_6205() {
 function hosting_update_6206() {
   $ret = array();
   module_enable(array('jquery_update'));
+  return $ret;
+}
+
+/**
+ * Alter the length avialable for a site alias to 235.
+ *
+ * https://drupal.org/node/1971348
+ */
+function hosting_update_6207() {
+  $ret = array();
+  $spec = array(
+        'type' => 'varchar',
+        // @see HOSTING_MAX_ALIAS_LENGTH
+        'length' => 235,
+        'not null' => TRUE,
+  );
+  db_change_field($ret, 'hosting_context', 'name', 'name', $spec);
   return $ret;
 }

@@ -60,8 +60,26 @@ function hosting_alias_help($path, $arg) {
  */
 function hosting_alias_form_alter(&$form, &$form_state, $form_id) {
   if ($form_id == 'site_node_form') {
+    $form['#validate'][] = 'hosting_alias_site_form_validate';
     return hosting_alias_form_data($form, $form_state);
   }
+}
+
+/**
+ * Validation handler for site form.
+ *
+ * Makes sure aliases are not more than HOSTING_MAX_ALIAS_LENGTH characters.
+ */
+function hosting_alias_site_form_validate($form, &$form_state) {
+  $aliases = $form_state['values']['aliases'];
+  foreach ($aliases as $key => $alias) {
+    $length = strlen(trim($alias));
+    if ($length > HOSTING_MAX_ALIAS_LENGTH) {
+      $long = $length - HOSTING_MAX_ALIAS_LENGTH;
+      form_set_error("aliases_wrapper][aliases][$key", t('The alias @alias is @long character(s) too long. Please shorten.', array('@alias' => $alias, '@long' => $long)));
+    }
+  }
+
 }
 
 /**

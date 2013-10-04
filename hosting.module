@@ -6,7 +6,13 @@
  *
  * Contains just about all the interface magic of hostmaster.
  */
- 
+
+/**
+ * The maximum length for a site alias.
+ * Leaving room to append '.alias.drushrc.php' and keep filenames below 255.
+ */
+define('HOSTING_MAX_ALIAS_LENGTH', 235);
+
 /**
  * Not split for performance reasons. Just to keep code together.
  */
