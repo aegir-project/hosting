@@ -23,7 +23,7 @@ function hosting_ip_view(&$node) {
  * IP Utility function for hook_update/hook_insert.
  */
 function hosting_ip_save($node, $update = FALSE) {
-  $ips = is_array($node->ip_addresses) ? $node->ip_addresses : array();
+  $ips = is_array($node->ip_addresses) ? (array) $node->ip_addresses : array();
 
   foreach ($ips as $id => $ip) {
     $ip = trim($ip);
