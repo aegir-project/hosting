@@ -35,7 +35,7 @@ function hosting_ip_save($node, $update = FALSE) {
     }
   }
 
-  $ips = isset($node->new_ip_addresses) ? $node->new_ip_addresses : array();
+  $ips = isset($node->new_ip_addresses) ? (array) $node->new_ip_addresses : array();
   foreach ($ips as $id => $ip) {
     if (!empty($ip)) {
       // new entries are prefixed with the string 'new', insert those
@@ -62,7 +62,7 @@ function hosting_ip_validate($node) {
     }
   }
 
-  $ips = isset($node->new_ip_addresses) ? $node->new_ip_addresses : array();
+  $ips = isset($node->new_ip_addresses) ? (array) $node->new_ip_addresses : array();
   foreach ($ips as $id => $ip) {
     if (!empty($ip) && !_hosting_valid_ip($ip)) {
       form_set_error("ip_addresses][$id", t('Invalid IP address: %ip.', array(
