@@ -4,6 +4,9 @@
  *   Install, update and uninstall for the hosting module.
  */
 
+// HOSTING_MAX_ALIAS_LENGTH is defined here:
+require_once(dirname(__FILE__) . '/hosting.module');
+
 /**
  * Implements hook_install().
  */
