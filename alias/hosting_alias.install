@@ -100,7 +100,7 @@ function hosting_alias_update_6203() {
 */
 function hosting_alias_update_6204() {
   $ret = array();
-  $result = db_query("SELECT `nid` FROM {hosting_site_alias} WHERE `redirection`=1");
+  $result = db_query("SELECT nid FROM {hosting_site_alias} INNER JOIN hosting_site site ON site.nid = alias.nid WHERE redirection=1 AND site.status>-2");
   while ($obj = db_fetch_object($result)) {
     $node = node_load($obj->nid);
     if (is_object($node)) {
