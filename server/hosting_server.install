@@ -286,16 +286,28 @@ function hosting_server_update_6202() {
    * we need to first find the SSL certificate of the site, then look at the
    * IP of the sites with SSL certs, match that IP with the IP of a server (we
    * assume it's the same server!).
+   *
+   * Verification query:
+   *
+   * SELECT cert.cid,cert.ssl_key,server_ip.ip_address,server_ip.nid,server_ip.id FROM hosting_ssl_site ssl_site
+   * INNER JOIN hosting_ssl_cert cert ON cert.cid = ssl_site.ssl_key
+   * INNER JOIN hosting_ip_addresses site_ip ON site_ip.nid = ssl_site.nid
+   * INNER JOIN hosting_site site ON site.nid = ssl_site.nid
+   * INNER JOIN hosting_ip_addresses server_ip ON server_ip.ip_address = site_ip.ip_address
+   * INNER JOIN hosting_platform p ON site.platform = p.nid AND p.web_server = server_ip.nid
+   * WHERE ssl_enabled > 0 AND site.status > -2 GROUP BY cid ;
+   *
+   * This should show a meaningful list of SSL certificates -> IPs mappings.
+   *
    */
   $ret[] = update_sql("INSERT INTO {hosting_ssl_cert_ips} (cid, ip_address)
-  SELECT cid, server_ip.nid FROM {hosting_ssl_site} ssl_site
+  SELECT cert.cid,server_ip.id FROM {hosting_ssl_site} ssl_site
     INNER JOIN {hosting_ssl_cert} cert ON cert.cid = ssl_site.ssl_key
     INNER JOIN {hosting_ip_addresses} site_ip ON site_ip.nid = ssl_site.nid
     INNER JOIN {hosting_site} site ON site.nid = ssl_site.nid
     INNER JOIN {hosting_ip_addresses} server_ip ON server_ip.ip_address = site_ip.ip_address
-    INNER JOIN {node} servers ON server_ip.nid = servers.nid
-    WHERE ssl_enabled > %d AND site.status > %d AND servers.type = 'server'
-    GROUP BY cid ORDER BY cert.cid, site.nid",
+    INNER JOIN {hosting_platform} p ON site.platform = p.nid AND p.web_server = server_ip.nid
+    WHERE ssl_enabled > %d AND site.status > %d GROUP BY cid",
                 HOSTING_SSL_DISABLED, HOSTING_SITE_DELETED);
   return $ret;
 }
