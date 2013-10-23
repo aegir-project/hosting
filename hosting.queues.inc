@@ -6,7 +6,7 @@
  */
 
 /**
- * @defgroup backend-frontend-IPC
+ * @defgroup backend-frontend-IPC Frontend/Backend Inter-process Communication
  * @{
  * Aegir is based on a very important distinction between the
  * "frontend" and the "backend". The frontend is the Drupal website
