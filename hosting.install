@@ -378,7 +378,7 @@ function hosting_update_6015(&$sandbox) {
   if (!isset($sandbox['progress'])) {
     $sandbox['progress'] = 0;
     $sandbox['current_pid'] = 0;
-    $sandbox['max'] = db_result(db_query('SELECT COUNT(pid) FROM {url_alias}'));
+    $sandbox['max'] = db_result(db_query('SELECT COUNT(pid) FROM {url_alias} WHERE dst LIKE "hosting/c/%" AND pid > 0'));
   }
 
   $aliases = db_query_range("SELECT pid, src, dst FROM {url_alias} WHERE dst LIKE 'hosting/c/%' AND pid > %d ORDER BY pid ASC", $sandbox['current_pid'], 0, 50);
