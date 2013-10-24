@@ -193,6 +193,10 @@ function hosting_task_views_default_views() {
   $handler->display->display_options['fields']['view_node']['empty_zero'] = 0;
   $handler->display->display_options['fields']['view_node']['hide_alter_empty'] = 1;
   $handler->display->display_options['fields']['view_node']['text'] = 'View';
+  /* Sort criterion: Hosting Task: Default */
+  $handler->display->display_options['sorts']['hosting_task_default_1']['id'] = 'hosting_task_default_1';
+  $handler->display->display_options['sorts']['hosting_task_default_1']['table'] = 'hosting_task';
+  $handler->display->display_options['sorts']['hosting_task_default_1']['field'] = 'hosting_task_default';
   /* Sort criterion: Node: Updated date */
   $handler->display->display_options['sorts']['changed']['id'] = 'changed';
   $handler->display->display_options['sorts']['changed']['table'] = 'node';
@@ -224,6 +228,60 @@ function hosting_task_views_default_views() {
   $handler->display->display_options['pager']['options']['offset'] = '0';
   $handler->display->display_options['pager']['options']['id'] = '0';
   $handler->display->display_options['pager']['options']['expose']['items_per_page_options_all'] = 0;
+  $handler->display->display_options['defaults']['style_plugin'] = FALSE;
+  $handler->display->display_options['style_plugin'] = 'table';
+  $handler->display->display_options['style_options']['row_class'] = '[task_status]';
+  $handler->display->display_options['style_options']['columns'] = array(
+    'task_status' => 'task_status',
+    'title' => 'title',
+    'task_type' => 'task_type',
+    'timestamp' => 'timestamp',
+    'delta' => 'delta',
+    'view_node' => 'view_node',
+  );
+  $handler->display->display_options['style_options']['default'] = '-1';
+  $handler->display->display_options['style_options']['info'] = array(
+    'task_status' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
+    'title' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
+    'task_type' => array(
+      'sortable' => 1,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
+    'timestamp' => array(
+      'sortable' => 1,
+      'default_sort_order' => 'desc',
+      'align' => '',
+      'separator' => '',
+    ),
+    'delta' => array(
+      'sortable' => 1,
+      'default_sort_order' => 'desc',
+      'align' => '',
+      'separator' => '',
+    ),
+    'view_node' => array(
+      'align' => '',
+      'separator' => '',
+    ),
+  );
+  $handler->display->display_options['style_options']['override'] = 1;
+  $handler->display->display_options['style_options']['sticky'] = 0;
+  $handler->display->display_options['style_options']['empty_table'] = 0;
+  $handler->display->display_options['defaults']['style_options'] = FALSE;
+  $handler->display->display_options['defaults']['row_plugin'] = FALSE;
+  $handler->display->display_options['defaults']['row_options'] = FALSE;
   $handler->display->display_options['defaults']['fields'] = FALSE;
   /* Field: Hosting Task: Status */
   $handler->display->display_options['fields']['task_status']['id'] = 'task_status';
@@ -298,51 +356,29 @@ function hosting_task_views_default_views() {
   $handler->display->display_options['fields']['task_type']['hide_empty'] = 0;
   $handler->display->display_options['fields']['task_type']['empty_zero'] = 0;
   $handler->display->display_options['fields']['task_type']['hide_alter_empty'] = 1;
-  /* Field: Node: Post date */
-  $handler->display->display_options['fields']['created']['id'] = 'created';
-  $handler->display->display_options['fields']['created']['table'] = 'node';
-  $handler->display->display_options['fields']['created']['field'] = 'created';
-  $handler->display->display_options['fields']['created']['label'] = 'Created';
-  $handler->display->display_options['fields']['created']['alter']['alter_text'] = 0;
-  $handler->display->display_options['fields']['created']['alter']['make_link'] = 0;
-  $handler->display->display_options['fields']['created']['alter']['absolute'] = 0;
-  $handler->display->display_options['fields']['created']['alter']['external'] = 0;
-  $handler->display->display_options['fields']['created']['alter']['replace_spaces'] = 0;
-  $handler->display->display_options['fields']['created']['alter']['trim_whitespace'] = 0;
-  $handler->display->display_options['fields']['created']['alter']['nl2br'] = 0;
-  $handler->display->display_options['fields']['created']['alter']['word_boundary'] = 1;
-  $handler->display->display_options['fields']['created']['alter']['ellipsis'] = 1;
-  $handler->display->display_options['fields']['created']['alter']['strip_tags'] = 0;
-  $handler->display->display_options['fields']['created']['alter']['trim'] = 0;
-  $handler->display->display_options['fields']['created']['alter']['html'] = 0;
-  $handler->display->display_options['fields']['created']['element_label_colon'] = 1;
-  $handler->display->display_options['fields']['created']['element_default_classes'] = 1;
-  $handler->display->display_options['fields']['created']['hide_empty'] = 0;
-  $handler->display->display_options['fields']['created']['empty_zero'] = 0;
-  $handler->display->display_options['fields']['created']['hide_alter_empty'] = 1;
-  $handler->display->display_options['fields']['created']['date_format'] = 'time ago';
-  /* Field: Hosting Task: Executed */
-  $handler->display->display_options['fields']['executed']['id'] = 'executed';
-  $handler->display->display_options['fields']['executed']['table'] = 'hosting_task';
-  $handler->display->display_options['fields']['executed']['field'] = 'executed';
-  $handler->display->display_options['fields']['executed']['alter']['alter_text'] = 0;
-  $handler->display->display_options['fields']['executed']['alter']['make_link'] = 0;
-  $handler->display->display_options['fields']['executed']['alter']['absolute'] = 0;
-  $handler->display->display_options['fields']['executed']['alter']['external'] = 0;
-  $handler->display->display_options['fields']['executed']['alter']['replace_spaces'] = 0;
-  $handler->display->display_options['fields']['executed']['alter']['trim_whitespace'] = 0;
-  $handler->display->display_options['fields']['executed']['alter']['nl2br'] = 0;
-  $handler->display->display_options['fields']['executed']['alter']['word_boundary'] = 1;
-  $handler->display->display_options['fields']['executed']['alter']['ellipsis'] = 1;
-  $handler->display->display_options['fields']['executed']['alter']['strip_tags'] = 0;
-  $handler->display->display_options['fields']['executed']['alter']['trim'] = 0;
-  $handler->display->display_options['fields']['executed']['alter']['html'] = 0;
-  $handler->display->display_options['fields']['executed']['element_label_colon'] = 1;
-  $handler->display->display_options['fields']['executed']['element_default_classes'] = 1;
-  $handler->display->display_options['fields']['executed']['hide_empty'] = 0;
-  $handler->display->display_options['fields']['executed']['empty_zero'] = 0;
-  $handler->display->display_options['fields']['executed']['hide_alter_empty'] = 1;
-  $handler->display->display_options['fields']['executed']['date_format'] = 'time ago';
+  /* Field: Node revision: Updated date */
+  $handler->display->display_options['fields']['timestamp']['id'] = 'timestamp';
+  $handler->display->display_options['fields']['timestamp']['table'] = 'node_revisions';
+  $handler->display->display_options['fields']['timestamp']['field'] = 'timestamp';
+  $handler->display->display_options['fields']['timestamp']['label'] = 'Scheduled';
+  $handler->display->display_options['fields']['timestamp']['alter']['alter_text'] = 0;
+  $handler->display->display_options['fields']['timestamp']['alter']['make_link'] = 0;
+  $handler->display->display_options['fields']['timestamp']['alter']['absolute'] = 0;
+  $handler->display->display_options['fields']['timestamp']['alter']['external'] = 0;
+  $handler->display->display_options['fields']['timestamp']['alter']['replace_spaces'] = 0;
+  $handler->display->display_options['fields']['timestamp']['alter']['trim_whitespace'] = 0;
+  $handler->display->display_options['fields']['timestamp']['alter']['nl2br'] = 0;
+  $handler->display->display_options['fields']['timestamp']['alter']['word_boundary'] = 1;
+  $handler->display->display_options['fields']['timestamp']['alter']['ellipsis'] = 1;
+  $handler->display->display_options['fields']['timestamp']['alter']['strip_tags'] = 0;
+  $handler->display->display_options['fields']['timestamp']['alter']['trim'] = 0;
+  $handler->display->display_options['fields']['timestamp']['alter']['html'] = 0;
+  $handler->display->display_options['fields']['timestamp']['element_label_colon'] = 1;
+  $handler->display->display_options['fields']['timestamp']['element_default_classes'] = 1;
+  $handler->display->display_options['fields']['timestamp']['hide_empty'] = 0;
+  $handler->display->display_options['fields']['timestamp']['empty_zero'] = 0;
+  $handler->display->display_options['fields']['timestamp']['hide_alter_empty'] = 1;
+  $handler->display->display_options['fields']['timestamp']['date_format'] = 'time ago';
   /* Field: Hosting Task: Execution time */
   $handler->display->display_options['fields']['delta']['id'] = 'delta';
   $handler->display->display_options['fields']['delta']['table'] = 'hosting_task';
@@ -391,10 +427,9 @@ function hosting_task_views_default_views() {
   $handler->display->display_options['fields']['view_node']['hide_alter_empty'] = 1;
   $handler->display->display_options['fields']['view_node']['text'] = 'View';
   $handler->display->display_options['path'] = 'hosting/queues/tasks';
-
   $views[$view->name] = $view;
 
-  // Exported view: hosting_task_list
+  // Exported view: hosting_task_log
   $view = new view;
   $view->name = 'hosting_task_log';
   $view->description = 'List of Hosting tasks that have run on a given Aegir entity';
@@ -741,5 +776,6 @@ function hosting_task_views_default_views() {
 
   return $views;
 }
+
 
 
