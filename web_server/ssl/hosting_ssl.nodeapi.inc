@@ -216,10 +216,10 @@ function hosting_ssl_nodeapi_site_update($node) {
     hosting_ssl_nodeapi_site_insert($node);
   }
   else {
+    if ($node->site_status == HOSTING_SITE_DELETED || !$node->ssl_enabled) {
+      hosting_ssl_clean_keys($node);
+    }
     db_query("UPDATE {hosting_ssl_site} SET ssl_enabled=%d, ssl_key=%d WHERE vid=%d", $node->ssl_enabled, $node->ssl_key, $node->vid);
-  }
-  if ($node->site_status == HOSTING_SITE_DELETED || !$node->ssl_enabled) {
-    hosting_ssl_clean_keys($node);
   }
 }
 
@@ -230,8 +230,8 @@ function hosting_ssl_nodeapi_site_load($node) {
 }
 
 function hosting_ssl_nodeapi_site_delete($node) {
-  db_query("DELETE FROM {hosting_ssl_site} WHERE nid=%d", $node->nid);
   hosting_ssl_clean_keys($node);
+  db_query("DELETE FROM {hosting_ssl_site} WHERE nid=%d", $node->nid);
 }
 
 function hosting_ssl_nodeapi_site_delete_revision($node) {
@@ -328,11 +328,14 @@ function hosting_ssl_clean_keys($node) {
   if (!db_result(db_query("SELECT * FROM hosting_ssl_site siteA
                              INNER JOIN hosting_ssl_site siteB ON siteA.ssl_key = siteB.ssl_key 
                              INNER JOIN hosting_site s ON s.nid = siteA.nid
-                               WHERE siteA.ssl_enabled = 1
+                               WHERE siteA.nid <> siteB.nid
+                                 AND siteA.ssl_enabled = 1
                                  AND s.status <> %d
                                  AND siteB.nid = %d;", HOSTING_SITE_DELETED, $node->nid))) {
-    drupal_set_message(t("cleaning up unused certificate associated with site"));
-    db_query("DELETE FROM {hosting_ssl_cert} WHERE cid = %d", $node->ssl_key);
-    db_query("DELETE FROM {hosting_ssl_cert_ips} WHERE cid = %d", $node->ssl_key);
+    // we need to fetch the ssl_key field from the DB because the object comes from the node edit, so it's gone
+    $ssl_key = db_result(db_query('SELECT ssl_key FROM {hosting_ssl_site} WHERE nid = %d', $node->nid));
+    drupal_set_message(t("cleaning up unused certificate %cert associated with site %site", array('%cert' => $ssl_key, '%site' => $node->nid)));
+    db_query("DELETE FROM {hosting_ssl_cert} WHERE cid = %d", $ssl_key);
+    db_query("DELETE FROM {hosting_ssl_cert_ips} WHERE cid = %d", $ssl_key);
   }
 }
