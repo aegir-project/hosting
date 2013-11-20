@@ -218,7 +218,7 @@ function hosting_ssl_nodeapi_site_update($node) {
   else {
     db_query("UPDATE {hosting_ssl_site} SET ssl_enabled=%d, ssl_key=%d WHERE vid=%d", $node->ssl_enabled, $node->ssl_key, $node->vid);
   }
-  if ($node->site_status == HOSTING_SITE_DELETED) {
+  if ($node->site_status == HOSTING_SITE_DELETED || !$node->ssl_enabled) {
     hosting_ssl_clean_keys($node);
   }
 }
