@@ -325,7 +325,12 @@ function hosting_ssl_get_keys($client = null, $ask_custom = FALSE) {
  */
 function hosting_ssl_clean_keys($node) {
   // check if there are still sites using this site's certificate
-  if (!db_result(db_query("SELECT * FROM hosting_ssl_site siteA INNER JOIN hosting_ssl_site siteB ON siteA.ssl_key = siteB.ssl_key INNER JOIN hosting_site s ON s.nid = siteA.nid WHERE siteA.ssl_enabled = 1 AND s.status <> %d AND siteB.nid = %d;", HOSTING_SITE_DELETED, $node->nid))) {
+  if (!db_result(db_query("SELECT * FROM hosting_ssl_site siteA
+                             INNER JOIN hosting_ssl_site siteB ON siteA.ssl_key = siteB.ssl_key 
+                             INNER JOIN hosting_site s ON s.nid = siteA.nid
+                               WHERE siteA.ssl_enabled = 1
+                                 AND s.status <> %d
+                                 AND siteB.nid = %d;", HOSTING_SITE_DELETED, $node->nid))) {
     drupal_set_message(t("cleaning up unused certificate associated with site"));
     db_query("DELETE FROM {hosting_ssl_cert} WHERE cid = %d", $node->ssl_key);
     db_query("DELETE FROM {hosting_ssl_cert_ips} WHERE cid = %d", $node->ssl_key);
