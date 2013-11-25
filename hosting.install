@@ -514,7 +514,7 @@ function hosting_update_6206() {
 }
 
 /**
- * Alter the length avialable for a site alias to 235.
+ * Alter the length available for a site alias to 235.
  *
  * https://drupal.org/node/1971348
  */
