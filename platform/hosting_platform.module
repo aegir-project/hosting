@@ -107,6 +107,7 @@ function hosting_platform_hosting_tasks() {
         Are you really sure you want to unlock this platform?'),
     'weight' => 10,
   );
+
   return $tasks;
 }
 
@@ -338,6 +339,7 @@ function hosting_platform_form(&$node) {
   foreach(array('verified', 'platform_status') as $extra_attribute) {
     $form["$extra_attribute"] = array('#type' => 'value', '#value' => $node->$extra_attribute);
   }
+
   return $form;
 }
 
@@ -564,6 +566,7 @@ function hosting_platform_view($node, $teaser = FALSE, $page = FALSE) {
 
     drupal_add_js(drupal_get_path('module','hosting_task') . '/hosting_task.js');
   }
+
   return $node;
 }
 
