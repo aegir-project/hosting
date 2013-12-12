@@ -27,6 +27,8 @@ function hosting_task_menu() {
            'access arguments' => array(1, $task),
            'type' => MENU_CALLBACK,
          );
+        // Complement the $items array with attributes from the task definition
+        // e.g. a custom access callback.
         $items[$path] = array_merge($items[$path], $info);
       }
     }
@@ -214,6 +216,13 @@ function hosting_task_menu_access($node, $task) {
  * Implemented as a helper function since we only want to validate the CSRF
  * token when the user accesses a certain path, not when (for example) building
  * the list of tasks a user has access to.
+ *
+ * @arg $node object
+ *   the node object we're trying to access
+ *
+ * @arg $task string
+ *   the task type we're trying to do on the $node
+ *
  *
  * @see hosting_task_menu_access()
  */
