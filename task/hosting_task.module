@@ -186,12 +186,15 @@ function hosting_task_menu_access($node, $task) {
       // If the platform's been locked, we can unlock it, delete, batch migrate existing sites or verify
       if ($node->platform_status == HOSTING_PLATFORM_LOCKED) {
         $platform_tasks = array('verify', 'unlock', 'delete', 'migrate');
+        return (in_array($task, $platform_tasks));
       }
-      else {   
-        // If the platform's unlocked, we can lock it, delete it or batch migrate sites
-        $platform_tasks = array('verify', 'lock', 'delete', 'migrate');
+      else {
+        // Platform is not locked, so no need for an unlock task
+        if ($task == 'unlock') {
+          return FALSE;
+        }
+        return TRUE;
       }
-      return (in_array($task, $platform_tasks)); 
     }
     if ($node->type === 'server') {
       // If the user can't edit this node, he can't create tasks on it.
