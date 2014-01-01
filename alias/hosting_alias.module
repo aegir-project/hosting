@@ -424,6 +424,21 @@ function hosting_alias_validate_alias($site, $alias) {
   }
 }
 
+/**
+ * Ensure that an alias is valid for subdir site.
+ *
+ * @param object $site
+ *   A Hosting site node.
+ * @param string $alias
+ *   An alias to have point to the site.
+ */
+function hosting_alias_validate_subdir($site, $alias) {
+  if ($alias = trim($alias)) {
+    if (!_hosting_valid_fqdn_subdir($alias)) {
+      form_set_error('aliases', t('The domain name @alias is not a valid subdir url', array('@alias' => $alias)));
+    }
+  }
+}
 
 /**
  * Implementation of hook_perm().

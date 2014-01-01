@@ -55,6 +55,20 @@ function _hosting_valid_fqdn_wildcard($fqdn) {
 }
 
 /**
+ * Check if the FQDN provided is valid for subdir alias.
+ *
+ * @param $fqdn
+ *   The Fully Qualified Domain Name (FQDN) to validate.
+ * @return
+ *   An integer greater than 0 if the $fqdn is valid, or 0 or FALSE if it not
+ *   valid.
+ */
+function _hosting_valid_fqdn_subdir($fqdn) {
+  return preg_match("/^([a-z0-9]([a-z0-9-\/]*[a-z0-9])?\.?)+$/i", $fqdn) &&
+         preg_match("/\//", $fqdn) && !preg_match("/\/\//", $fqdn);
+}
+
+/**
  * Format a timestamp as a string in a friendly way.
  *
  * @param $ts
