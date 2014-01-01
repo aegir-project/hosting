@@ -18,7 +18,7 @@ function hosting_subdirs_form_alter(&$form, &$form_state, $form_id) {
  * Implements hook_form_FORM_ID_alter().
  */
 function hosting_subdirs_form_site_node_form_alter(&$form, &$form_state) {
-  $form['title']['#description'] = 'To create a site using a subdirectory, name it using a subdomain (e.g., foo.example.com), and then enter an alias below for the desired subdirectory (e.g., example.com/foo). <strong>N.B. The root domain (e.g., example.com) cannot be in use for a subdirectory to work.</strong>';
+  $form['title']['#description'] = 'Hint: To create a site using a subdirectory, name it using a subdomain (e.g., foo.example.com), and then enter an alias below for the desired subdirectory (e.g., example.com/foo). If you plan to use also the root domain (e.g., example.com), you must create a site with the root domain before adding sites in its subdirectories.';
 }
 
 /**
