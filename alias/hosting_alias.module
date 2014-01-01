@@ -434,6 +434,9 @@ function hosting_alias_validate_alias($site, $alias) {
  */
 function hosting_alias_validate_subdir($site, $alias) {
   if ($alias = trim($alias)) {
+    if (!hosting_alias_allow_domain($alias, array('nid' => $site->nid)) || $alias == $site->title) {
+      form_set_error('aliases', t('The domain name @alias is already in use', array('@alias' => $alias)));
+    }
     if (!_hosting_valid_fqdn_subdir($alias)) {
       form_set_error('aliases', t('The domain name @alias is not a valid subdir url', array('@alias' => $alias)));
     }
