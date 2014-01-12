@@ -73,12 +73,20 @@ function hosting_drush_command() {
     'description' => dt('Complete the migration of the hostmaster site to a new platform.'),
     'arguments' => array(
       'example.com' => dt('The url of the site being migrated.')),
+    'options' => array(
+      'old_platform_name' => dt('The old platform name'),
+      'new_platform_name' => dt('The new platform name'),
+    )
   );
 
   $items['hosting-resume'] = array(
     'description' => dt('Complete the migration of the hostmaster site to a new platform.'),
     'arguments' => array(
       'example.com' => dt('The url of the site being migrated.')),
+    'options' => array(
+      'old_platform_name' => dt('The old platform name'),
+      'new_platform_name' => dt('The new platform name'),
+    )
   );
 
   return $items;
