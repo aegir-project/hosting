@@ -182,7 +182,7 @@ function hosting_site_update(&$node) {
     db_query("UPDATE {hosting_site} SET client = %d, db_server = %d, db_name = '%s', platform = %d, last_cron = %d, cron_key = '%s', status = %d, profile = %d, language = '%s', verified = %d WHERE vid=%d",
              $node->client, $node->db_server, $node->db_name, $node->platform, $node->last_cron, $node->cron_key, $node->site_status, $node->profile, $node->site_language, $node->verified, $node->vid);
   }
-  if (!$node->no_verify) {
+  if ((isset($node->no_verify) && $node->no_verify) == FALSE) {
     hosting_add_task($node->nid, 'verify');
   }
 }
