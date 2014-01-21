@@ -5,7 +5,7 @@
  *
  * @ingroup views_field_handlers
  */
-class views_handler_field_hosting_package_site_count extends views_handler_field {
+class hosting_package_handler_field_site_count extends views_handler_field {
 
   function query() {
     parent::query();

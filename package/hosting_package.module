@@ -459,7 +459,7 @@ function hosting_package_sync(&$data) {
 function hosting_package_views_api() {
   return array(
     'api' => 3,
-    'path' => drupal_get_path('module', 'hosting_package') . '/views',
+    'path' => drupal_get_path('module', 'hosting_package') . '/includes/views',
   );
 }
 

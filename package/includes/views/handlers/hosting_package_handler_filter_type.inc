@@ -7,7 +7,7 @@
 /**
  * Views filter class to filter by package type.
  */
-class views_handler_filter_hosting_package_type extends views_handler_filter_in_operator {
+class hosting_package_handler_filter_type extends views_handler_filter_in_operator {
   function get_value_options() {
     if (!isset($this->value_options)) {
       $this->value_title = t('Package Type');

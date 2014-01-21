@@ -3,7 +3,7 @@
 /**
  * Access plugin that provides access control for package views.
  */
-class views_plugin_access_hosting_package extends views_plugin_access {
+class hosting_package_plugin_access extends views_plugin_access {
 
   /**
    * Return a string to display as the clickable title for the

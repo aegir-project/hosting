@@ -5,34 +5,6 @@
  */
 
 /**
- * Implementation of hook_views_handlers().
- */
-function hosting_package_views_handlers() {
-  return array(
-    'info' => array(
-      'path' => drupal_get_path('module', 'hosting_package') . '/views',
-    ),
-    'handlers' => array(
-      // field handlers
-      'views_handler_field_hosting_package_status' => array(
-        'parent' => 'views_handler_field_hosting_site_status',
-      ),
-      'views_handler_field_hosting_package_site_count' => array(
-        'parent' => 'views_handler_field',
-      ),
-      // filter handlers
-      'views_handler_filter_hosting_package_status' => array(
-        'parent' => 'views_handler_filter_in_operator',
-      ),
-      // sort handlers
-      'views_handler_sort_hosting_package_site_count' => array(
-        'parent' => 'views_handler_sort',
-      ),
-    ),
-  );
-}
-
-/**
  * Implementation of hook_views_data().
  */
 function hosting_package_views_data() {
@@ -119,11 +91,11 @@ function hosting_package_views_data() {
     'help' => t('A count of sites using a package.'),
     'field' => array(
       'field' => 'platform',
-      'handler' => 'views_handler_field_hosting_package_site_count',
+      'handler' => 'hosting_package_handler_field_site_count',
       'click sortable' => TRUE,
     ),
     'sort' => array(
-      'handler' => 'views_handler_sort_hosting_package_site_count',
+      'handler' => 'hosting_package_handler_sort_site_count',
     ),
   );
 
@@ -223,11 +195,11 @@ function hosting_package_views_data() {
     'title' => t('Status'),
     'help' => t('The status of the package instance.'),
     'field' => array(
-      'handler' => 'views_handler_field_hosting_package_status',
+      'handler' => 'hosting_package_handler_field_status',
       'click sortable' => TRUE,
     ),
     'filter' => array(
-      'handler' => 'views_handler_filter_hosting_package_status',
+      'handler' => 'hosting_package_handler_filter_status',
       'label' => t('Status'),
       'type' => 'on-off',
       // use boolean_field = 1 instead of boolean_field <> 0 in WHERE statment
@@ -256,8 +228,8 @@ function hosting_package_views_plugins() {
       'package' => array(
         'title' => t('Hosting package'),
         'help' => t('Manage package access.'),
-        'handler' => 'views_plugin_access_hosting_package',
-        'path' => drupal_get_path('module', 'hosting_package') . '/views',
+        'handler' => 'hosting_package_plugin_access',
+        'path' => drupal_get_path('module', 'hosting_package') . '/includes/views',
       ),
     ),
   );

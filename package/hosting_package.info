@@ -4,4 +4,9 @@ package = Hosting
 dependencies[] = hosting
 
 core = 7.x
-files[] = hosting_package_handler_filter_hosting_package_type.inc
+
+files[] = includes/views/handlers/hosting_package_handler_field_site_count.inc
+files[] = includes/views/handlers/hosting_package_handler_field_status.inc
+files[] = includes/views/handlers/hosting_package_handler_filter_status.inc
+files[] = includes/views/handlers/hosting_package_handler_filter_type.inc
+files[] = includes/views/handlers/hosting_package_handler_sort_site_count.inc

@@ -3,7 +3,7 @@
 /**
  * Sort handler for package site counts.
  */
-class views_handler_sort_hosting_package_site_count extends views_handler_sort {
+class hosting_package_handler_sort_site_count extends views_handler_sort {
 
   /**
    * Called to add the sort to a query.

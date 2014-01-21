@@ -5,7 +5,7 @@
  *
  * @ingroup views_field_handlers
  */
-class views_handler_field_hosting_package_status extends views_handler_field_hosting_site_status {
+class hosting_package_handler_field_status extends hosting_site_handler_field_status {
 
   /**
    * Constructor; calls to base object constructor.
