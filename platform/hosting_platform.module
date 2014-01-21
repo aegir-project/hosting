@@ -762,8 +762,8 @@ function hosting_platform_hosting_summary() {
  */
 function hosting_platform_views_api() {
   return array(
-    'api' => 2,
-    'path' => drupal_get_path('module', 'hosting_platform'),
+    'api' => 3,
+    'path' => drupal_get_path('module', 'hosting_platform') . '/includes/views',
   );
 }
 

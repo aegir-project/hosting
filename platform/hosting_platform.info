@@ -4,4 +4,8 @@ package = Hosting
 dependencies[] = hosting
 dependencies[] = hosting_package
 
+files[] = includes/views/handlers/hosting_platform_handler_field_release.inc
+files[] = includes/views/handlers/hosting_platform_handler_field_sites.inc
+files[] = includes/views/handlers/hosting_platform_handler_field_status.inc
+
 core = 7.x

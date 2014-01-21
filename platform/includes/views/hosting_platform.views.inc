@@ -5,29 +5,6 @@
  */
 
 /**
- * Implements hook_views_handlers().
- */
-function hosting_platform_views_handlers() {
-  return array(
-    'info' => array(
-      'path' => drupal_get_path('module', 'hosting_platform'),
-    ),
-    'handlers' => array(
-      // field handlers
-      'views_handler_field_hosting_platform_release' => array(
-        'parent' => 'views_handler_field',
-      ),
-      'views_handler_field_hosting_platform_status' => array(
-        'parent' => 'views_handler_field_hosting_site_status',
-      ),
-      'views_handler_field_hosting_platform_sites' => array(
-        'parent' => 'views_handler_field',
-      ),
-    ),
-  );
-}
-
-/**
  * Implements hook_views_data().
  */
 function hosting_platform_views_data() {
@@ -67,7 +44,7 @@ function hosting_platform_views_data() {
     'help' => t('The release name.'),
     'field' => array(
       'field' => 'nid',
-      'handler' => 'views_handler_field_hosting_platform_release',
+      'handler' => 'hosting_platform_handler_field_release',
       'click sortable' => TRUE,
     ),
   );
@@ -85,7 +62,7 @@ function hosting_platform_views_data() {
     'title' => t('Status'),
     'help' => t('The current state of this platform.'),
     'field' => array(
-      'handler' => 'views_handler_field_hosting_platform_status',
+      'handler' => 'hosting_platform_handler_field_status',
       'click sortable' => TRUE,
     ),
     'filter' => array(
@@ -97,7 +74,7 @@ function hosting_platform_views_data() {
     'title' => t('Sites'),
     'help' => t('The number of sites in this platform.'),
     'field' => array(
-      'handler' => 'views_handler_field_hosting_platform_sites',
+      'handler' => 'hosting_platform_handler_field_sites',
       'field' => 'nid',
     ),
   );
