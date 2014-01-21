@@ -1604,7 +1604,7 @@ function hosting_task_status_class($status = NULL) {
 function hosting_task_views_api() {
   return array(
     'api' => 3,
-    'path' => drupal_get_path('module', 'hosting_task') . '/includes',
+    'path' => drupal_get_path('module', 'hosting_task') . '/includes/views',
   );
 }
 

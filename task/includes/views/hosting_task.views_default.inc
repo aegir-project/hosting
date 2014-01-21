@@ -12,17 +12,17 @@ function hosting_task_views_default_views() {
   // Exported view: hosting_task_list
   $view = new view();
   $view->name = 'hosting_task_list';
-  $view->description = 'Display a list of tasks in Aegir';
+  $view->description = 'Display a list of tasks in Aegir.';
   $view->tag = 'hosting_task';
   $view->base_table = 'node';
-  $view->human_name = 'Hosting tasks list';
+  $view->human_name = 'Hosting Task list';
   $view->core = 6;
   $view->api_version = '3.0';
   $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
 
   /* Display: Defaults */
   $handler = $view->new_display('default', 'Defaults', 'default');
-  $handler->display->display_options['title'] = 'Queues';
+  $handler->display->display_options['title'] = 'Tasks';
   $handler->display->display_options['use_ajax'] = TRUE;
   $handler->display->display_options['use_more'] = TRUE;
   $handler->display->display_options['use_more_always'] = FALSE;
@@ -93,12 +93,14 @@ function hosting_task_views_default_views() {
   $handler->display->display_options['relationships']['rid']['id'] = 'rid';
   $handler->display->display_options['relationships']['rid']['table'] = 'hosting_task';
   $handler->display->display_options['relationships']['rid']['field'] = 'rid';
-  /* Field: Broken/missing handler */
+  /* Field: Hosting Task: Status */
   $handler->display->display_options['fields']['task_status']['id'] = 'task_status';
   $handler->display->display_options['fields']['task_status']['table'] = 'hosting_task';
   $handler->display->display_options['fields']['task_status']['field'] = 'task_status';
   $handler->display->display_options['fields']['task_status']['label'] = '';
   $handler->display->display_options['fields']['task_status']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['task_status']['alter']['status_mode'] = 'class';
+  $handler->display->display_options['fields']['task_status']['element_label_colon'] = FALSE;
   /* Field: Content: Title */
   $handler->display->display_options['fields']['title']['id'] = 'title';
   $handler->display->display_options['fields']['title']['table'] = 'node';
@@ -146,6 +148,8 @@ function hosting_task_views_default_views() {
 
   /* Display: Block */
   $handler = $view->new_display('block', 'Block', 'block');
+  $handler->display->display_options['defaults']['title'] = FALSE;
+  $handler->display->display_options['title'] = 'Task queue';
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page_tasks');
@@ -155,12 +159,14 @@ function hosting_task_views_default_views() {
   $handler->display->display_options['pager']['options']['offset'] = '0';
   $handler->display->display_options['pager']['options']['id'] = '0';
   $handler->display->display_options['defaults']['fields'] = FALSE;
-  /* Field: Broken/missing handler */
+  /* Field: Hosting Task: Status */
   $handler->display->display_options['fields']['task_status']['id'] = 'task_status';
   $handler->display->display_options['fields']['task_status']['table'] = 'hosting_task';
   $handler->display->display_options['fields']['task_status']['field'] = 'task_status';
   $handler->display->display_options['fields']['task_status']['label'] = '';
   $handler->display->display_options['fields']['task_status']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['task_status']['alter']['status_mode'] = 'class';
+  $handler->display->display_options['fields']['task_status']['element_label_colon'] = FALSE;
   /* Field: Content: Title */
   $handler->display->display_options['fields']['title']['id'] = 'title';
   $handler->display->display_options['fields']['title']['table'] = 'node';
@@ -204,10 +210,15 @@ function hosting_task_views_default_views() {
   $handler->display->display_options['fields']['nid']['alter']['link_class'] = 'hosting-button-enabled hosting-button-log hosting-button-dialog';
   $handler->display->display_options['fields']['nid']['element_class'] = 'hosting-actions';
   $handler->display->display_options['path'] = 'hosting/queues/tasks';
+  $handler->display->display_options['menu']['type'] = 'normal';
+  $handler->display->display_options['menu']['title'] = 'Tasks';
+  $handler->display->display_options['menu']['description'] = 'A list of all queued and run tasks.';
+  $handler->display->display_options['menu']['weight'] = '0';
+  $handler->display->display_options['menu']['name'] = 'main-menu';
+  $handler->display->display_options['menu']['context'] = 0;
+  $handler->display->display_options['menu']['context_only_inline'] = 0;
 
   $views[$view->name] = $view;
 
   return $views;
 }
-
-

@@ -4,31 +4,6 @@
  */
 
 /**
- * Implements hook_views_handlers().
- */
-function hosting_task_views_handlers() {
-  return array(
-    'info' => array(
-      'path' => drupal_get_path('module', 'hosting_task') . '/includes',
-    ),
-    'handlers' => array(
-      'hosting_task_handler_field_hosting_task_status' => array(
-        'parent' => 'views_handler_field',
-      ),
-      'hosting_task_handler_filter_hosting_task_status' => array(
-        'parent' => 'views_handler_filter_in_operator',
-      ),
-      'hosting_task_handler_filter_hosting_task_type' => array(
-        'parent' => 'views_handler_filter_in_operator',
-      ),
-      'hosting_task_handler_sort_hosting_task_default' => array(
-        'parent' => 'views_handler_sort',
-      ),
-    ),
-  );
-}
-
-/**
  * Implements hook_views_data().
  */
 function hosting_task_views_data() {
@@ -55,7 +30,7 @@ function hosting_task_views_data() {
       'click sortable' => TRUE,
     ),
     'filter' => array(
-      'handler' => 'hosting_task_handler_filter_hosting_task_type',
+      'handler' => 'hosting_task_handler_filter_type',
     ),
   );
 
@@ -81,11 +56,11 @@ function hosting_task_views_data() {
     'title' => t('Status'),
     'help' => t('Current status of the task.'),
     'field' => array(
-      'handler' => 'hosting_task_handler_field_hosting_task_status',
+      'handler' => 'hosting_task_handler_field_status',
       'click sortable' => TRUE,
     ),
     'filter' => array(
-      'handler' => 'hosting_task_handler_filter_hosting_task_status',
+      'handler' => 'hosting_task_handler_filter_status',
     ),
   );
 
@@ -120,7 +95,7 @@ function hosting_task_views_data() {
     'title' => t('Default'),
     'help' => t('The default sort order for tasks.'),
     'sort' => array(
-      'handler' => 'hosting_task_handler_sort_hosting_task_default',
+      'handler' => 'hosting_task_handler_sort_default',
     ),
   );
 

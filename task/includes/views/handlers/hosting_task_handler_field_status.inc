@@ -6,7 +6,7 @@
 /**
  * @ingroup views_field_handlers
  */
-class hosting_task_handler_field_hosting_task_status extends views_handler_field {
+class hosting_task_handler_field_status extends views_handler_field {
   function option_definition() {
     $options = parent::option_definition();
 
