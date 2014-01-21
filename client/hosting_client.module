@@ -1201,6 +1201,6 @@ function hosting_client_sanitize($title) {
 function hosting_client_views_api() {
   return array(
     'api' => 3,
-    'path' => drupal_get_path('module', 'hosting_client'),
+    'path' => drupal_get_path('module', 'hosting_client') . '/includes/views',
   );
 }
