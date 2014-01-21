@@ -1135,8 +1135,8 @@ function hosting_context_node_types() {
  */
 function hosting_views_api() {
   return array(
-    'api' => 2,
-    'path' => drupal_get_path('module', 'hosting'),
+    'api' => 3,
+    'path' => drupal_get_path('module', 'hosting') . '/includes/views',
   );
 }
 

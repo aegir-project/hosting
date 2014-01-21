@@ -13,7 +13,7 @@ dependencies[] = views_bulk_operations
 #dependencies[] = hosting_site
 #dependencies[] = hosting_web_server
 
-files[] = hosting_views_field_handler_interval.inc
+files[] = includes/views/handlers/hosting_field_handler_interval.inc
 files[] = hosting.test
 
 configure = admin/hosting

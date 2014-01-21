@@ -3,7 +3,7 @@
 /**
  * Access plugin that provides access control for site views.
  */
-class views_plugin_access_hosting_site extends views_plugin_access {
+class hosting_site_plugin_access extends views_plugin_access {
   /**
    * Determine if the current user has access or not.
    */

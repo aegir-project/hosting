@@ -687,12 +687,12 @@ function _hosting_site_list_class($node, $verified = NULL) {
 }
 
 /**
- * Views integration
+ * Views integration.
  */
 function hosting_site_views_api() {
   return array(
     'api' => 3,
-    'path' => drupal_get_path('module', 'hosting_site') . '/views',
+    'path' => drupal_get_path('module', 'hosting_site') . '/includes/views',
   );
 }
 

@@ -68,7 +68,7 @@ function hosting_site_views_data() {
     'title' => t('Verified'),
     'help' => t('The last date verified task run on this site.'),
     'field' => array(
-      'handler' => 'hosting_views_field_handler_interval',
+      'handler' => 'hosting_field_handler_interval',
       'click sortable' => TRUE,
     ),
   );
@@ -77,7 +77,7 @@ function hosting_site_views_data() {
     'title' => t('Last Cron Run'),
     'help' => t('The time the last cron run was executed on this site.'),
     'field' => array(
-      'handler' => 'hosting_views_field_handler_interval',
+      'handler' => 'hosting_field_handler_interval',
       'click sortable' => TRUE,
     ),
   );
@@ -86,7 +86,7 @@ function hosting_site_views_data() {
     'title' => t('Language'),
     'help' => t('The default language of this site.'),
     'field' => array(
-      'handler' => 'views_handler_field_hosting_language',
+      'handler' => 'hosting_site_handler_field_language',
       'click sortable' => TRUE,
     ),
   );
@@ -95,7 +95,7 @@ function hosting_site_views_data() {
     'title' => t('Status'),
     'help' => t('The current state of this site.'),
     'field' => array(
-      'handler' => 'views_handler_field_hosting_site_status',
+      'handler' => 'hosting_site_handler_field_status',
       'click sortable' => TRUE,
     ),
     'filter' => array(
@@ -249,23 +249,6 @@ function hosting_site_views_data() {
   return $data;
 }
 
-function hosting_site_views_handlers() {
-  return array(
-    'info' => array(
-      'path' => drupal_get_path('module', 'hosting_site') . '/views',
-    ),
-    'handlers' => array(
-      // field handlers
-      'views_handler_field_hosting_language' => array(
-        'parent' => 'views_handler_field',
-      ),
-      'views_handler_field_hosting_site_status' => array(
-        'parent' => 'views_handler_field',
-      ),
-    ),
-  );
-}
-
 /**
  * Implementation of hook_views_plugins
  */
@@ -280,8 +263,8 @@ function hosting_site_views_plugins() {
       'site' => array(
         'title' => t('Hosting site'),
         'help' => t('Manage site access.'),
-        'handler' => 'views_plugin_access_hosting_site',
-        'path' => drupal_get_path('module', 'hosting_site') . '/views',
+        'handler' => 'hosting_site_plugin_access',
+        'path' => drupal_get_path('module', 'hosting_site') . '/includes/views/plugins',
       ),
     ),
   );
