@@ -86,7 +86,7 @@ function hosting_format_interval($ts) {
   if ($ts == REQUEST_TIME) {
     return t('Now');
   }
-  if (!$ts) {
+  if ($ts <= 1) {
     //Treats the UNIX EPOCH as never.
     return t('Never');
   }

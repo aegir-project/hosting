@@ -679,7 +679,7 @@ function hosting_site_task_status($nid) {
 function _hosting_site_list_class($node, $verified = NULL) {
   $status = (is_numeric($node)) ? $node : $node->site_status;
   $classes = hosting_site_status_codes('class');
-  if (($status == HOSTING_SITE_ENABLED) && (!$verified)) {
+  if (($status == HOSTING_SITE_ENABLED) && ($verified <= 1)) {
     return 'hosting-warning';
   }
 
