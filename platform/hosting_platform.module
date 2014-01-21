@@ -112,6 +112,7 @@ function hosting_platform_hosting_tasks() {
         Are you really sure you want to unlock this platform?'),
     'weight' => 10,
   );
+
   return $tasks;
 }
 
@@ -158,7 +159,7 @@ function hosting_platform_permission() {
  */
 function hosting_platform_node_access($node, $op, $account) {
   if ($op != 'create' && hosting_feature('client')) {
-    // we rely on hosting_node_grants() instead of global configuration
+    // we rely on hosting_client_node_grants() instead of global configuration
     return NULL;
   }
 
@@ -213,7 +214,7 @@ function hosting_platform_op_verify($nodes) {
 /**
  * Callback for platform lock operation.
  */
-function hosting_platform_op_lock() {
+function hosting_platform_op_lock($nodes) {
   foreach ($nodes as $nid) {
     hosting_add_task($nid, 'lock');
   }
@@ -414,6 +415,7 @@ function hosting_platform_form(&$node) {
       '#value' => isset($node->$extra_attribute) ? $node->$extra_attribute : NULL,
     );
   }
+
   return $form;
 }
 
@@ -571,6 +573,9 @@ function hosting_platform_validate($node, &$form) {
 function hosting_platform_load($nodes) {
   foreach ($nodes as $nid => &$node) {
     $additions = db_query('SELECT publish_path, makefile, verified, web_server, status AS platform_status, make_working_copy FROM {hosting_platform} WHERE vid = :vid', array(':vid' => $node->vid))->fetch();
+    // Avoid PHP 5.4 warning when platform doesn't exist yet.
+    // See: https://drupal.org/node/1940378
+    $additions = $additions ? $additions : new stdClass();
     $iid = db_query("SELECT iid
                      FROM {hosting_package_instance} i
                      LEFT JOIN {hosting_package} p

@@ -289,7 +289,7 @@ function theme_hosting_client_form($variables) {
 function hosting_client_validate($node, $form, &$form_state) {
   // We don't allow duplicate client names
   $title = $node->form_id == 'hosting_signup_form' ? 'client_name' : 'title';
-  $node_nid = db_query("SELECT nid FROM {node} WHERE title = ':title'", array(':title' => $node->title))->fetchField;
+  $node_nid = db_query("SELECT nid FROM {node} WHERE type = 'client' AND title = ':title'", array(':title' => $node->title))->fetchField;
   if ($node_nid && $node->nid != $node_nid) {
     form_set_error($title, t("Client name already in use, try %suggestion.",
                               array('%suggestion' => hosting_client_validate_suggest($node->title))));

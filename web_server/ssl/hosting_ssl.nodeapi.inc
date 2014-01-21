@@ -141,7 +141,19 @@ function hosting_ssl_get_key($cid) {
  * @see http://drupal.org/node/1354
  */
 function hosting_ssl_get_ip($cid) {
-  return db_query("SELECT ips.ip_address FROM {hosting_ssl_cert_ips} cert INNER JOIN {hosting_ip_addresses} ips ON cert.ip_address = ips.id WHERE cid = :cid", array(':cid' => $cid))->fetchField();
+  $result = db_query("SELECT h.name AS server_name, ips.ip_address
+                        FROM {hosting_ssl_cert_ips} cert
+                  INNER JOIN {hosting_ip_addresses} ips
+                          ON cert.ip_address = ips.id
+                  INNER JOIN {hosting_context} h
+                          ON h.nid = ips.nid
+                       WHERE cid = :cid",
+                      array(':cid' => $cid));
+  $ip_addresses = array();
+  foreach ($result as $record) {
+    $ip_addresses[$record->server_name] = $record->ip_address;
+  }
+  return $ip_addresses;
 }
 
 /**
@@ -261,6 +273,10 @@ function hosting_ssl_nodeapi_site_update($node) {
     hosting_ssl_nodeapi_site_insert($node);
   }
   else {
+    if ($node->site_status == HOSTING_SITE_DELETED || !$node->ssl_enabled) {
+      hosting_ssl_clean_keys($node);
+    }
+
     db_update('hosting_ssl_site')
       ->fields(array(
         'ssl_enabled' => $node->ssl_enabled,
@@ -268,9 +284,6 @@ function hosting_ssl_nodeapi_site_update($node) {
       ))
       ->condition('vid', $node->vid)
       ->execute();
-  }
-  if ($node->site_status == HOSTING_SITE_DELETED) {
-    hosting_ssl_clean_keys($node);
   }
 }
 
@@ -288,10 +301,10 @@ function hosting_ssl_nodeapi_site_load($node) {
  * @see http://drupal.org/node/1354
  */
 function hosting_ssl_nodeapi_site_delete($node) {
+  hosting_ssl_clean_keys($node);
   db_delete('hosting_ssl_site')
     ->condition('nid', $node->nid)
     ->execute();
-  hosting_ssl_clean_keys($node);
 }
 
 /**
@@ -393,13 +406,27 @@ function hosting_ssl_get_keys($client = NULL, $ask_custom = FALSE) {
  */
 function hosting_ssl_clean_keys($node) {
   // check if there are still sites using this site's certificate
-  if (!db_query("SELECT * FROM {hosting_ssl_site} siteA INNER JOIN {hosting_ssl_site} siteB ON siteA.ssl_key = siteB.ssl_key INNER JOIN {hosting_site} s ON s.nid = siteA.nid WHERE siteA.ssl_enabled = :siteA.ssl_enabled AND s.status <> :s.status AND siteB.nid = :siteB.nid;", array(':siteA.ssl_enabled' => 1, ':s.status' => HOSTING_SITE_DELETED, ':siteB.nid' => $node->nid))->fetchField()) {
-    drupal_set_message(t("cleaning up unused certificate associated with site"));
+  if (!db_query("SELECT * FROM {hosting_ssl_site} siteA
+                   INNER JOIN {hosting_ssl_site} siteB ON siteA.ssl_key = siteB.ssl_key
+                   INNER JOIN {hosting_site} s ON s.nid = siteA.nid
+                     WHERE siteA.nid <> siteB.nid
+                       AND siteA.ssl_enabled = :siteA.ssl_enabled
+                       AND s.status <> :s.status
+                       AND siteB.nid = :siteB.nid;",
+                 array(
+                   ':siteA.ssl_enabled' => 1,
+                   ':s.status' => HOSTING_SITE_DELETED,
+                   ':siteB.nid' => $node->nid
+                 ))->fetchField()) {
+    drupal_set_message(t("cleaning up unused certificate %cert associated with site %site", array('%cert' => $ssl_key, '%site' => $node->nid)));
+    // We need to fetch the ssl_key field from the DB because the object comes
+    // from the node edit, so it's gone.
+    $ssl_key = db_query('SELECT ssl_key FROM {hosting_ssl_site} WHERE nid = %d', $node->nid)->fetchField();
     db_delete('hosting_ssl_cert')
-      ->condition('cid', $node->ssl_key)
+      ->condition('cid', $ssl_key)
       ->execute();
     db_delete('hosting_ssl_cert_ips')
-      ->condition('cid', $node->ssl_key)
+      ->condition('cid', $ssl_key)
       ->execute();
   }
 }

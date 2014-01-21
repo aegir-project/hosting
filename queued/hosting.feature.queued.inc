@@ -23,10 +23,8 @@ function hosting_queued_hosting_feature() {
     'status' => HOSTING_FEATURE_DISABLED,
     // module to enable/disable alongside feature
     'module' => 'hosting_queued',
-    // associate with a specific node type.
-    //  'node' => 'nodetype',
     // which group to display in ( null , experimental )
-    'group' => 'experimental',
+    'group' => 'optional',
   );
   return $features;
 }

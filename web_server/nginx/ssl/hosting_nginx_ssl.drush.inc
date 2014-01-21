@@ -13,6 +13,6 @@ function hosting_nginx_ssl_hosting_site_context_options(&$task) {
     else {
       $task->context_options['ssl_key'] = 'null';
     }
-    $task->context_options['ip_address'] = hosting_ssl_get_ip($node->ssl_key);
+    $task->context_options['ip_addresses'] = hosting_ssl_get_ip($node->ssl_key);
   }
 }

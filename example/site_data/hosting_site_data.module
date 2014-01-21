@@ -1,0 +1,86 @@
+<?php
+
+
+/**
+ * Implementation of hook_form_alter()
+ */
+function hosting_site_data_form_alter(&$form, $form_state, $form_id) {
+  if ($form_id == 'site_node_form') {
+
+    $form['site_data'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Site data example'),
+      '#description' => t('Example implementation of saving data into the site context.'),
+    );
+
+    $form['site_data']['site_data'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Site data'),
+      '#default_value' => $form['#node']->site_data ? $form['#node']->site_data : '',
+      '#weight' => 0,
+    );
+    return $form;
+  }
+}
+
+/**
+ * Implementation of hook_insert()
+ */
+function hosting_site_data_insert($node) {
+  if (!empty($node->site_data)) {
+    db_query("INSERT INTO {hosting_site_data} (vid, nid, site_data) VALUES (%d, %d, '%s')", $node->vid, $node->nid, $node->site_data);
+  }
+}
+
+/**
+ * Implementation of hook_update()
+ */
+function hosting_site_data_update($node) {
+  if (FALSE === db_fetch_array(db_query("SELECT site_data FROM {hosting_site_data} WHERE vid = %d", $node->vid))) {
+    hosting_site_data_insert($node);
+  }
+  else {
+    db_query("UPDATE {hosting_site_data} SET site_data = '%s' WHERE vid = %d", $node->site_data, $node->vid);
+  }
+
+}
+
+/**
+ * Implementation of hook_delete()
+ */
+function hosting_site_data_delete($node) {
+  db_query("DELETE FROM {hosting_site_data} WHERE nid=%d", $node->nid);
+}
+
+/**
+ * Implementation of hook_delete_revision()
+ */
+function hosting_site_data_delete_revision($node) {
+  db_query("DELETE FROM {hosting_site_data} WHERE vid=%d", $node->vid);
+}
+
+/**
+ * Implementation of hook_nodeapi()
+ */
+function hosting_site_data_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+  if ($node->type == 'site') {
+    switch ($op) {
+    case 'insert':
+        hosting_site_data_insert($node);
+        break;
+      case 'update':
+        hosting_site_data_update($node);
+        break;
+      case 'delete' :
+        hosting_site_data_delete($node);
+        break;
+      case 'delete revision':
+        hosting_site_data_delete_revision($node);
+        break;
+      case 'load':
+        $additions = db_fetch_array(db_query("SELECT site_data FROM {hosting_site_data} WHERE vid = %d", $node->vid));
+        return $additions;
+        break;
+    }
+  }
+}

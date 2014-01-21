@@ -462,3 +462,13 @@ function hosting_package_views_api() {
     'path' => drupal_get_path('module', 'hosting_package') . '/views',
   );
 }
+
+/**
+ * Control block visibility.
+ */
+function hosting_package_block_visibility() {
+  $node = menu_get_object();
+  if (!empty($node)) {
+    return $node->type == 'package' && $node->package_type != 'profile';
+  }
+}

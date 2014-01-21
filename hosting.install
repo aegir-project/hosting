@@ -4,6 +4,9 @@
  *   Define database schemas and update functions for the hosting module.
  */
 
+// HOSTING_MAX_ALIAS_LENGTH is defined here:
+require_once(dirname(__FILE__) . '/hosting.module');
+
 /**
  * Implements hook_schema().
  */
@@ -18,7 +21,7 @@ function hosting_schema() {
       ),
       'name' => array(
         'type' => 'varchar',
-        'length' => 50,
+        'length' => HOSTING_MAX_ALIAS_LENGTH,
         'not null' => TRUE,
       ),
     ),
@@ -367,7 +370,7 @@ function hosting_update_6015(&$sandbox) {
   if (!isset($sandbox['progress'])) {
     $sandbox['progress'] = 0;
     $sandbox['current_pid'] = 0;
-    $sandbox['max'] = db_result(db_query('SELECT COUNT(pid) FROM {url_alias}'));
+    $sandbox['max'] = db_result(db_query('SELECT COUNT(pid) FROM {url_alias} WHERE dst LIKE "hosting/c/%" AND pid > 0'));
   }
 
   $aliases = db_query_range("SELECT pid, src, dst FROM {url_alias} WHERE dst LIKE 'hosting/c/%' AND pid > %d ORDER BY pid ASC", $sandbox['current_pid'], 0, 50);
@@ -493,3 +496,28 @@ function hosting_update_6205() {
   return $ret;
 }
 
+/**
+ * Enable the jquery_update module.
+ */
+function hosting_update_6206() {
+  $ret = array();
+  module_enable(array('jquery_update'));
+  return $ret;
+}
+
+/**
+ * Alter the length available for a site alias to 235.
+ *
+ * https://drupal.org/node/1971348
+ */
+function hosting_update_6207() {
+  $ret = array();
+  $spec = array(
+        'type' => 'varchar',
+        // @see HOSTING_MAX_ALIAS_LENGTH
+        'length' => 235,
+        'not null' => TRUE,
+  );
+  db_change_field($ret, 'hosting_context', 'name', 'name', $spec);
+  return $ret;
+}

@@ -116,6 +116,7 @@ function hosting_site_available_options($node, $platform = NULL) {
 
   // Install profiles
   $profiles = hosting_get_profiles();
+  $platform_profiles = array();
   foreach ($profiles as $id => $name) {
 
     // Don't allow a site to be provisioned with hostslave or hostmaster profile
@@ -329,6 +330,12 @@ function hosting_site_validate($node, &$form) {
   $url = strtolower(trim($node->title)); // domain names are case-insensitive
   if (!_hosting_valid_fqdn($url)) {
     form_set_error('title', t("You have not specified a valid url for this site."));
+  }
+
+  $length = strlen($url);
+  if ($length > HOSTING_MAX_ALIAS_LENGTH) {
+    $long = $length - HOSTING_MAX_ALIAS_LENGTH;
+    form_set_error("title", t('The url your provided is @long character(s) too long. Please shorten.', array('@long' => $long)));
   }
 
   if (isset($node->new_client) && !$node->new_client) {

@@ -27,6 +27,8 @@ function hosting_task_menu() {
           'access arguments' => array(1, $task),
           'type' => MENU_CALLBACK,
         );
+        // Complement the $items array with attributes from the task definition
+        // e.g. a custom access callback.
         $items[$path] = array_merge($items[$path], $info);
       }
     }
@@ -173,7 +175,7 @@ function hosting_task_ajax_queue() {
  */
 function hosting_task_cancel($node) {
   if ($node->type == 'task') {
-    if ($node->task_status == 0) {
+    if ($node->task_status == HOSTING_TASK_QUEUED) {
       $ref = node_load($node->rid);
 
       hosting_add_task($node->rid, $node->task_type, array(), HOSTING_TASK_ERROR);
@@ -278,6 +280,7 @@ function hosting_task_menu_access($node, $task) {
       // If the platform's been locked, we can unlock it, delete, batch migrate existing sites or verify
       if ($node->platform_status == HOSTING_PLATFORM_LOCKED) {
         $platform_tasks = array('verify', 'unlock', 'delete', 'migrate');
+        return (in_array($task, $platform_tasks));
       }
       else {
         // If the platform's unlocked, we can lock it, delete it or batch migrate sites
@@ -303,6 +306,13 @@ function hosting_task_menu_access($node, $task) {
  * Implemented as a helper function since we only want to validate the CSRF
  * token when the user accesses a certain path, not when (for example) building
  * the list of tasks a user has access to.
+ *
+ * @arg $node object
+ *   the node object we're trying to access
+ *
+ * @arg $task string
+ *   the task type we're trying to do on the $node
+ *
  *
  * @see hosting_task_menu_access()
  */
@@ -346,7 +356,7 @@ function hosting_task_node_info() {
  */
 function hosting_task_node_access($node, $op, $account) {
   if (hosting_feature('client')) {
-    // we rely on hosting_node_grants() instead of global configuration
+    // we rely on hosting_client_node_grants() instead of global configuration
     return NULL;
   }
 
@@ -512,7 +522,7 @@ function hosting_add_task($nid, $type, $args = NULL, $status = HOSTING_TASK_QUEU
   $task = hosting_get_most_recent_task($nid, $type);
 
   // Guard against destructive tasks run on the hostmaster site
-  $hostmaster_nid = db_query('SELECT site.nid FROM hosting_site site JOIN hosting_package_instance pkgi ON pkgi.rid=site.nid JOIN hosting_package pkg ON pkg.nid=pkgi.package_id WHERE pkg.short_name=\'hostmaster\'')->fetchField();
+  $hostmaster_nid = hosting_get_hostmaster_nid();
   if ($nid == $hostmaster_nid && in_array($type, array('delete', 'disable'))) {
     drupal_set_message(t('You cannot !task the Hostmaster site.', array('!task' => $type)), 'warning');
     watchdog('hostmaster', t('Attempt to !task the Hostmaster site blocked.', array('!task' => $type)), array(), WATCHDOG_WARNING);

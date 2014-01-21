@@ -13,7 +13,7 @@ function hosting_web_cluster_hosting_feature() {
     'description' => t('Provides a service to expose a site across multiple web front ends.'),
     'status' => HOSTING_FEATURE_DISABLED,
     'module' => 'hosting_web_cluster',
-    'group' => 'experimental',
+    'group' => 'optional',
   );
   return $features;
 }

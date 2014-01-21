@@ -1,5 +1,4 @@
 <?php
-// $Id$
 
 /**
  * @file Site nodeapi implementations.
@@ -220,7 +219,7 @@ function hosting_site_update(&$node) {
       ->condition('vid', $node->vid)
       ->execute();
   }
-  if (!$node->no_verify) {
+  if ((isset($node->no_verify) && $node->no_verify) == FALSE) {
     hosting_add_task($node->nid, 'verify');
   }
 }

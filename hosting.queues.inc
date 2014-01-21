@@ -171,7 +171,7 @@ function _hosting_queues_clean_output($return) {
 
 
 function _hosting_dispatch_cmd() {
-  $cmd = sprintf("%s %s hosting-dispatch ", DRUSH_COMMAND, escapeshellarg(d()->name));
+  $cmd = sprintf("/usr/bin/env php %s %s hosting-dispatch ", DRUSH_COMMAND, escapeshellarg(d()->name));
   return $cmd;
 }
 

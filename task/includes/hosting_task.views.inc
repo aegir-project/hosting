@@ -21,6 +21,9 @@ function hosting_task_views_handlers() {
       'hosting_task_handler_filter_hosting_task_type' => array(
         'parent' => 'views_handler_filter_in_operator',
       ),
+      'hosting_task_handler_sort_hosting_task_default' => array(
+        'parent' => 'views_handler_sort',
+      ),
     ),
   );
 }
@@ -110,6 +113,14 @@ function hosting_task_views_data() {
     'field' => array(
       'handler' => 'views_handler_field_time_interval',
       'click sortable' => TRUE,
+    ),
+  );
+
+  $data['hosting_task']['hosting_task_default'] = array(
+    'title' => t('Default'),
+    'help' => t('The default sort order for tasks.'),
+    'sort' => array(
+      'handler' => 'hosting_task_handler_sort_hosting_task_default',
     ),
   );
 

@@ -140,7 +140,7 @@ function hosting_site_wildcard_load($arg) {
  */
 function _hosting_site_goto_link($node) {
   $cache = cache_get("hosting:site:" . $node->nid . ":login_link");
-  if ($cache && (REQUEST_TIME < $cache->data['expire'])) {
+  if (user_access('create login-reset task') && $cache && (REQUEST_TIME < $cache->data['expire'])) {
     $title = t("Log in to !url", array('!url' => $node->title));
   }
   else {
@@ -170,7 +170,7 @@ function theme_hosting_site_goto_link($title, $url) {
 function hosting_site_goto($node) {
   $cid = "hosting:site:" . $node->nid . ":login_link";
   $cache = cache_get($cid);
-  if (!is_null($cache) && (REQUEST_TIME < $cache->data['expire'])) {
+  if (user_access('create login-reset task') && !is_null($cache) && (REQUEST_TIME < $cache->data['expire'])) {
     $theurl = $cache->data['link'];
     cache_clear_all($cid, 'cache');
   }
@@ -338,7 +338,7 @@ function hosting_site_permission() {
  */
 function hosting_site_node_access($node, $op, $account) {
   if ($op != 'create' && hosting_feature('client')) {
-    // we rely on hosting_node_grants() instead of global configuration
+    // we rely on hosting_client_node_grants() instead of global configuration
     return NULL; //@todo check this return value -> NODE_ACCESS_IGNORE?
   }
   if ($op == 'create' && user_access('create site', $account)) {
@@ -704,4 +704,42 @@ function theme_hosting_site_profile($profile, $html = FALSE) {
     return "{$profile->title} <em>({$profile->short_name})</em>";
   }
   return "{$profile->title} ({$profile->short_name})";
+}
+
+/**
+ * Control block visibility.
+ */
+function hosting_site_client_list_block_visibility() {
+  global $user;
+  $node = menu_get_object();
+  $menu_item = menu_get_item();
+  if (!empty($node) && $menu_item['number_parts'] == 2) {
+    return $node->type == 'client' && !user_access('administer clients', $user);
+  }
+  return FALSE;
+}
+
+/**
+ * Control block visibility.
+ */
+function hosting_site_client_admin_block_visibility() {
+  global $user;
+  $node = menu_get_object();
+  $menu_item = menu_get_item();
+  if (!empty($node) && $menu_item['number_parts'] == 2) {
+    return $node->type == 'client' && user_access('administer clients', $user);
+  }
+  return FALSE;
+}
+
+/**
+ * Control block visibility.
+ */
+function hosting_site_profile_block_visibility() {
+  $node = menu_get_object();
+  $menu_item = menu_get_item();
+  if (!empty($node) && $menu_item['number_parts'] == 2) {
+    return $node->type == 'package' && $node->package_type == 'profile';
+  }
+  return FALSE;
 }

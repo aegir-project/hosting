@@ -8,6 +8,12 @@
  */
 
 /**
+ * The maximum length for a site alias.
+ * Leaving room to append '.alias.drushrc.php' and keep filenames below 255.
+ */
+define('HOSTING_MAX_ALIAS_LENGTH', 235);
+
+/**
  * Not split for performance reasons. Just to keep code together.
  */
 include_once dirname(__FILE__) . '/hosting.inc';
@@ -437,7 +443,8 @@ function hosting_init() {
 
   // Redirect anonymous users to our default welcome page
   global $user;
-  if (!user_is_logged_in() && php_sapi_name() != 'cli' && drupal_is_front_page()) {
+  $welcome = variable_get('hosting_welcome_page', TRUE);
+  if ($welcome && !user_is_logged_in() && php_sapi_name() != 'cli' && drupal_is_front_page()) {
     drupal_goto('welcome');
   }
 }
@@ -1113,12 +1120,13 @@ function hosting_context_delete($nid) {
  *   The nid of the node to get the provision context name for.
  * @return
  *   The provision context name associated with the specified node, will be
- *   prefixed with '@'.
+ *   prefixed with '@' or FALSE if node doesnt exist.
  */
 function hosting_context_name($nid) {
   $node = node_load($nid);
   if (!$node) {
     drupal_set_message(t('Error: cannot load node id %nid to find its context', array('%nid' => $nid)), 'error');
+    return FALSE;
   }
   return '@' . $node->hosting_name;
 }
@@ -1187,7 +1195,13 @@ function hosting_settings($form, &$form_state) {
     '#description' => t('Check if you wish for users to run the Disable task on a site prior to running the Delete task.'),
     '#default_value' => variable_get('hosting_require_disable_before_delete', TRUE),
   );
-  if (hosting_feature('cron')) {
+  $form['hosting_welcome_page'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Redirect anonymous users to the Welcome page'),
+    '#description' => t('By default, anonymous users will receive a 403 error, since they don\'t have the \'access content\' permission. This option will redirect them to the !welcome_page.', array('!welcome_page' => l('Welcome page', 'welcome'))),
+    '#default_value' => variable_get('hosting_welcome_page', TRUE),
+  );
+  if(hosting_feature('cron')) {
     $form['hosting_cron_use_backend'] = array(
       '#type' => 'radios',
       '#title' => t('Cron method'),

@@ -55,6 +55,20 @@ function _hosting_valid_fqdn_wildcard($fqdn) {
 }
 
 /**
+ * Check if the FQDN provided is valid for subdir alias.
+ *
+ * @param $fqdn
+ *   The Fully Qualified Domain Name (FQDN) to validate.
+ * @return
+ *   An integer greater than 0 if the $fqdn is valid, or 0 or FALSE if it not
+ *   valid.
+ */
+function _hosting_valid_fqdn_subdir($fqdn) {
+  return preg_match("/^([a-z0-9]([a-z0-9-\/]*[a-z0-9])?\.?)+$/i", $fqdn) &&
+         preg_match("/\//", $fqdn) && !preg_match("/\/\//", $fqdn);
+}
+
+/**
  * Format a timestamp as a string in a friendly way.
  *
  * @param $ts
@@ -88,4 +102,17 @@ function hosting_format_interval($ts) {
  */
 function hosting_path_normalize($path) {
   return rtrim(preg_replace('/(\/\/*\.)?\/\/*/', '/', $path), '/');
+}
+
+/**
+ * Helper function to get the node ID of the Aegir front-end site.
+ */
+function hosting_get_hostmaster_nid() {
+  return db_query('SELECT site.nid
+                     FROM hosting_site site
+                     JOIN hosting_package_instance pkgi
+                       ON pkgi.rid = site.nid
+                     JOIN hosting_package pkg
+                       ON pkg.nid = pkgi.package_id
+                    WHERE pkg.short_name = \'hostmaster\'')->fetchField();
 }
