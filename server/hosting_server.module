@@ -31,14 +31,6 @@ function hosting_server_node_info() {
 function hosting_server_menu() {
   $items = array();
 
-  $items['hosting/servers'] = array(
-    'title' => 'Servers',
-    'description' => 'List of servers',
-    'page callback' => 'hosting_server_listing',
-    'access arguments' => array('view server'),
-    'type' => MENU_NORMAL_ITEM,
-  );
-
   $items['hosting/servers/list'] = array(
     'title' => 'List',
     'type' => MENU_DEFAULT_LOCAL_TASK,
@@ -567,55 +559,6 @@ function hosting_server_view(&$node, $teaser = FALSE, $page = FALSE) {
 }
 
 /**
- * Output a table of servers with their enabled services.
- * @todo: replace with a view
- */
-function hosting_server_listing() {
-  $services = hosting_server_services();
-  $header = array(t('Server'));
-  foreach ($services as $service => $data) {
-    if ($service !== 'server') {
-      $header[] = $data['title'];
-    }
-  }
-
-  $query = db_select('node', 'n')
-    ->fields('n', array('nid'))
-    ->condition('type', 'server')
-    ->condition('status', 1)
-    ->orderBy('title')
-    ->addTag('node_access');
-  $result = $query->execute();
-  $rows = array();
-  foreach ($result as $obj) {
-    $row = array();
-    $server = node_load($obj->nid);
-    $row[] = l($server->title, 'node/' . $server->nid);
-    foreach ($services as $service => $data) {
-      if ($service !== 'server') {
-        if (isset($server->services[$service]) &&
-            isset($server->services[$service]->available) &&
-            $server->services[$service]->available) {
-          $row[] = array(
-            'class' => array('hosting-service-available'),
-            'data' => $server->services[$service]->type,
-          );
-        }
-        else {
-          $row[] = array(
-            'class' => array('hosting-service-unavailable'),
-            'data' => t('No'),
-          );
-        }
-      }
-    }
-    $rows[] = $row;
-  }
-
-  return theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('class' => array('hosting-table'))));
-}
-
-/**
  * Get servers providing a service.
  *
  * @param $service
@@ -652,4 +595,74 @@ function hosting_server_views_api() {
     'api' => 3,
     'path' => drupal_get_path('module', 'hosting_server') . '/includes/views',
   );
+}
+
+/**
+ * Implements hook_preprocess().
+ */
+function hosting_server_preprocess(&$variables) {
+  if (isset($variables['view']) && array_key_exists('services', $variables['view']->field)) {
+    if ($variables['header']) {
+      $services = explode(',', $variables['header']['services']);
+      // Split our headers and fields.
+      _hosting_server_preprocess_explode($variables['header']);
+      _hosting_server_preprocess_explode($variables['rows'], 1);
+      // Adjust the rest of the $variables accordingly.
+      _hosting_server_preprocess_expand($variables['header_classes'], $services);
+      _hosting_server_preprocess_expand($variables['field_attributes'], $services);
+      _hosting_server_preprocess_expand($variables['field_classes'], $services);
+      _hosting_server_preprocess_expand($variables['fields'], $services);
+      // Add service availability classes.
+      _hosting_server_preprocess_classes($variables['field_classes'], $variables['rows']);
+    }
+  }
+}
+
+/**
+ * Add fields to table headers or rows.
+ *
+ * In order to allow the our server list view to dynamically respond to the
+ * number of enabled services, we define the field as a comma-separated list
+ * in our field handler. Here we explode that text back into an array, and add
+ * it back to the table render array.
+ *
+ * @see: hosting_server_handler_field_services::label()
+ * @see: hosting_server_handler_field_services::render()
+ */
+function _hosting_server_preprocess_explode(&$element, $depth = 0) {
+  if ($depth) {
+    foreach ($element as $i => $sub_element) {
+        _hosting_server_preprocess_explode($sub_element, $depth - 1);
+        $element[$i] = $sub_element;
+    }
+  }
+  else {
+    $index = array_search('services', array_keys($element));
+    $services = explode(',', $element['services']);
+    array_splice($element, $index, 1, $services);
+  }
+}
+
+/**
+ * Since we're adding headers and fields to our table render array, we need to
+ * adjust other $variables as their passed to the template.
+ */
+function _hosting_server_preprocess_expand(&$element, $services) {
+  foreach ($services as $i => $name) {
+    $element[$i] = $element['services'];
+  }
+  unset($element['services']);
+}
+
+/**
+ * Add our service availability classes.
+ */
+function _hosting_server_preprocess_classes(&$classes, $rows) {
+  foreach ($classes as $field_label => $field_row) {
+    if (is_numeric($field_label)) {
+      foreach ($field_row as $index => $field_classes) {
+        $classes[$field_label][$index] .= $rows[$index][$field_label] == 'no' ? ' hosting-service-unavailable' : ' hosting-service-available';
+      }
+    }
+  }
 }

@@ -8,13 +8,36 @@
  * Implements hook_views_data().
  */
 function hosting_server_views_data() {
-  $data['hosting_service']['table'] = array(
+  $data['hosting_server']['table'] = array(
     'group' => 'Hosting Server',
     'title' => 'Server',
     'join' => array(
       'node' => array(
         'left_field' => 'vid',
-         'field' => 'vid',
+        'field' => 'vid',
+      ),
+    ),
+  );
+
+  $data['hosting_server']['services'] = array(
+    'title' => t('Services'),
+    'help' => t('Available types of services per server.'),
+    'field' => array(
+      'handler' => 'hosting_server_handler_field_services',
+      'field' => 'nid',
+/*      'click sortable' => TRUE,*/
+    ),
+  );
+
+
+
+  $data['hosting_service']['table'] = array(
+    'group' => 'Hosting Service',
+    'title' => 'Services',
+    'join' => array(
+      'node' => array(
+        'left_field' => 'vid',
+        'field' => 'vid',
       ),
     ),
   );
