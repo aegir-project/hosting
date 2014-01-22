@@ -659,6 +659,6 @@ function hosting_get_servers($service) {
 function hosting_server_views_api() {
   return array(
     'api' => 3,
-    'path' => drupal_get_path('module', 'hosting_server'),
+    'path' => drupal_get_path('module', 'hosting_server') . '/includes/views',
   );
 }
