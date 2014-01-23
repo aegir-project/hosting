@@ -27,15 +27,9 @@ class hosting_server_handler_field_services extends views_handler_field {
     if ($this->view->editing && is_null($this->original_value)) {
       return 'Services';
     }
-    $all_services = hosting_server_services();
-    $servers = $this->view->result;
-    // Preserve order of services.
-    $services = $all_services;
-    foreach ($servers as $server) {
-      $node = node_load($server->hosting_server_nid);
-      foreach ($node->services as $name => $service) {
-        $services[$name] = $all_services[$name]['title'];
-      }
+    $services = hosting_server_services();
+    foreach ($services as $name => $service) {
+      $services[$name] = $service['title'];
     }
     return implode(',', $services);
   }
