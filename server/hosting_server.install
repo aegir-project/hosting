@@ -23,6 +23,11 @@ function hosting_server_schema() {
         'not null' => TRUE,
         'default' => 0,
       ),
+      'human_name' => array(
+        'type' => 'text',
+        'size' => 'small',
+        'not null' => FALSE,
+      ),
     ),
     'primary key' => array('vid'),
   );
@@ -338,3 +343,14 @@ function hosting_server_update_6202() {
 /*   $ret[] = update_sql("DELETE {hosting_ip_addresses} FROM {hosting_ip_addresses} JOIN {node} ON hosting_ip_addresses.nid = node.nid WHERE node.type <> 'server';"); */
 /*   return $ret; */
 /* } */
+
+/**
+ * Add 'name' field to hosting_server.
+ */
+function hosting_server_update_7300() {
+  db_add_field('hosting_server', 'human_name', array(
+    'type' => 'text',
+    'size' => 'small',
+    'not null' => FALSE,
+  ));
+}

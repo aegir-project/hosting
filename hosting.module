@@ -499,10 +499,13 @@ function _hosting_node_link($nid, $title = NULL) {
   }
   $node = node_load($nid);
   if (!isset($title)) {
-    $title = isset($node->title) ? filter_xss($node->title) : NULL;
+    $title = isset($node->title) ? $node->title : NULL;
+    // Override with the human-readable name, when available.
+    $title = isset($node->human_name) ? $node->human_name : $title;
   }
+  $title = filter_xss($title);
   if (isset($node->nid)) {
-    return node_access('view', $node) ? l($title, "node/" . $node->nid) : filter_xss($node->title);
+    return node_access('view', $node) ? l($title, "node/" . $node->nid) : $title;
   }
 }
 

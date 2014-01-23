@@ -16,7 +16,7 @@ function hosting_server_node_info() {
     "name" => t('Server'),
     'base' => 'hosting_server',
     "has_title" => TRUE,
-    "title_label" => t('Host name'),
+    "title_label" => t('Hostname'),
     "description" => hosting_node_help("server"),
     "has_body" => 0,
     "body_label" => '',
@@ -199,7 +199,8 @@ function hosting_server_init_services(&$node) {
 }
 
 /**
- * Translate a server form submission into populated server objects on the node.*/
+ * Translate a server form submission into populated server objects on the node.
+ */
 function hosting_server_services_from_post(&$node) {
   if (isset($node->services) && is_array($node->services)) {
     foreach (hosting_server_services() as $name => $data) {
@@ -247,11 +248,19 @@ function hosting_server_form($node, &$form_state) {
     '#required' => TRUE,
     '#default_value' => $node->title,
     '#description' => t('The host name of the server. This is the address that will be used by Hostmaster to connect to the server to issue commands. It is to resolve to the internal network, if you have such a separation.<br /><strong>Be careful when changing the node title, it is used to create the SQL users if the IP address, below, is not set.</strong>'),
-    '#weight' => -10,
+    '#weight' => 0,
+  );
+
+  $form['human_name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Human-readable name'),
+    '#default_value' => $node->human_name,
+    '#description' => t('<strong>Optional, but recommended.</strong> Internally, Aegir refers to servers by their hostname. The value of this field will be used throughout the UI, and allows for more meaningful names. While not enforced by the system, it is highly recommended that the name assigned to a server be unique.'),
+    '#weight' => 1,
   );
 
   $form['services'] = array(
-    '#weight' => -5,
+    '#weight' => 5,
     '#tree' => TRUE,
   );
 
@@ -266,7 +275,7 @@ function hosting_server_form($node, &$form_state) {
       '#description' => t('A list of IP addresses this server is publicly available under, one per line. If none is specified, a DNS lookup will be performed based on the server hostname above. <br /><strong>This should point to the public network, if you have such a separation.</strong>'),
       '#type' => 'fieldset',
       '#tree' => FALSE,
-      '#weight' => -9,
+      '#weight' => 2,
       '#prefix' => '<div class="clear-block" id="hosting-ips-wrapper">',
       '#suffix' => '</div>',
   );
@@ -402,6 +411,13 @@ function hosting_server_update($node) {
     }
   }
 
+  $id = db_update('hosting_server')
+    ->fields(array(
+      'human_name' => $node->human_name,
+    ))
+    ->condition('nid', $node->nid)
+    ->execute();
+
   hosting_ip_save($node, TRUE);
 
   if (!isset($node->no_verify) || !$node->no_verify) {
@@ -422,6 +438,7 @@ function hosting_server_insert($node) {
     ->fields(array(
       'vid' => $node->vid,
       'nid' => $node->nid,
+      'human_name' => $node->human_name,
     ))
     ->execute();
 
@@ -463,9 +480,11 @@ function hosting_server_delete($node) {
  */
 function hosting_server_load($nodes) {
   foreach ($nodes as $nid => &$node) {
+    $node->human_name = db_query('SELECT human_name FROM {hosting_server} WHERE nid = :nid', array(':nid' => $nid))->fetchField();
     hosting_server_init_services($node);
     hosting_server_invoke_services($node, 'load');
     $additions = new stdClass();
+    $additions->human_name = $node->human_name;
     $additions->services = $node->services;
     $additions->ip_addresses = hosting_ip_load($node);
 
@@ -509,6 +528,14 @@ function hosting_server_view(&$node, $teaser = FALSE, $page = FALSE) {
     '#suffix' => '</div>',
   );
 
+
+  $node->content['info']['hostname'] = array(
+    '#title' => 'hostname',
+    '#type' => 'item',
+    '#markup' => $node->title,
+    '#weight' => -50,
+  );
+
   hosting_ip_view($node);
   if (isset($node->content->info->ip_addresses['#weight'])) {
     $node->content->info->ip_addresses['#weight'] = -30;
@@ -527,7 +554,8 @@ function hosting_server_view(&$node, $teaser = FALSE, $page = FALSE) {
       $title = $services[$name]['title'] . ' : ' . $service->type;
 
       $node->content['info'][$name]['title'] = array(
-        '#value' => '<h3>' . $title . '</h3>',
+        '#markup' => '<h3>' . $title . '</h3>',
+        '#type' => 'markup',
         '#weight' => -20,
       );
 
@@ -553,6 +581,10 @@ function hosting_server_view(&$node, $teaser = FALSE, $page = FALSE) {
 
       drupal_add_js(drupal_get_path('module', 'hosting_task') . '/hosting_task.js');
     }
+  }
+
+  if ($node->human_name) {
+    $node->title = $node->human_name;
   }
 
   return $node;

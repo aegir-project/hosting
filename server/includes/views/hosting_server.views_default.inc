@@ -31,13 +31,28 @@ function hosting_server_views_default_views() {
   $handler->display->display_options['pager']['type'] = 'full';
   $handler->display->display_options['pager']['options']['items_per_page'] = '10';
   $handler->display->display_options['style_plugin'] = 'table';
+  /* Field: Content: Nid */
+  $handler->display->display_options['fields']['nid']['id'] = 'nid';
+  $handler->display->display_options['fields']['nid']['table'] = 'node';
+  $handler->display->display_options['fields']['nid']['field'] = 'nid';
+  $handler->display->display_options['fields']['nid']['exclude'] = TRUE;
   /* Field: Content: Title */
   $handler->display->display_options['fields']['title']['id'] = 'title';
   $handler->display->display_options['fields']['title']['table'] = 'node';
   $handler->display->display_options['fields']['title']['field'] = 'title';
   $handler->display->display_options['fields']['title']['label'] = 'Server';
+  $handler->display->display_options['fields']['title']['exclude'] = TRUE;
   $handler->display->display_options['fields']['title']['alter']['word_boundary'] = FALSE;
   $handler->display->display_options['fields']['title']['alter']['ellipsis'] = FALSE;
+  $handler->display->display_options['fields']['title']['link_to_node'] = FALSE;
+  /* Field: Hosting Server: Human-readable name */
+  $handler->display->display_options['fields']['human_name']['id'] = 'human_name';
+  $handler->display->display_options['fields']['human_name']['table'] = 'hosting_server';
+  $handler->display->display_options['fields']['human_name']['field'] = 'human_name';
+  $handler->display->display_options['fields']['human_name']['label'] = 'Name';
+  $handler->display->display_options['fields']['human_name']['alter']['make_link'] = TRUE;
+  $handler->display->display_options['fields']['human_name']['alter']['path'] = 'node/[nid]';
+  $handler->display->display_options['fields']['human_name']['alter']['alt'] = '[title]';
   /* Field: Hosting Server: Services */
   $handler->display->display_options['fields']['services']['id'] = 'services';
   $handler->display->display_options['fields']['services']['table'] = 'hosting_server';

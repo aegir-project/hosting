@@ -29,7 +29,14 @@ function hosting_server_views_data() {
     ),
   );
 
-
+  $data['hosting_server']['human_name'] = array(
+    'title' => t('Human-readable name'),
+    'help' => t('A human-readable name for the server.'),
+    'field' => array(
+      'handler' => 'hosting_server_handler_field_human_name',
+      'click sortable' => TRUE,
+    ),
+  );
 
   $data['hosting_service']['table'] = array(
     'group' => 'Hosting Service',

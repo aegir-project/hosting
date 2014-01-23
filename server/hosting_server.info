@@ -8,3 +8,4 @@ core = 7.x
 files[] = hosting_server.service.inc
 files[] = hosting_server.test
 files[] = includes/views/handlers/hosting_server_handler_field_services.inc
+files[] = includes/views/handlers/hosting_server_handler_field_human_name.inc
