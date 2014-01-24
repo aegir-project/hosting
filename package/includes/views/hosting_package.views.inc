@@ -278,3 +278,29 @@ function hosting_package_views_access($type, $display, $account = NULL) {
 
   return FALSE;
 }
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function hosting_package_form_views_exposed_form_alter(&$form, &$form_state) {
+  // The status filter doesn't make sense on platforms.
+  if ($form_state['view']->name == 'hosting_package_list' && is_numeric(arg(1)) && $node = node_load(arg(1))) {
+    if ($node->type == 'platform') {
+      $form['status']['#access'] = FALSE;
+      unset($form['#info']['filter-status']);
+    }
+  }
+}
+
+/**
+ * Implements hook_views_pre_build().
+ */
+function hosting_package_views_pre_build(&$view) {
+  // The site_count field doesn't make sense for sites.
+  if ($view->name == 'hosting_package_list' && is_numeric(arg(1)) && $node = node_load(arg(1))) {
+    if ($node->type == 'site') {
+      unset($view->field['site_count']);
+      unset($view->display_handler->handlers['field']['site_count']);
+    }
+  }
+}

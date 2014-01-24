@@ -23,6 +23,7 @@ function hosting_package_views_default_views() {
   /* Display: Defaults */
   $handler = $view->new_display('default', 'Defaults', 'default');
   $handler->display->display_options['use_more_always'] = FALSE;
+  $handler->display->display_options['access']['type'] = 'none';
   $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['exposed_form']['type'] = 'basic';
@@ -76,6 +77,10 @@ function hosting_package_views_default_views() {
   $handler->display->display_options['relationships']['package_id']['id'] = 'package_id';
   $handler->display->display_options['relationships']['package_id']['table'] = 'hosting_package_instance';
   $handler->display->display_options['relationships']['package_id']['field'] = 'package_id';
+  /* Relationship: Hosting Package Instance: Reference ID */
+  $handler->display->display_options['relationships']['rid']['id'] = 'rid';
+  $handler->display->display_options['relationships']['rid']['table'] = 'hosting_package_instance';
+  $handler->display->display_options['relationships']['rid']['field'] = 'rid';
   /* Field: Class */
   $handler->display->display_options['fields']['status']['id'] = 'status';
   $handler->display->display_options['fields']['status']['table'] = 'hosting_package_instance';
@@ -117,10 +122,10 @@ function hosting_package_views_default_views() {
   $handler->display->display_options['arguments']['rid']['table'] = 'hosting_package_instance';
   $handler->display->display_options['arguments']['rid']['field'] = 'rid';
   $handler->display->display_options['arguments']['rid']['default_action'] = 'default';
-  $handler->display->display_options['arguments']['rid']['title_enable'] = TRUE;
-  $handler->display->display_options['arguments']['rid']['title'] = 'Packages on %1';
   $handler->display->display_options['arguments']['rid']['default_argument_type'] = 'node';
+  $handler->display->display_options['arguments']['rid']['summary']['number_of_records'] = '0';
   $handler->display->display_options['arguments']['rid']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['rid']['summary_options']['items_per_page'] = '25';
   $handler->display->display_options['arguments']['rid']['specify_validation'] = TRUE;
   $handler->display->display_options['arguments']['rid']['validate']['type'] = 'node';
   $handler->display->display_options['arguments']['rid']['validate_options']['types'] = array(
@@ -138,9 +143,65 @@ function hosting_package_views_default_views() {
   $handler->display->display_options['filters']['package_type']['expose']['operator'] = 'package_type_op';
   $handler->display->display_options['filters']['package_type']['expose']['identifier'] = 'package_type';
 
-  /* Display: Page: Site packages */
-  $handler = $view->new_display('page', 'Page: Site packages', 'page_packages_site');
-  $handler->display->display_options['display_description'] = 'Display a list of packages for a hosted site';
+  /* Display: Page */
+  $handler = $view->new_display('page', 'Page', 'page_packages');
+  $handler->display->display_options['display_description'] = 'Display a list of packages for a hosted site or platform. Note that we alter this view and the exposed form.';
+  $handler->display->display_options['defaults']['style_plugin'] = FALSE;
+  $handler->display->display_options['style_plugin'] = 'table';
+  $handler->display->display_options['style_options']['row_class'] = '[status]';
+  $handler->display->display_options['style_options']['columns'] = array(
+    'status' => 'status',
+    'title' => 'title',
+    'version' => 'version',
+    'package_type' => 'package_type',
+    'site_count' => 'site_count',
+  );
+  $handler->display->display_options['style_options']['default'] = '-1';
+  $handler->display->display_options['style_options']['info'] = array(
+    'status' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
+    'title' => array(
+      'sortable' => 1,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
+    'version' => array(
+      'sortable' => 1,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
+    'package_type' => array(
+      'sortable' => 1,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
+    'site_count' => array(
+      'sortable' => 1,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
+  );
+  $handler->display->display_options['defaults']['style_options'] = FALSE;
+  $handler->display->display_options['defaults']['row_plugin'] = FALSE;
+  $handler->display->display_options['defaults']['row_options'] = FALSE;
+  $handler->display->display_options['defaults']['relationships'] = FALSE;
+  /* Relationship: Hosting Package Instance: Package ID */
+  $handler->display->display_options['relationships']['package_id']['id'] = 'package_id';
+  $handler->display->display_options['relationships']['package_id']['table'] = 'hosting_package_instance';
+  $handler->display->display_options['relationships']['package_id']['field'] = 'package_id';
+  /* Relationship: Hosting Package Instance: Reference ID */
+  $handler->display->display_options['relationships']['rid']['id'] = 'rid';
+  $handler->display->display_options['relationships']['rid']['table'] = 'hosting_package_instance';
+  $handler->display->display_options['relationships']['rid']['field'] = 'rid';
+  $handler->display->display_options['relationships']['rid']['label'] = 'site/platform';
   $handler->display->display_options['defaults']['fields'] = FALSE;
   /* Field: Class */
   $handler->display->display_options['fields']['status']['id'] = 'status';
@@ -168,6 +229,36 @@ function hosting_package_views_default_views() {
   $handler->display->display_options['fields']['package_type']['field'] = 'package_type';
   $handler->display->display_options['fields']['package_type']['relationship'] = 'package_id';
   $handler->display->display_options['fields']['package_type']['label'] = 'Package type';
+  /* Field: Hosting Package Instance: Site count */
+  $handler->display->display_options['fields']['site_count']['id'] = 'site_count';
+  $handler->display->display_options['fields']['site_count']['table'] = 'hosting_package_instance';
+  $handler->display->display_options['fields']['site_count']['field'] = 'site_count';
+  /* Field: Content: Type */
+  $handler->display->display_options['fields']['type']['id'] = 'type';
+  $handler->display->display_options['fields']['type']['table'] = 'node';
+  $handler->display->display_options['fields']['type']['field'] = 'type';
+  $handler->display->display_options['fields']['type']['relationship'] = 'rid';
+  $handler->display->display_options['fields']['type']['exclude'] = TRUE;
+  $handler->display->display_options['defaults']['arguments'] = FALSE;
+  /* Contextual filter: Hosting Package Instance: Reference ID */
+  $handler->display->display_options['arguments']['rid']['id'] = 'rid';
+  $handler->display->display_options['arguments']['rid']['table'] = 'hosting_package_instance';
+  $handler->display->display_options['arguments']['rid']['field'] = 'rid';
+  $handler->display->display_options['arguments']['rid']['default_action'] = 'default';
+  $handler->display->display_options['arguments']['rid']['title_enable'] = TRUE;
+  $handler->display->display_options['arguments']['rid']['title'] = '<span class="label">[type]</span> %1';
+  $handler->display->display_options['arguments']['rid']['breadcrumb_enable'] = TRUE;
+  $handler->display->display_options['arguments']['rid']['breadcrumb'] = 'Packages';
+  $handler->display->display_options['arguments']['rid']['default_argument_type'] = 'node';
+  $handler->display->display_options['arguments']['rid']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['rid']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['rid']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['arguments']['rid']['specify_validation'] = TRUE;
+  $handler->display->display_options['arguments']['rid']['validate']['type'] = 'node';
+  $handler->display->display_options['arguments']['rid']['validate_options']['types'] = array(
+    'platform' => 'platform',
+    'site' => 'site',
+  );
   $handler->display->display_options['defaults']['filter_groups'] = FALSE;
   $handler->display->display_options['defaults']['filters'] = FALSE;
   /* Filter criterion: Content: Title */
@@ -200,13 +291,19 @@ function hosting_package_views_default_views() {
   $handler->display->display_options['filters']['status']['expose']['label'] = 'Status';
   $handler->display->display_options['filters']['status']['expose']['operator'] = 'status_op';
   $handler->display->display_options['filters']['status']['expose']['identifier'] = 'status';
+  $handler->display->display_options['filters']['status']['expose']['remember_roles'] = array(
+    2 => '2',
+    1 => 0,
+    3 => 0,
+    4 => 0,
+  );
   $handler->display->display_options['path'] = 'node/%/packages';
   $handler->display->display_options['menu']['type'] = 'tab';
   $handler->display->display_options['menu']['title'] = 'Packages';
   $handler->display->display_options['menu']['weight'] = '1';
 
   /* Display: Block: Sites */
-  $handler = $view->new_display('block', 'Block: Sites', 'block_1');
+  $handler = $view->new_display('block', 'Block: Sites', 'block_sites');
   $handler->display->display_options['display_description'] = 'Display a list of sites on which a package is enabled or available.';
   $handler->display->display_options['defaults']['style_plugin'] = FALSE;
   $handler->display->display_options['style_plugin'] = 'table';
@@ -345,115 +442,8 @@ function hosting_package_views_default_views() {
   );
   $handler->display->display_options['block_description'] = 'Hosting package: Sites';
 
-  /* Display: Page: Platform packages */
-  $handler = $view->new_display('page', 'Page: Platform packages', 'page_packages_platform');
-  $handler->display->display_options['display_description'] = 'Display a list of packages for a hosted platform';
-  $handler->display->display_options['defaults']['style_plugin'] = FALSE;
-  $handler->display->display_options['style_plugin'] = 'table';
-  $handler->display->display_options['style_options']['row_class'] = '[status]';
-  $handler->display->display_options['style_options']['columns'] = array(
-    'status' => 'status',
-    'title' => 'title',
-    'version' => 'version',
-    'package_type' => 'package_type',
-    'site_count' => 'site_count',
-  );
-  $handler->display->display_options['style_options']['default'] = '-1';
-  $handler->display->display_options['style_options']['info'] = array(
-    'status' => array(
-      'sortable' => 0,
-      'default_sort_order' => 'asc',
-      'align' => '',
-      'separator' => '',
-    ),
-    'title' => array(
-      'sortable' => 1,
-      'default_sort_order' => 'asc',
-      'align' => '',
-      'separator' => '',
-    ),
-    'version' => array(
-      'sortable' => 1,
-      'default_sort_order' => 'asc',
-      'align' => '',
-      'separator' => '',
-    ),
-    'package_type' => array(
-      'sortable' => 1,
-      'default_sort_order' => 'asc',
-      'align' => '',
-      'separator' => '',
-    ),
-    'site_count' => array(
-      'sortable' => 1,
-      'default_sort_order' => 'asc',
-      'align' => '',
-      'separator' => '',
-    ),
-  );
-  $handler->display->display_options['defaults']['style_options'] = FALSE;
-  $handler->display->display_options['defaults']['row_plugin'] = FALSE;
-  $handler->display->display_options['defaults']['row_options'] = FALSE;
-  $handler->display->display_options['defaults']['fields'] = FALSE;
-  /* Field: Class */
-  $handler->display->display_options['fields']['status']['id'] = 'status';
-  $handler->display->display_options['fields']['status']['table'] = 'hosting_package_instance';
-  $handler->display->display_options['fields']['status']['field'] = 'status';
-  $handler->display->display_options['fields']['status']['ui_name'] = 'Class';
-  $handler->display->display_options['fields']['status']['exclude'] = TRUE;
-  $handler->display->display_options['fields']['status']['status_mode'] = 'class';
-  /* Field: Content: Title */
-  $handler->display->display_options['fields']['title']['id'] = 'title';
-  $handler->display->display_options['fields']['title']['table'] = 'node';
-  $handler->display->display_options['fields']['title']['field'] = 'title';
-  $handler->display->display_options['fields']['title']['relationship'] = 'package_id';
-  $handler->display->display_options['fields']['title']['label'] = 'Package';
-  $handler->display->display_options['fields']['title']['element_class'] = 'hosting-status';
-  $handler->display->display_options['fields']['title']['element_wrapper_class'] = '[hosting-status]';
-  /* Field: Hosting Package Instance: Version */
-  $handler->display->display_options['fields']['version']['id'] = 'version';
-  $handler->display->display_options['fields']['version']['table'] = 'hosting_package_instance';
-  $handler->display->display_options['fields']['version']['field'] = 'version';
-  $handler->display->display_options['fields']['version']['label'] = 'Release';
-  /* Field: Hosting Package: Type */
-  $handler->display->display_options['fields']['package_type']['id'] = 'package_type';
-  $handler->display->display_options['fields']['package_type']['table'] = 'hosting_package';
-  $handler->display->display_options['fields']['package_type']['field'] = 'package_type';
-  $handler->display->display_options['fields']['package_type']['relationship'] = 'package_id';
-  $handler->display->display_options['fields']['package_type']['label'] = 'Package type';
-  /* Field: Hosting Package Instance: Site count */
-  $handler->display->display_options['fields']['site_count']['id'] = 'site_count';
-  $handler->display->display_options['fields']['site_count']['table'] = 'hosting_package_instance';
-  $handler->display->display_options['fields']['site_count']['field'] = 'site_count';
-  $handler->display->display_options['defaults']['filter_groups'] = FALSE;
-  $handler->display->display_options['defaults']['filters'] = FALSE;
-  /* Filter criterion: Content: Title */
-  $handler->display->display_options['filters']['title']['id'] = 'title';
-  $handler->display->display_options['filters']['title']['table'] = 'node';
-  $handler->display->display_options['filters']['title']['field'] = 'title';
-  $handler->display->display_options['filters']['title']['relationship'] = 'package_id';
-  $handler->display->display_options['filters']['title']['operator'] = 'contains';
-  $handler->display->display_options['filters']['title']['exposed'] = TRUE;
-  $handler->display->display_options['filters']['title']['expose']['operator_id'] = 'title_op';
-  $handler->display->display_options['filters']['title']['expose']['label'] = 'Package name';
-  $handler->display->display_options['filters']['title']['expose']['operator'] = 'title_op';
-  $handler->display->display_options['filters']['title']['expose']['identifier'] = 'package';
-  /* Filter criterion: Hosting Package: Type */
-  $handler->display->display_options['filters']['package_type']['id'] = 'package_type';
-  $handler->display->display_options['filters']['package_type']['table'] = 'hosting_package';
-  $handler->display->display_options['filters']['package_type']['field'] = 'package_type';
-  $handler->display->display_options['filters']['package_type']['relationship'] = 'package_id';
-  $handler->display->display_options['filters']['package_type']['exposed'] = TRUE;
-  $handler->display->display_options['filters']['package_type']['expose']['operator_id'] = 'package_type_op';
-  $handler->display->display_options['filters']['package_type']['expose']['label'] = 'Type';
-  $handler->display->display_options['filters']['package_type']['expose']['operator'] = 'package_type_op';
-  $handler->display->display_options['filters']['package_type']['expose']['identifier'] = 'package_type';
-  $handler->display->display_options['path'] = 'node/%/packages';
-  $handler->display->display_options['menu']['type'] = 'tab';
-  $handler->display->display_options['menu']['title'] = 'Packages';
-  $handler->display->display_options['menu']['weight'] = '1';
-
   $views[$view->name] = $view;
 
   return $views;
 }
+
