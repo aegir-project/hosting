@@ -873,7 +873,6 @@ function _hosting_client_site_default($node) {
     foreach ($client_ids as $client_id => $client_permissions) {
       $client_id = $client_id ? $client_id : HOSTING_DEFAULT_CLIENT;
       $client = node_load($client_id);
-      $client = $client[$client_id];
       $clients[$client->title] = $client->title;
       if (isset($node->client) && ($node->client == $client_id || !$current_client_id)) {
         $current_client_id = $client_id;
