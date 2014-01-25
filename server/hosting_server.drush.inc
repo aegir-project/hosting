@@ -58,13 +58,14 @@ function hosting_server_drush_context_import($context, &$node) {
  * Resave the target node to trigger reverifications.
  */
 function hosting_server_post_hosting_verify_task($task, $data) {
-  $task->ref->no_verify = TRUE;
-  node_save($task->ref);
+  if ($task->ref->type == 'server') {
+    $task->ref->no_verify = TRUE;
+    node_save($task->ref);
 
-  // Verify the platforms on this server
-  $query = db_query("SELECT nid FROM {hosting_platform} WHERE status <> :status AND web_server = :web_server", array(':status' => HOSTING_PLATFORM_DELETED, ':web_server' => $task->ref->nid));
-  while ($nid = $query->fetch()) {
-    hosting_add_task($nid->nid, 'verify');
+    // Verify the platforms on this server
+    $query = db_query("SELECT nid FROM {hosting_platform} WHERE status <> :status AND web_server = :web_server", array(':status' => HOSTING_PLATFORM_DELETED, ':web_server' => $task->ref->nid));
+    while ($nid = $query->fetch()) {
+      hosting_add_task($nid->nid, 'verify');
+    }
   }
-
 }
