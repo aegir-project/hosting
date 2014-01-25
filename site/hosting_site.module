@@ -701,11 +701,11 @@ function hosting_site_views_api() {
 /**
  * Theme function for install profile item.
  */
-function theme_hosting_site_profile($profile, $html = FALSE) {
-  if ($html) {
-    return "{$profile->title} <em>({$profile->short_name})</em>";
+function theme_hosting_site_profile($variables) {
+  if ($variables['html']) {
+    return "{$variables['profile']->title} <em>({$variables['profile']->short_name})</em>";
   }
-  return "{$profile->title} ({$profile->short_name})";
+  return "{$variables['profile']->title} ({$variables['profile']->short_name})";
 }
 
 /**
