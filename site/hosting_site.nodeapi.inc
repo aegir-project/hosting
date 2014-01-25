@@ -160,6 +160,8 @@ function hosting_site_insert(&$node) {
   $node->cron_key = isset($node->cron_key) ? $node->cron_key : '';
   // Ensure that the last_cron value is set.
   $node->last_cron = isset($node->last_cron) ? $node->last_cron : 0;
+  // Provide a dummy profile, if one isn't set in the node; e.g. on hosting-import.
+  $node->profile = isset($node->profile) ? $node->profile : 0;
 
   $id = db_insert('hosting_site')
     ->fields(array(
