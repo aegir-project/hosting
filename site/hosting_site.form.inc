@@ -47,7 +47,7 @@ function _hosting_site_field(&$form, $node, $item, $element, $filter_display = '
       $form['info'][$item] = array(
         '#type' => 'item',
         '#title' => $element['#title'],
-        '#value' => $filter_display($element['#default_value']),
+        '#markup' => $filter_display($element['#default_value']),
         '#required' => FALSE,
       );
 

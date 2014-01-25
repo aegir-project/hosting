@@ -246,6 +246,14 @@ a.hosting-goto-site-link {
   display: block;
 }
 
+/**
+ * Site form
+ */
+
+#hosting-site-edit-info label {
+  position: absolute;
+  left: 0;
+}
 
 .site-form-ajax-processed .form-text {
   width: 90%;
