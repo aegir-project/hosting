@@ -83,7 +83,7 @@ function hosting_site_menu() {
 /**
  * Implements hook_theme().
  */
-function hosting_site_theme() {
+function hosting_site_theme($existing, $type, $theme, $path) {
   $items = array();
 
   $items['hosting_site_profile'] = array(
@@ -147,17 +147,16 @@ function _hosting_site_goto_link($node) {
     $title = t("Go to !url", array('!url' => $node->title));
   }
   $url = "node/" . $node->nid . "/goto_site";
-
-  return theme('hosting_site_goto_link', $title, $url);
+  return theme('hosting_site_goto_link', array('title' => $title, 'url' => $url));
 }
 
 /**
  * Theme function for site link.
  */
-function theme_hosting_site_goto_link($title, $url) {
+function theme_hosting_site_goto_link($variables) {
   $options['attributes']['class'] = 'hosting-goto-site-link';
   $options['attributes']['target'] = '_blank';
-  return l($title, $url, $options);
+  return l($variables['title'], $variables['url'], $options);
 }
 
 /**
