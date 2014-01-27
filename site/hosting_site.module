@@ -452,7 +452,7 @@ function hosting_site_add_by_platform_access($node) {
  * Page callback for Site add by platform.
  */
 function hosting_site_add_by_platform($node) {
-  drupal_goto('node/add/site', "platform={$node->nid}");
+  drupal_goto('node/add/site', array('query' => array('platform' => $node->nid)));
 }
 
 /**
