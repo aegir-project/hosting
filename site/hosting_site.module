@@ -752,7 +752,7 @@ function hosting_site_profile_block_visibility() {
  * @see: hosting_site_views_pre_build().
  */
 function hosting_site_block_view_alter(&$data, $block) {
-  if ($block->delta =='hosting_site_list-block_client') {
+  if ($block->delta =='hosting_site_list-block_sites') {
     if ($node = menu_get_object()) {
       // We only want to show a list of sites on a server with a database,
       // or on install profile package pages.

@@ -330,7 +330,7 @@ function hosting_site_views_default_views() {
   $handler->display->display_options['filters']['title_1']['expose']['identifier'] = 'title_1';
 
   /* Display: Page admin */
-  $handler = $view->new_display('page', 'Page admin', 'page_1');
+  $handler = $view->new_display('page', 'Site List Page', 'page_sites');
   $handler->display->display_options['defaults']['access'] = FALSE;
   $handler->display->display_options['access']['type'] = 'perm';
   $handler->display->display_options['access']['perm'] = 'create site';
@@ -560,7 +560,7 @@ function hosting_site_views_default_views() {
   $handler->display->display_options['menu']['context_only_inline'] = 0;
 
   /* Display: Block: Client admin */
-  $handler = $view->new_display('block', 'Block: Client admin', 'block_client');
+  $handler = $view->new_display('block', 'Site List Block', 'block_sites');
   $handler->display->display_options['defaults']['empty'] = FALSE;
   /* No results behavior: Global: Text area */
   $handler->display->display_options['empty']['area']['id'] = 'area';
