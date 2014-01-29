@@ -58,6 +58,15 @@ function hosting_feature($feature) {
  * @see hosting_features_form_submit()
  */
 function hosting_features_form($form, &$form_state) {
+  $form = array();
+  $form['settings'] = array(
+    '#type' => 'checkboxes',
+    '#title' => 'Settings',
+    '#options' => array('dependencies' => 'Display dependencies', 'roles' => 'Display roles and permissions'),
+    '#default_value' => variable_get('hosting_features_form_settings', array()),
+    '#weight' => -20,
+  );
+
   $optional = array(
     '#type' => 'fieldset',
     '#title' => t('Optional system features'),
@@ -85,21 +94,38 @@ function hosting_features_form($form, &$form_state) {
   $features = hosting_get_features(TRUE);
   foreach ($features as $feature => $info) {
     $description = $info['description'];
-    // Gather dependencies and their statuses
-    $depends_on = isset($info['dependencies']['features']) ? $info['dependencies']['features'] : FALSE;
-    if (is_array($depends_on)) {
-      $description .= theme('hosting_feature_dependencies', array(
-        'dependencies' => $depends_on,
-        'prefix' => 'Depends on',
-        'features' => $features));
+
+    if ($settings = variable_get('hosting_features_form_settings', FALSE)) {
+      if ($settings['dependencies']) {
+        // Gather dependencies and their statuses
+        $depends_on = isset($info['dependencies']['features']) ? $info['dependencies']['features'] : FALSE;
+        if (is_array($depends_on)) {
+          $description .= theme('hosting_feature_dependencies', array(
+            'dependencies' => $depends_on,
+            'prefix' => 'Depends on',
+            'features' => $features));
+        }
+
+        // Gather relying features and their statuses
+        $required_by = isset($info['dependencies']['reverse']) ? $info['dependencies']['reverse'] : FALSE;
+        if (is_array($required_by)) {
+          $description .= theme('hosting_feature_dependencies', array(
+            'dependencies' => $required_by,
+            'prefix' => 'Required by',
+            'features' => $features));
+        }
+      }
     }
-    // Gather relying features and their statuses
-    $required_by = isset($info['dependencies']['reverse']) ? $info['dependencies']['reverse'] : FALSE;
-    if (is_array($required_by)) {
-      $description .= theme('hosting_feature_dependencies', array(
-        'dependencies' => $required_by,
-        'prefix' => 'Required by',
-        'features' => $features));
+
+    if ($settings = variable_get('hosting_features_form_settings', FALSE)) {
+      if ($settings['roles']) {
+        // Add collapsed fieldset listing the feature's permissions assigned per role.
+        $role_perms = isset($info['role_permissions']) ? $info['role_permissions'] : FALSE;
+        if (is_array($role_perms)) {
+          $element = drupal_get_form('hosting_feature_role_perms_table', $role_perms);
+          $description .= drupal_render_children($element);
+        }
+      }
     }
 
     // Disable checkbox for required features.
@@ -107,7 +133,7 @@ function hosting_features_form($form, &$form_state) {
     if ($info['status'] == HOSTING_FEATURE_REQUIRED) {
       $locked = TRUE;
     }
-    elseif ($required_by) {
+    elseif (isset($required_by) && $required_by) {
       foreach ($required_by as $mod => $feat) {
         $locked = $features[$feat]['enabled'] ? TRUE : $locked;
       }
@@ -189,6 +215,8 @@ function hosting_features_form($form, &$form_state) {
  * @see hook_hosting_feature()
  */
 function hosting_features_form_submit($form, &$form_state) {
+  variable_set('hosting_features_form_settings', $form_state['values']['settings']);
+
   // Get form values, filtering out irrelevant entries.
   $values = array_filter($form_state['values'], 'is_int');
 
@@ -307,6 +335,31 @@ function theme_hosting_feature_dependencies($vars) {
   }
   return $return;
 }
+
+/**
+ * Helper function to list Hosting feature permissions.
+ */
+function hosting_feature_role_perms_table($form, &$form_table, $role_perms) {
+  $form = array();
+  $form['role_perms'] = array(
+    '#type' => 'fieldset',
+    '#title' => 'Roles & permissions',
+    '#description' => 'Upon enabling this feature, the following roles will be assigned the listed permissions.',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+  $table = '<table><thead><tr><th>Role</th><th>Permissions</th></tr></thead><tbody>';
+  foreach ($role_perms as $role => $perms) {
+    $table .= '<tr><td>' . $role . '</td>';
+    $table .= '<td>' . implode(', ', $perms) . '</td></tr>';
+  }
+  $table .= '</tbody></table>';
+  $form['role_perms']['table'] = array(
+    '#markup' => $table,
+  );
+  return $form;
+}
+
 
 /**
  * Enable one or more Hosting features.
