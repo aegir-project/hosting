@@ -329,3 +329,45 @@ function hosting_site_views_access($type, $display, $account = NULL) {
 
   return FALSE;
 }
+
+/**
+ * Implements hook_views_pre_build().
+ */
+function hosting_site_views_pre_build(&$view) {
+  if ($view->name == 'hosting_site_list') {
+    switch ($view->current_display) {
+      case 'page_1':
+        // Only allow VBO for admins.
+        if (!user_access('administer sites')) {
+          unset($view->field['views_bulk_operations']);
+          unset($view->display_handler->handlers['field']['views_bulk_operations']);
+        }
+        break;
+      case 'block_client':
+        // Rather than maintain separate views/displays for each hosting
+        // content type, we alter the view to remove all but the relevant
+        // contextual filters (arguments) here.
+        // @see: hosting_site_block_view_alter().
+        if($node = menu_get_object()) {
+          if (in_array($node->type, array('platform', 'server', 'client', 'package'))) {
+            foreach ($view->argument as $name => $arg) {
+              if (!in_array($node->type, $arg->options['validate_options']['types'])) {
+                unset($view->argument[$name]);
+                unset($view->display_handler->handlers['argument'][$name]);
+                unset($view->display_handler->display->display_options['arguments'][$name]);
+                unset($view->display_handler->options['arguments'][$name]);
+              }
+            }
+            // Only allow VBO for admins.
+            if (!user_access('administer sites')) {
+              unset($view->field['views_bulk_operations']);
+              unset($view->display_handler->handlers['field']['views_bulk_operations']);
+            }
+          }
+        }
+        break;
+    }
+  }
+
+}
+

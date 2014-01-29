@@ -745,3 +745,22 @@ function hosting_site_profile_block_visibility() {
   }
   return FALSE;
 }
+
+/**
+ * Implements hook_block_view_alter().
+ *
+ * @see: hosting_site_views_pre_build().
+ */
+function hosting_site_block_view_alter(&$data, $block) {
+  if ($block->delta =='hosting_site_list-block_client') {
+    if ($node = menu_get_object()) {
+      // We only want to show a list of sites on a server with a database,
+      // or on install profile package pages.
+      if (($node->type == 'server' && !array_key_exists('db', $node->services))
+       || ($node->type == 'package' && $node->package_type != 'profile')) {
+        unset($data['subject']);
+        unset($data['content']);
+      }
+    }
+  }
+}
