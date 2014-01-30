@@ -1165,7 +1165,7 @@ function hosting_settings($form, &$form_state) {
   $profiles = array();
   foreach (hosting_get_profiles() as $id => $name) {
     $profile = hosting_package_instance_load(array('p.nid' => $id));
-    $profiles[$profile->short_name] = theme('hosting_site_profile', $profile);
+    $profiles[$profile->short_name] = theme('hosting_site_profile', array('profile' => $profile));
     // Don't allow a site to be provisioned with hostslave or hostmaster profile
     if (in_array($name, array('Hostslave', 'Hostmaster'))) {
       unset($profiles[$profile->short_name]);
