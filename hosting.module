@@ -1263,3 +1263,19 @@ function hosting_create_roles() {
 
   node_access_rebuild();
 }
+
+/**
+ * Implements hook_modules_enabled().
+ */
+function hosting_modules_enabled($modules) {
+  // List any features whose module was just enabled.
+  $features = hosting_get_features();
+  $enable = array();
+  foreach ($features as $feature => $info) {
+    if (in_array($info['module'], $modules) && !variable_get('hosting_feature_' . $feature, FALSE)) {
+      $enable[$info['module']] = $feature;
+    }
+  }
+
+  hosting_features_enable($enable, TRUE, FALSE);
+}
