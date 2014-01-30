@@ -377,6 +377,8 @@ function hosting_features_enable($enable, $rebuild = TRUE) {
       if (isset($features[$feature]['enable']) && function_exists($callback = $features[$feature]['enable'])) {
         $callback();
       }
+      $role_perms = isset($feature['role_permissions']) ? isset($feature['role_permissions']) : array();
+      hosting_add_permissions($module, $role_perms);
       variable_set('hosting_feature_' . $feature, HOSTING_FEATURE_ENABLED);
       if ($rebuild) {
         hosting_feature_rebuild_caches();
@@ -472,4 +474,30 @@ function hosting_feature_rebuild_caches() {
   // Record enabled features in the Hosting features registry (in
   // /var/aegir/.drush/drushrc.php)
   hosting_add_task(hosting_get_hostmaster_nid(), 'verify');
+}
+
+/**
+ * Add a module's permissions to the appropriate roles.
+ *
+ * @param $module
+ *   The name of the module whose permissions we're adding.
+ * @param $role_perms
+ *   An array of arrays keyed by the role name. The values are the permissions
+ *   to enable.
+ */
+function hosting_add_permissions($module, $role_perms) {
+  $perm_hook = $module . '_permission';
+  if (function_exists($perm_hook)) {
+    $roles = user_roles(TRUE);
+    foreach ($roles as $rid => $name) {
+      if ($name == 'aegir administrator') {
+        // The Aegir admin role gets all hosting module permissions
+        $perms = call_user_func($module . '_permission');
+        user_role_grant_permissions($rid, array_keys($perms));
+      }
+      if (array_key_exists($name, $role_perms)) {
+        user_role_grant_permissions($rid, $role_perms[$name]);
+      }
+    }
+  }
 }

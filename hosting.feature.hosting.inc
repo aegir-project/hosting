@@ -21,23 +21,23 @@ function hosting_hosting_feature() {
     // automatically assigned all permissions defined in Hosting features, none
     // are assigned explicitely here.
     'role_permissions' => array(
-      'aegir_administrator' => array(
+      'aegir administrator' => array(
         'access administration menu',
         'access content',
         'view revisions',
         'access user profiles',
       ),
-      'aegir_platform_manager' => array(
+      'aegir platform manager' => array(
         'access content',
         'search content',
         'use advanced search',
         'view revisions',
       ),
-      'aegir_account_manager' => array(
+      'aegir account manager' => array(
         'access content',
         'access user profiles',
       ),
-      'aegir_client' => array(
+      'aegir client' => array(
         'access content',
         'view revisions',
       ),
