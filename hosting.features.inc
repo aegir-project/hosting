@@ -364,22 +364,31 @@ function hosting_feature_role_perms_table($form, &$form_table, $role_perms) {
 /**
  * Enable one or more Hosting features.
  */
-function hosting_features_enable($enable, $rebuild = TRUE) {
-  if (count($enable)) {
-    drupal_set_message(t("Enabling %feature feature!plural.", array(
-      '%feature' => implode(", ", $enable),
-      '!plural' => count($enable) > 1 ? 's' : '',
-    )));
+function hosting_features_enable($features, $rebuild = TRUE, $enable = TRUE) {
+  if (count($features)) {
+
     include_once('includes/install.inc');
-    module_enable(array_keys($enable));
-    $features = hosting_get_features();
-    foreach ($enable as $module => $feature) {
-      if (isset($features[$feature]['enable']) && function_exists($callback = $features[$feature]['enable'])) {
+
+    $all_features = hosting_get_features();
+    $titles = array();
+    foreach ($features as $feature) {
+      $titles[] = $all_features[$feature]['title'];
+    }
+    drupal_set_message(t("Enabling %feature feature!plural.", array(
+      '%feature' => implode(", ", $titles),
+      '!plural' => count($features) > 1 ? 's' : '',
+    )));
+
+    foreach ($features as $module => $feature) {
+      variable_set('hosting_feature_' . $feature, HOSTING_FEATURE_ENABLED);
+      if ($enable) {
+        module_enable(array($module));
+      }
+      if (isset($all_features[$feature]['enable']) && function_exists($callback = $all_features[$feature]['enable'])) {
         $callback();
       }
-      $role_perms = isset($feature['role_permissions']) ? isset($feature['role_permissions']) : array();
+      $role_perms = isset($all_features[$feature]['role_permissions']) ? $all_features[$feature]['role_permissions'] : array();
       hosting_add_permissions($module, $role_perms);
-      variable_set('hosting_feature_' . $feature, HOSTING_FEATURE_ENABLED);
       if ($rebuild) {
         hosting_feature_rebuild_caches();
       }
@@ -421,7 +430,6 @@ function hosting_features_disable($disable, $rebuild = TRUE) {
  */
 function hosting_determine_features_status($values) {
   $features = hosting_get_features();
-
   // List of features currently enabled.
   $enabled = array();
   // List of features to enable.
@@ -439,7 +447,7 @@ function hosting_determine_features_status($values) {
       }
     }
     elseif ($value) {
-      $enable[$features[$feature]['module']] = $features[$feature]['title'];
+      $enable[$features[$feature]['module']] = $feature;
       // Add dependencies to enable
       if (isset($info['dependencies']['features']) && count($info['dependencies']['features'])){
         foreach ($info['dependencies']['features'] as $module_dep => $feature_dep) {
@@ -488,15 +496,22 @@ function hosting_feature_rebuild_caches() {
 function hosting_add_permissions($module, $role_perms) {
   $perm_hook = $module . '_permission';
   if (function_exists($perm_hook)) {
-    $roles = user_roles(TRUE);
+    $roles = user_roles();
     foreach ($roles as $rid => $name) {
+
+      // The Aegir admin role gets all hosting module permissions
       if ($name == 'aegir administrator') {
-        // The Aegir admin role gets all hosting module permissions
         $perms = call_user_func($module . '_permission');
         user_role_grant_permissions($rid, array_keys($perms));
       }
+
       if (array_key_exists($name, $role_perms)) {
         user_role_grant_permissions($rid, $role_perms[$name]);
+        drupal_set_message(t("The '%role' role was assigned the following permission!plural: '%perms'.", array(
+          '%role' => $name,
+          '%perms' => implode('\', \'', $role_perms[$name]),
+          '!plural' => count($role_perms[$name]) > 1 ? 's' : '',
+        )));
       }
     }
   }
