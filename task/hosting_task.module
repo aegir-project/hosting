@@ -529,7 +529,7 @@ function hosting_add_task($nid, $type, $args = NULL, $status = HOSTING_TASK_QUEU
     return FALSE;
   }
 
-  $node = db_query("SELECT nid, uid, title FROM {node} WHERE nid = :nid", array(':nid' => $nid))->fetch();
+  $node = db_query("SELECT nid, uid, title FROM {node} WHERE nid = :nid", array(':nid' => $nid))->fetchObject();
   if (!$task) {
     $task = new stdClass();
   }

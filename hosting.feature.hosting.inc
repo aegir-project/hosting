@@ -29,8 +29,8 @@ function hosting_hosting_feature() {
       ),
       'aegir platform manager' => array(
         'access content',
-        'search content',
-        'use advanced search',
+  //      'search content',
+  //      'use advanced search',
         'view revisions',
       ),
       'aegir account manager' => array(

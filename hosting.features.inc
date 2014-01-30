@@ -389,9 +389,9 @@ function hosting_features_enable($features, $rebuild = TRUE, $enable = TRUE) {
       }
       $role_perms = isset($all_features[$feature]['role_permissions']) ? $all_features[$feature]['role_permissions'] : array();
       hosting_add_permissions($module, $role_perms);
-      if ($rebuild) {
-        hosting_feature_rebuild_caches();
-      }
+    }
+    if ($rebuild) {
+      hosting_feature_rebuild_caches($features);
     }
   }
 
@@ -472,7 +472,7 @@ function hosting_determine_features_status($values) {
 /**
  * Perform necessary task after enabling or disabling Hosting features.
  */
-function hosting_feature_rebuild_caches() {
+function hosting_feature_rebuild_caches($features) {
   // Rebuild schema.
   drupal_get_schema(NULL, TRUE);
 
@@ -481,6 +481,13 @@ function hosting_feature_rebuild_caches() {
 
   // Record enabled features in the Hosting features registry (in
   // /var/aegir/.drush/drushrc.php)
+  $all_features = hosting_get_features();
+  foreach ($features as $feature) {
+    // Don't add a verify task during install of hostmaster site.
+    if ($all_features[$feature]['status'] == HOSTING_FEATURE_REQUIRED) {
+      return;
+    }
+  }
   hosting_add_task(hosting_get_hostmaster_nid(), 'verify');
 }
 
