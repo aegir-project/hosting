@@ -34,6 +34,13 @@ function hosting_schema() {
 }
 
 /**
+ * Implements hook_install().
+ */
+function hosting_install() {
+  hosting_create_roles();
+}
+
+/**
  * Implements hook_update_N().
  *
  * Set weight for hosting module.
