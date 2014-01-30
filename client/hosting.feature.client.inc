@@ -20,6 +20,23 @@ function hosting_client_hosting_feature() {
     'module' => 'hosting_client',
     'node' => 'client',
     'group' => 'required',
+    'role_permissions' => array(
+      'aegir platform manager' => array(
+        'administer clients',
+      ),
+      'aegir account manager' => array(
+        'administer clients',
+        'create client',
+        'edit client users',
+        'view client',
+        'edit client uname',
+      ),
+      'aegir client' => array(
+        'edit own client',
+        'view client',
+      ),
+    ),
+
   );
   return $features;
 }

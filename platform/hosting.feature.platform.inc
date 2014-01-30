@@ -15,6 +15,21 @@ function hosting_platform_hosting_feature() {
     'module' => 'hosting_platform',
     'node' => 'platform',
     'group' => 'required',
+    'role_permissions' => array(
+      'aegir platform manager' => array(
+        'administer platforms',
+        'create platform',
+        'delete platform',
+        'edit platform',
+        'view locked platforms',
+        'view platform',
+        'create sites on locked platforms',
+      ),
+      'aegir client' => array(
+        'view platform',
+      ),
+    ),
+
   );
   return $features;
 }

@@ -14,6 +14,12 @@ function hosting_alias_hosting_feature() {
     'status' => HOSTING_FEATURE_ENABLED,
     'module' => 'hosting_alias',
     'group' => 'optional',
+    'role_permissions' => array(
+      'aegir client' => array(
+        'create site aliases',
+      ),
+    ),
+
   );
   return $features;
 }

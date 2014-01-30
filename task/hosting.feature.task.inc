@@ -15,7 +15,37 @@ function hosting_task_hosting_feature() {
     'module' => 'hosting_task',
     'node' => 'task',
     'group' => 'required',
-    );
+    'role_permissions' => array(
+      'aegir platform manager' => array(
+        'administer tasks',
+        'create clone task',
+        'create migrate task',
+        'create lock task',
+        'create unlock task',
+        'create verify task',
+        'access task logs',
+        'cancel own tasks',
+        'view own tasks',
+        'retry failed tasks',
+        'view task',
+      ),
+      'aegir client' => array(
+        'create backup task',
+        'create delete task',
+        'create disable task',
+        'create enable task',
+        'create restore task',
+        'create verify task',
+        'create clone task',
+        'create migrate task',
+        'access task logs',
+        'view own tasks',
+        'view task',
+        'cancel own tasks',
+      ),
+    ),
+
+  );
   return $features;
 }
 

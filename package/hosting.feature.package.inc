@@ -15,7 +15,15 @@ function hosting_package_hosting_feature() {
     'module' => 'hosting_package',
     'node' => 'package',
     'group' => 'required',
-    );
+    'role_permissions' => array(
+      'aegir platform manager' => array(
+        'view package',
+      ),
+      'aegir client' => array(
+        'view package',
+      ),
+    ),
+  );
   return $features;
 }
 

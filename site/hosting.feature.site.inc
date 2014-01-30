@@ -15,6 +15,25 @@ function hosting_site_hosting_feature() {
     'module' => 'hosting_site',
     'node' => 'site',
     'group' => 'required',
+    'role_permissions' => array(
+      'aegir platform manager' => array(
+        'administer sites',
+        'create site',
+        'delete site',
+        'edit site',
+        'view site',
+      ),
+      'aegir account manager' => array(
+        'view_site',
+      ),
+      'aegir client' => array(
+        'create site',
+        'delete site',
+        'view site',
+        'edit site',
+      ),
+    ),
+
   );
   return $features;
 }

@@ -13,6 +13,12 @@ function hosting_ssl_hosting_feature() {
     'status' => HOSTING_FEATURE_DISABLED,
     'module' => 'hosting_ssl',
     'group' => 'optional',
+    'role_permissions' => array(
+      'aegir client' => array(
+        'create ssl certificate',
+      ),
+    ),
+
   );
   return $features;
 }

@@ -15,6 +15,17 @@ function hosting_quota_hosting_feature() {
     'status' => HOSTING_FEATURE_DISABLED,
     'module' => 'hosting_quota',
     'group' => 'experimental',
+    'role_permissions' => array(
+      'aegir account manager' => array(
+        'edit all quotas',
+        'view all quotas',
+        'view own quota',
+      ),
+      'aegir client' => array(
+        'view own quota',
+      ),
+    ),
+
   );
   return $features;
 }

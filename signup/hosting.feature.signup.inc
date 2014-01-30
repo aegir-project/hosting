@@ -14,6 +14,11 @@ function hosting_signup_hosting_feature() {
     'status' => HOSTING_FEATURE_DISABLED,
     'module' => 'hosting_signup',
     'group' => 'optional',
+    'role_permissions' => array(
+      'anonymous user' => array(
+        'access hosting signup form',
+      ),
+    ),
   );
   return $features;
 }
