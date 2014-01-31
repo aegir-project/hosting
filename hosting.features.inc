@@ -472,7 +472,7 @@ function hosting_determine_features_status($values) {
 /**
  * Perform necessary task after enabling or disabling Hosting features.
  */
-function hosting_feature_rebuild_caches($features) {
+function hosting_feature_rebuild_caches($features = array()) {
   // Rebuild schema.
   drupal_get_schema(NULL, TRUE);
 
