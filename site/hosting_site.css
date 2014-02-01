@@ -1,0 +1,7 @@
+/* Collapsed filter and operations */
+div.view-hosting-site-list div.view-filters,
+div.view-hosting-site-list div.vbo-views-form fieldset {
+  float: left;
+  width: 45%;
+  margin-left: 10px !important;
+}

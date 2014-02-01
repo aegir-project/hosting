@@ -290,3 +290,49 @@ function hosting_site_views_pre_build(&$view) {
 
 }
 
+/**
+ * Implements hook_preprocess_views_view().
+ */
+function hosting_site_preprocess_views_view(&$vars) {
+  if ($vars['view']->name == 'hosting_site_list') {
+    // Wrap exposed filters in a fieldset.
+    if ($vars['exposed']) {
+      // Ensure required css and js libs are added
+      drupal_add_js('misc/form.js');
+      drupal_add_js('misc/collapse.js');
+      drupal_add_css(drupal_get_path('module', 'hosting_site') . '/hosting_site.css');
+
+      // Assume other get vars are exposed filters, so expand fieldset
+      // to show applied filters
+      $class = array('collapsible', 'collapsed');
+      if (count($_GET) > 1){
+        $class = array('collapsible');
+      }
+
+      // Build fieldset element, using correct array nesting for theme_fieldset
+      $fieldset['element'] = array(
+        '#title' => t('Filters'),
+        '#attributes' => array('class' => $class),
+        '#value' => $vars['exposed'],
+        '#children' => '',
+      );
+
+      // Reassign exposed filter tpl var to fieldset value
+      $vars['exposed'] = theme('fieldset', $fieldset);
+    }
+  }
+}
+
+/**
+ * Callback to collapse VBO fieldset.
+ *
+ * @see: hosting_site_form_alter().
+ */
+function _hosting_site_collapse_views_fieldset($form, &$form_state) {
+  // Ensure required js libs are added
+  drupal_add_js('misc/form.js');
+  drupal_add_js('misc/collapse.js');
+
+  $form['select']['#attributes']['class'][] = ' collapsible collapsed';
+  return $form;
+}

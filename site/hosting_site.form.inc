@@ -392,14 +392,9 @@ function hosting_site_form_alter(&$form, &$form_state, $form_id) {
       $form['buttons']['delete']['#type'] = 'hidden';
     }
   }
-  // Override the 'Bulk operations' title.
-  if (in_array($form_id, array(
-    'views_bulk_operations_form_hosting_site_list_block_client',
-    'views_bulk_operations_form_hosting_site_list_page_1',
-    'views_bulk_operations_form_hosting_site_list_block_1',
-    'views_bulk_operations_form_hosting_site_list_block_profile',
-  ))) {
-    $form['select']['#title'] = 'Site operations';
+  if (array_key_exists('views_bulk_operations', $form)) {
+    // Add our callback, so we can operate on the fully built form.
+    $form['#after_build'][] = '_hosting_site_collapse_views_fieldset';
   }
-}
 
+}
