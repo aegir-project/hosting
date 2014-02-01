@@ -141,7 +141,7 @@ function hosting_alias_form_data(&$form, &$form_state) {
     for ($delta = 0; $delta < $alias_count; $delta++) {
       $form['aliases_wrapper']['aliases'][$delta] = array(
         '#type' => 'textfield',
-        '#default_value' => $aliases[$delta],
+        '#default_value' => isset($aliases[$delta]) ? $aliases[$delta] : '',
       );
     }
 
@@ -151,9 +151,10 @@ function hosting_alias_form_data(&$form, &$form_state) {
       '#value' => t('Add an alias'),
       '#description' => t("Click here to add another alias."),
       '#weight' => 1,
-      '#submit' => array('hosting_alias_add_alias_submit'), // If no javascript action.
-      '#ahah' => array(
-        'path' => 'hosting_alias/js',
+      '#submit' => array('hosting_alias_add_alias_submit'),
+      '#limit_validation_errors' => array(),
+      '#ajax' => array(
+        'callback' => 'hosting_alias_add_alias_callback',
         'wrapper' => 'hosting-aliases-wrapper',
         'method' => 'replace',
         'effect' => 'fade',
@@ -173,7 +174,7 @@ function hosting_alias_form_data(&$form, &$form_state) {
       $options += array_combine($automatic_aliases, $automatic_aliases);
     }
 
-    $default = isset($form_state['values']['redirection']) ? $form_state['values']['redirection'] : $form['#node']->redirection;
+    $default = isset($form['#node']->redirection) ? $form['#node']->redirection : '';
 
     $form['aliases_wrapper']['redirection'] = array(
       '#type' => 'select',
@@ -190,51 +191,17 @@ function hosting_alias_form_data(&$form, &$form_state) {
  * Callback to handle "Add Alias" button
  */
 function hosting_alias_add_alias_submit($form, &$form_state) {
-  // Set the form to rebuild and run submit handlers.
-  node_form_submit_build_node($form, $form_state);
-
-  // Make the changes we want to the form state.
-  if ($form_state['values']['add_alias']) {
-    $form_state['values']['aliases'] = array_filter($form_state['values']['aliases']);
-    $form_state['alias_count'] = max(count($form_state['values']['aliases']), 1);
-  }
+  $form_state['alias_count']++;
+  $form_state['rebuild'] = TRUE;
 }
 
 /**
- * AHAH callback for additional alias form fields.
- *
- * Copied from poll_choice_js()
+ * Ajax callback for returning multiple alias fields
  */
-function hosting_alias_form_js() {
-  include_once 'modules/node/node.pages.inc';
-  $form_state = array(
-    'storage' => NULL,
-    'submitted' => FALSE,
-  );
-  $form_build_id = $_POST['form_build_id'];
-  // Get the form from the cache.
-  $form = form_get_cache($form_build_id, $form_state);
-  $args = $form['#parameters'];
-  $form_id = array_shift($args);
-  // We will run some of the submit handlers so we need to disable redirecting.
-  $form['#redirect'] = FALSE;
-  // We need to process the form, prepare for that by setting a few internals
-  // variables.
-  $form['#post'] = $_POST;
-  $form['#programmed'] = FALSE;
-  $form_state['post'] = $_POST;
-  // Build, validate and if possible, submit the form.
-  drupal_process_form($form_id, $form, $form_state);
-  // This call recreates the form relying solely on the form_state that the
-  // drupal_process_form set up.
-  $form = drupal_rebuild_form($form_id, $form_state, $args, $form_build_id);
-  // Render the new output.
-  $alias_form = $form['aliases_wrapper'];
-  unset($alias_form['#prefix'], $alias_form['#suffix']); // Prevent duplicate wrappers.
-  $output = theme('status_messages') . drupal_render($alias_form);
-
-  drupal_json(array('status' => TRUE, 'data' => $output));
+function hosting_alias_add_alias_callback($form, $form_state) {
+  return $form['aliases_wrapper'];
 }
+
 
 /**
  * Retrieve a list of aliases for a site.
