@@ -120,8 +120,8 @@ function hosting_alias_form_data(&$form, &$form_state) {
     );
 
     // Get the list of existing aliases, either from form_state or the node.
-    if (isset($form_state['aliases'])) {
-      $aliases = array_filter($form_state['aliases']);
+    if (isset($form_state['input']['aliases'])) {
+      $aliases = array_filter($form_state['input']['aliases']);
     }
     elseif (isset($form['#node']->aliases)) {
       $aliases = array_filter($form['#node']->aliases);
@@ -129,16 +129,8 @@ function hosting_alias_form_data(&$form, &$form_state) {
       $aliases = array();
     }
 
-    // Figure out the alias count
-    if (isset($form_state['alias_count'])) {
-      $alias_count = $form_state['alias_count'] + 1;
-    }
-    else {
-      $alias_count = max(1, empty($aliases) ? 1 : count($aliases) + 1);
-    }
-
     // Add alias textfields
-    for ($delta = 0; $delta < $alias_count; $delta++) {
+    for ($delta = 0; $delta <= count($aliases); $delta++) {
       $form['aliases_wrapper']['aliases'][$delta] = array(
         '#type' => 'textfield',
         '#default_value' => isset($aliases[$delta]) ? $aliases[$delta] : '',
@@ -191,7 +183,6 @@ function hosting_alias_form_data(&$form, &$form_state) {
  * Callback to handle "Add Alias" button
  */
 function hosting_alias_add_alias_submit($form, &$form_state) {
-  $form_state['alias_count']++;
   $form_state['rebuild'] = TRUE;
 }
 
