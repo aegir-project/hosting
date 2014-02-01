@@ -464,7 +464,17 @@ function hosting_alias_settings($form, &$form_state) {
     '#description' => t('Instead of serving the primary domain under a symlinked site alias, this module can also redirect the user to the primary domain from an alias. This setting can be controlled per site. Setting this option here will make redirection the default behavior for site aliases.'),
     '#default_value' => variable_get('hosting_alias_redirection', FALSE),
   );
+  $form['#submit'][] = 'hosting_alias_settings_validate';
   return system_settings_form($form);
+}
+
+/**
+ * Validation handler for hosting_alias_settings form.
+ */
+function hosting_alias_settings_validate($form, $form_state){
+  if(!valid_url($form_state['values']['hosting_alias_subdomain'])){
+    form_set_error('hosting_alias_subdomain', t('The provided domain is invalid.'));
+  }
 }
 
 /**
