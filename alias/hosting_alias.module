@@ -70,15 +70,10 @@ function hosting_alias_form_alter(&$form, &$form_state, $form_id) {
  * Makes sure aliases are not more than HOSTING_MAX_ALIAS_LENGTH characters.
  */
 function hosting_alias_site_form_validate($form, &$form_state) {
-  $aliases = $form_state['values']['aliases'];
+  $aliases = $form_state['values']['aliases'] = array_filter($form_state['values']['aliases']);
   foreach ($aliases as $key => $alias) {
-    $length = strlen(trim($alias));
-    if ($length > HOSTING_MAX_ALIAS_LENGTH) {
-      $long = $length - HOSTING_MAX_ALIAS_LENGTH;
-      form_set_error("aliases_wrapper][aliases][$key", t('The alias @alias is @long character(s) too long. Please shorten.', array('@alias' => $alias, '@long' => $long)));
-    }
+    hosting_alias_validate_alias($form_state['node'], $alias, $key);
   }
-
 }
 
 /**
@@ -144,7 +139,6 @@ function hosting_alias_form_data(&$form, &$form_state) {
       '#description' => t("Click here to add another alias."),
       '#weight' => 1,
       '#submit' => array('hosting_alias_add_alias_submit'),
-      '#limit_validation_errors' => array(),
       '#ajax' => array(
         'callback' => 'hosting_alias_add_alias_callback',
         'wrapper' => 'hosting-aliases-wrapper',
@@ -251,7 +245,7 @@ function hosting_alias_insert($node) {
               'nid' => $node->nid,
               'alias' => $alias,
               'automatic' => HOSTING_ALIAS_CUSTOM,
-              'redirection' => $node->redirection,
+              'redirection' => isset($node->redirection) ? $node->redirection : NULL,
             ))
             ->execute();
         }
@@ -357,10 +351,10 @@ function hosting_alias_node_revision_delete($node) {
 function hosting_alias_node_validate($node, $form, &$form_state) {
   if ($node->type == 'site') {
     $aliases = $node->aliases;
-    foreach ($aliases as $alias) {
+    foreach ($aliases as $key => $alias) {
       if ($alias = trim($alias)) {
         if (!module_exists('hosting_subdirs')) {
-          hosting_alias_validate_alias($node, $alias);
+          hosting_alias_validate_alias($node, $alias, $key);
         }
       }
     }
@@ -375,14 +369,21 @@ function hosting_alias_node_validate($node, $form, &$form_state) {
  * @param string $alias
  *   An alias to have point to the site.
  */
-function hosting_alias_validate_alias($site, $alias) {
+function hosting_alias_validate_alias($site, $alias, $key) {
   if ($alias = trim($alias)) {
-    if (!hosting_domain_allowed($alias, array('nid' => $site->nid)) || $alias == $site->title) {
-      form_set_error('aliases', t('The domain name @alias is already in use', array('@alias' => $alias)));
+    $params = isset($site->nid) ? array('nid' => $site->nid) : array();
+    if (!hosting_domain_allowed($alias, $params) || $alias == $site->title) {
+      form_set_error("aliases][$key", t('The domain name @alias is already in use', array('@alias' => $alias)));
     }
     if (!_hosting_valid_fqdn_wildcard($alias)) {
-      form_set_error('aliases', t('The domain name @alias is not a valid url', array('@alias' => $alias)));
+      form_set_error("aliases][$key", t('The domain name @alias is not a valid url', array('@alias' => $alias)));
     }
+    $length = strlen($alias);
+    if ($length > HOSTING_MAX_ALIAS_LENGTH) {
+      $long = $length - HOSTING_MAX_ALIAS_LENGTH;
+      form_set_error("aliases][$key", t('The domain name @alias is @long character(s) too long. Please shorten.', array('@alias' => $alias, '@long' => $long)));
+    }
+
   }
 }
 
@@ -537,9 +538,10 @@ function hosting_alias_allow_domain($url, $params = array()) {
   $query->leftJoin('hosting_site_alias', 'a', 'n.vid = a.vid');
   $query->condition('a.alias', $url);
 
+  // For existing sites, don't match the site's current aliases.
   if (isset($params['nid'])) {
     $query->condition('n.nid', $params['nid'], '<>');
   }
-  return $query->countQuery()->execute()->fetchField();
+  return !$query->countQuery()->execute()->fetchField();
 
 }
