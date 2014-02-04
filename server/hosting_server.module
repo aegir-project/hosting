@@ -230,7 +230,7 @@ function hosting_server_form(&$node) {
   // taken mostly from the hosting_site alias stuff
   $form['ips_wrapper'] = array(
       '#title' => t('IP addresses'),
-      '#description' => t('A list of IP addresses this server is publicly available under, one per line. If none is specified, a DNS lookup will be performed based on the server hostname above. <br /><strong>This should point to the public network, if you have such a separation.</strong>'),
+      '#description' => t('A list of IP addresses this server is publicly available under, one per line. If none is specified, X509 certificates will be offered through the SNI mechanism by TLS-enabled webservers. <br /><strong>This should point to the public network, if you have such a separation.</strong>'),
       '#type' => 'fieldset',
       '#tree' => FALSE,
       '#weight' => -9,
@@ -307,18 +307,15 @@ function hosting_server_form(&$node) {
 /**
  * Implementation of hook_presave()
  *
- * We resolve the server name to IP addresses if none has been given
- * by the operator. we also fire up the regular services hooks.
+ * We notice the operator if no IP was given. We do not set any to allow
+ * operators to use SNI. We also fire up the regular services hooks.
  */
 function hosting_nodeapi_server_presave(&$node) {
   if (empty($node->ip_addresses)) {
     // this returns an array or FALSE
     $ips = gethostbynamel($node->title);
     if ($ips) {
-      drupal_set_message(t('Initialized the IP to %ip based on hostname %name. If an HTTP service is enabled, this will be used to create database grants so make sure it is the right address, as seen from the database server.', array('%ip' => join(',', $ips), '%name' => $node->title)), 'message');
-      $node->new_ip_addresses = $ips;
-    } else {
-      drupal_set_message(t("Could not resolve IP address of server %name, not automatically setting IP address. DNS may fail.", array('%name' => $node->title)));
+      drupal_set_message(t('No IP addresse provided for server. We guess the IP is %ip based on hostname %name. You should set IP addreses in the server node unless you are ready to use SNI (Server Name Indication) which is incompatible with IE and Safari on Windows XP.', array('%ip' => join(',', $ips), '%name' => $node->title)), 'message');
     }
   }
   hosting_server_services_from_post($node);
