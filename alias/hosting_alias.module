@@ -438,14 +438,14 @@ function hosting_alias_node_view($node, $view_mode, $langcode) {
       $node->content['info']['aliases'] = array(
         '#type' => 'item',
         '#title' => t('Domain aliases'),
-        '#value' => implode(', ', $links),
+        '#markup' => implode(', ', $links),
         '#weight' => 10,
       );
-      $redirection = db_query("SELECT redirection FROM {hosting_site_alias} WHERE vid = :vid", array(':vid' => $node->vid))->fetchField();
+      $redirection = db_query("SELECT redirection FROM {hosting_site_alias} WHERE vid = :vid", array(':vid' => $node->vid))->fetchAssoc();
       $node->content['info']['redirection'] = array(
         '#type' => 'item',
         '#title' => t('Redirection'),
-        '#value' => $redirection['redirection'] ? t('Yes') : t('No'),
+        '#markup' => $redirection['redirection'] ? t('Yes') : t('No'),
         '#weight' => 10,
       );
     }

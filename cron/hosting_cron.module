@@ -76,7 +76,7 @@ function hosting_cron_node_view($node, $view_mode, $langcode) {
         '#type' => 'item',
         '#title' => t('Cron run'),
         '#weight' => 20,
-        '#value' => hosting_format_interval($node->last_cron),
+        '#markup' => hosting_format_interval($node->last_cron),
       );
     }
   }

@@ -859,7 +859,7 @@ function hosting_queues_configure($form, &$form_state) {
         // @ignore i18n_11
         '#suffix' => t(' %items every ', array('%items' => $info['plural'])),
         '#attributes' => array(
-          'class' => 'hosting-select-frequency-items',
+          'class' => array('hosting-select-frequency-items'),
         ),
       );
     }
@@ -878,7 +878,7 @@ function hosting_queues_configure($form, &$form_state) {
       '#maxlength' => 5,
       '#size' => 5,
       '#attributes' => array(
-        'class' => 'hosting-select-frequency-ticks',
+        'class' => array('hosting-select-frequency-ticks'),
       ),
     );
     $form[$queue]['frequency']["unit"] = array(
@@ -886,7 +886,7 @@ function hosting_queues_configure($form, &$form_state) {
       '#options' => $units,
       '#default_value' => $frequency_length,
       '#attributes' => array(
-        'class' => 'hosting-select-frequency-unit',
+        'class' => array('hosting-select-frequency-unit'),
       ),
     );
   }
@@ -1165,7 +1165,7 @@ function hosting_settings($form, &$form_state) {
   $profiles = array();
   foreach (hosting_get_profiles() as $id => $name) {
     $profile = hosting_package_instance_load(array('p.nid' => $id));
-    $profiles[$profile->short_name] = theme('hosting_site_profile', array('profile' => $profile));
+    $profiles[$profile->short_name] = theme('hosting_site_profile', array('profile' => $profile, 'html'=> ''));
     // Don't allow a site to be provisioned with hostslave or hostmaster profile
     if (in_array($name, array('Hostslave', 'Hostmaster'))) {
       unset($profiles[$profile->short_name]);

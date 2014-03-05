@@ -56,7 +56,7 @@ class hostingService_http_ssl extends hostingService_http_public {
     $render['ssl_port'] = array(
       '#type' => 'item',
       '#title' => t('SSL Port'),
-      '#value' => filter_xss($this->ssl_port),
+      '#markup' => filter_xss($this->ssl_port),
     );
   }
 

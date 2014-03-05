@@ -603,13 +603,13 @@ function hosting_client_view($node, $teaser = FALSE, $page = FALSE) {
   $node->content['info']['title'] = array(
     '#type' => 'item',
     '#title' => $type->title_label,
-    '#value' => filter_xss($node->title),
+    '#markup' => filter_xss($node->title),
   );
   $node->content['info']['uname'] = array(
     '#type' => 'item',
     '#title' => t('Internal name'),
     '#weight' => 1,
-    '#value' => filter_xss($node->uname),
+    '#markup' => filter_xss($node->uname),
   );
 
   $node->content['info']['#suffix'] = '</div>';

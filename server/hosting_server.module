@@ -551,11 +551,10 @@ function hosting_server_view(&$node, $teaser = FALSE, $page = FALSE) {
         $node->content['info'][$name]['#weight'] = $services[$name]['weight'];
       }
 
-      $title = $services[$name]['title'] . ' : ' . $service->type;
-
       $node->content['info'][$name]['title'] = array(
-        '#markup' => '<h3>' . $title . '</h3>',
-        '#type' => 'markup',
+        '#title' => $services[$name]['title'],
+        '#markup' => $service->type,
+        '#type' => 'item',
         '#weight' => -20,
       );
 
