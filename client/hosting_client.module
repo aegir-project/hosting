@@ -303,14 +303,14 @@ function hosting_client_validate($node, $form, &$form_state) {
     $node->uname = hosting_client_sanitize($node->title);
   }
   // @todo convert this statement to DBTNG syntax.
-  $nid = db_query("SELECT nid FROM {hosting_client} WHERE uname = ':uname'", array(':uname' => $node->uname))->fetchField;
+  $nid = db_query("SELECT nid FROM {hosting_client} WHERE uname = ':uname'", array(':uname' => $node->uname))->fetchField();
   if ($nid && $node->nid != $nid) {
     form_set_error('uname', t("Client internal name already in use, try %suggestion.",
                               array('%suggestion' => hosting_client_validate_suggest($node->uname, TRUE))));
   }
 
   if (!$node->nid && $node->email) {
-    $user = user_load(array('mail' => $node->email));
+    $user = user_load_by_mail($node->email);
     if ($user) {
       form_set_error('email', t("Email address already exists."));
     }

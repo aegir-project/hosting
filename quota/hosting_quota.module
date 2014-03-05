@@ -313,9 +313,13 @@ function hosting_quota_node_insert($node) {
 /**
  *  Implements hook_node_load().
  */
-function hosting_quota_node_load($node, $types) {
-  if ($node->type == 'client') {
-    $node->quota = hosting_quota_get_all_info($node->nid);
+function hosting_quota_node_load($nodes, $types) {
+  if (in_array('client', $types)) {
+    foreach ($nodes as $nid => $node) {
+      if ($node->type == 'client') {
+        $nodes[$nid]->quota = hosting_quota_get_all_info($node->nid);
+      }
+    }
   }
 }
 
