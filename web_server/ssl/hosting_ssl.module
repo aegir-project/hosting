@@ -168,19 +168,18 @@ function hosting_ssl_server_cert_list($node) {
 */
 // TODO: Validate and finish conversion to DBTNG. Specifically, what do we do
 // with $primary_table passed to db_rewrite_sql()?
-  $query = db_select('hosting_ip_addresses', 'ips')
-    ->extend('PagerDefault')
-    ->extend('TableSort');
-  $query = $query->join('hosting_ssl_cert_ips', 'cert_ip', 'cert_ip.ip_address = ips.id');
-  $query = $query->join('hosting_ssl_cert', 'cert', 'cert.cid = cert_ip.cid');
-  $query = $query->join('node', 'client', 'client.nid = cert.client');
-  $query = $query->element(2);
-  $query = $query
-    ->addField('ips', 'ip_address')
-    ->addField('cert', 'ssl_key', 'domain')
-    ->addField('cert', 'status')
-    ->addField('client', 'title', 'client')
-    ->condition('ips.nid', $node->nid)
+  $query = db_select('hosting_ip_addresses', 'ips');
+  $query = $query->extend('PagerDefault');
+  $query = $query->extend('TableSort');
+  $query->join('hosting_ssl_cert_ips', 'cert_ip', 'cert_ip.ip_address = ips.id');
+  $query->join('hosting_ssl_cert', 'cert', 'cert.cid = cert_ip.cid');
+  $query->join('node', 'client', 'client.nid = cert.client');
+  $query->element(2);
+  $query->addField('ips', 'ip_address');
+  $query->addField('cert', 'ssl_key', 'domain');
+  $query->addField('cert', 'status');
+  $query->addField('client', 'title', 'client');
+  $query->condition('ips.nid', $node->nid)
     ->limit(25)
     ->orderByHeader($header)
     ->addTag('node_access');

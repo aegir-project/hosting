@@ -11,11 +11,13 @@
 function hosting_quota_admin_client_list() {
   $items_per_page = 25;
   $all_resources = module_invoke_all('hosting_quota_resource');
-  $result = pager_query('SELECT q.*, n.title FROM {hosting_client_quota} q INNER JOIN {node} n ON n.nid = q.client', $items_per_page);
+  $result = db_select('hosting_client_quota', 'q');
+  $result->join('node', 'n', 'q.client = n.nid');
+  $result->fields('q')->fields('n');
+  $result = $result->extend('PagerDefault')->limit($items_per_page)->execute();
   $output = array();
 
-  while ($row = $result->fetch()) {
-
+  while ($row = $result->fetchObject()) {
     $resource = array($row->resource => $all_resources[$row->resource]);
 
     // Pass in raw limit and usage

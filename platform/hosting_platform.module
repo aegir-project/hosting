@@ -271,14 +271,14 @@ function _hosting_get_locked_platforms() {
                       FROM {node} n
                       LEFT JOIN {hosting_platform} h
                       ON n.nid = h.nid
-                      WHERE n.type = :n.type
-                      AND n.status = :n.status
-                      AND h.status = :h.status
+                      WHERE n.type = :type
+                      AND n.status = :nstatus
+                      AND h.status = :hstatus
                       ORDER BY n.title
                      ", array(
-                       ':n.type' => 'platform',
-                       ':n.status' => 1, //@todo: remove magic number?
-                       ':h.status' => HOSTING_PLATFORM_LOCKED,
+                       ':type' => 'platform',
+                       ':nstatus' => NODE_PUBLISHED,
+                       ':hstatus' => HOSTING_PLATFORM_LOCKED,
                      )
                    );
   while ($server = $result->fetch()) {

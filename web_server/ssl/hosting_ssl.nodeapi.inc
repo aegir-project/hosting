@@ -384,13 +384,13 @@ function hosting_ssl_get_keys($client = NULL, $ask_custom = FALSE) {
   if (!is_null($client)) {
     $client = hosting_get_client($client);
     if ($client) {
-      $query .= " WHERE client = %d";
-      $args[] = $client->nid;
+      $query .= " WHERE client = :client";
+      $args[':client'] = $client->nid;
     }
   }
   $result = db_query($query, $args);
 
-  while ($obj = $result->fetch()) {
+  while ($obj = $result->fetchObject()) {
     if (sizeof($obj->ssl_key)) {
       $keys[$obj->cid] = $obj->ssl_key;
     }

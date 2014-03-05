@@ -65,7 +65,8 @@ function hosting_ip_validate($node) {
     $ip = trim($ip);
     if (empty($ip)) {
       // deletion, look if the IP is in use
-      if ($cid = db_result(db_query('SELECT ssl_key FROM {hosting_ssl_cert_ips} i INNER JOIN {hosting_ssl_cert} c ON c.cid = i.cid WHERE ip_address = %d', $id))) {
+      $cid = db_query('SELECT ssl_key FROM {hosting_ssl_cert_ips} i INNER JOIN {hosting_ssl_cert} c ON c.cid = i.cid WHERE ip_address = :id', array(':id' => $id))->fetchField();
+      if ($cid) {
         form_set_error("ip_addresses][$id", t('Cannot remove IP associated with certificate %cert.', array('%cert' => $cid)));
       }
     } elseif (!_hosting_valid_ip($ip)) {
