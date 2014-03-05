@@ -241,7 +241,7 @@ function hosting_site_form($node) {
     '#weight' => -10,
   ));
 
-  $editable = ((!isset($node->client) || $node->nid) || user_access('administer sites')) && hosting_feature('client');
+  $editable = ((!isset($node->client) || !isset($node->nid)) || user_access('administer sites')) && hosting_feature('client');
   $add_client_text = '';
   if (user_access('administer clients') || user_access('create client')) {
     $add_client_text = t(' Click !here to add a new client.', array('!here' => l('here', 'node/add/client', array('attributes' => array('target' => '_blank')))));

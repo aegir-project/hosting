@@ -481,7 +481,7 @@ function hosting_platform_update($node) {
       ->condition('nid', $node->nid)
       ->execute();
   }
-  if (!$node->no_verify) {
+  if (!isset($node->no_verify)) {
     hosting_add_task($node->nid, 'verify');
   }
 }

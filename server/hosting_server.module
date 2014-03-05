@@ -254,7 +254,7 @@ function hosting_server_form($node, &$form_state) {
   $form['human_name'] = array(
     '#type' => 'textfield',
     '#title' => t('Human-readable name'),
-    '#default_value' => $node->human_name,
+    '#default_value' => isset($node->human_name) ? $node->human_name : '',
     '#description' => t('<strong>Optional, but recommended.</strong> Internally, Aegir refers to servers by their hostname. The value of this field will be used throughout the UI, and allows for more meaningful names. While not enforced by the system, it is highly recommended that the name assigned to a server be unique.'),
     '#weight' => 1,
   );

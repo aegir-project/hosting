@@ -17,7 +17,7 @@ function hosting_ssl_site_form(&$form, &$form_state, $form_id) {
 
   $ssl_available = FALSE;
   // Only allow the user to modify these values when the platform is SSL enabled.
-  if ($node->nid) {
+  if (isset($node->nid)) {
     $platform = node_load($node->platform);
     $server = node_load($platform->web_server);
 
@@ -72,7 +72,7 @@ function hosting_ssl_hosting_site_options_alter(&$return, $node) {
   $return['ssl_key_new'] = FALSE;
 
   // Test if ssl has been enabled.
-  if ($node->ssl_enabled != 0) {
+  if (isset($node->ssl_enable)) {
 
     $keys = hosting_ssl_get_keys($node->client, TRUE);
 
@@ -105,14 +105,14 @@ function hosting_ssl_hosting_site_options_alter(&$return, $node) {
  * @see http://drupal.org/node/1354
  */
 function hosting_ssl_nodeapi_site_view(&$node, $teaser = FALSE) {
-  $node->content['info']['ssl_enabled'] = array(
+ $node->content['info']['ssl_enabled'] = array(
     '#type' => 'item',
     '#title' => t('Encryption'),
-    '#value' => hosting_ssl_status_options((!is_null($node->ssl_enabled)) ? $node->ssl_enabled : HOSTING_SSL_DISABLED),
+    '#markup' => hosting_ssl_status_options((isset($node->ssl_enabled)) ? $node->ssl_enabled : HOSTING_SSL_DISABLED),
     '#weight' => 6,
   );
 
-  if ($node->ssl_enabled != 0) {
+  if (isset($node->ssl_enabled)) {
     $node->content['info']['ssl_key'] = array(
       '#type' => 'item',
       '#title' => t('Encryption key'),

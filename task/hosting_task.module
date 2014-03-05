@@ -651,7 +651,8 @@ function hosting_task_restore_form_validate($form, &$form_state) {
  */
 function hosting_task_confirm_form_submit($form, &$form_state) {
   $values = $form_state['values'];
-  hosting_add_task($values['nid'], $values['task'], $values['parameters']);
+  $parameters = isset($values['parameters']) ? $values['parameters'] : array();
+  hosting_add_task($values['nid'], $values['task'], $parameters);
   $form_state['redirect'] = 'node/' . $values['nid'];
   overlay_close_dialog();
 }

@@ -205,7 +205,7 @@ function hosting_client_form(&$node, &$form_state) {
       '#description' => t('Email address of the contact created with this client. Optional - if none is provided, no user will be created with this client.'),
       '#required' => FALSE,
       '#size' => 40,
-      '#default_value' => $node->email,
+      '#default_value' => isset($node->email) ? $node->email : '',
       '#maxlength' => 100,
     );
 

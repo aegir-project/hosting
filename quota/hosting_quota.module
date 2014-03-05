@@ -344,10 +344,12 @@ function hosting_quota_form_alter(&$form, &$form_state, $form_id) {
   if (user_access('edit all quotas') && isset($form['type']) && isset($form['#node']) && 'client_node_form' == $form_id) {
     $node = $form['#node'];
 
-    if (!$quota_info = $node->quota) {
+    if(!isset($node->quota)){
       $quota_info = module_invoke_all('hosting_quota_resource');
     }
-
+    else{
+      $quota_info = $node->quota;
+    }
 
     $form['quota'] = array(
       '#type' => 'fieldset',
@@ -358,7 +360,7 @@ function hosting_quota_form_alter(&$form, &$form_state, $form_id) {
     );
 
     foreach ($quota_info as $resource => $quota) {
-      if (!$quota['limit']) {
+      if (!isset($quota['limit'])) {
         $quota['limit'] = variable_get("hosting_quota_default_$resource", 0);
       }
       $form['quota']['quota-' . $resource] = array(

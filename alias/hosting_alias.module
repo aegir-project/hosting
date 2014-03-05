@@ -245,7 +245,7 @@ function hosting_alias_insert($node) {
               'nid' => $node->nid,
               'alias' => $alias,
               'automatic' => HOSTING_ALIAS_CUSTOM,
-              'redirection' => isset($node->redirection) ? $node->redirection : NULL,
+              'redirection' => isset($node->redirection) ? $node->redirection : 0,
             ))
             ->execute();
         }
@@ -260,7 +260,7 @@ function hosting_alias_insert($node) {
               'nid' => $node->nid,
               'alias' => $alias,
               'automatic' => HOSTING_ALIAS_AUTOMATIC,
-              'redirection' => $node->redirection,
+              'redirection' => isset($node->redirection) ? $node->redirection : 0,
             ))
             ->execute();
         }

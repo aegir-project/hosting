@@ -946,7 +946,7 @@ function hosting_queues_configure_validate($form, &$form_state) {
       if ($form_state['values'][$queue]['frequency']['ticks'] && !is_numeric($form_state['values'][$queue]['frequency']['ticks'])) {
         form_set_error($queue, t('Please enter a valid frequency.'));
       }
-      if ($form_state['values'][$queue]['frequency']['items'] && !is_numeric($form_state['values'][$queue]['frequency']['items'])) {
+      if (isset($form_state['values'][$queue]['frequency']['items']) && !is_numeric($form_state['values'][$queue]['frequency']['items'])) {
         form_set_error($queue, t('Please enter a valid amount of items.'));
       }
     }
