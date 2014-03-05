@@ -769,6 +769,31 @@ function hosting_available_tasks($type = NULL, $reset = FALSE) {
   }
 }
 
+
+/**
+ * Implements hook_action_info().
+ */
+function hosting_task_action_info() {
+  $available_tasks = hosting_available_tasks();
+  $actions = array();
+  foreach ($available_tasks as $module => $tasks) {
+    foreach ($tasks as $task => $task_info) {
+      // Search for dashes an replace accordingly.
+      $task = str_replace('-', '_', $task);
+      $function = 'hosting_' . $module . '_' . $task . '_action';
+      if (function_exists($function)) {
+        $label = ucwords($module . ': ' . $task);
+        $actions[$function] = array(
+          'type' => 'node',
+          'label' => t($label),
+          'configurable' => FALSE,
+        );
+      }
+    }
+  }
+  return $actions;
+}
+
 /**
  * Implements hook_insert().
  */

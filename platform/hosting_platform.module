@@ -177,65 +177,39 @@ function hosting_platform_node_access($node, $op, $account) {
 }
 
 /**
- * Implements hook_node_operations().
+ * Callback for platform verify action.
+ *
+ * @see: hosting_task_action_info().
  */
-function hosting_platform_node_operations() {
-  $operations = array();
-
-  $operations['hosting-platform-verify'] = array(
-    'label' => t('Platform: Verify'),
-    'callback' => 'hosting_platform_op_verify',
-   );
-  $operations['hosting-platform-lock'] = array(
-    'label' => t('Platform: Lock'),
-    'callback' => 'hosting_platform_op_lock',
-   );
-  $operations['hosting-platform-unlock'] = array(
-    'label' => t('Platform: Unlock'),
-    'callback' => 'hosting_platform_op_unlock',
-   );
-  $operations['hosting-platform-delete'] = array(
-    'label' => t('Platform: Delete'),
-    'callback' => 'hosting_platform_op_delete',
-   );
-
-  return $operations;
+function hosting_platform_verify_action($node) {
+  hosting_add_task($node->nid, 'verify');
 }
 
 /**
- * Callback for platform verify operation.
+ * Callback for platform lock action.
+ *
+ * @see: hosting_task_action_info().
  */
-function hosting_platform_op_verify($nodes) {
-  foreach ($nodes as $nid) {
-    hosting_add_task($nid, 'verify');
-  }
+function hosting_platform_lock_action($node) {
+  hosting_add_task($node->nid, 'lock');
 }
 
 /**
- * Callback for platform lock operation.
+ * Callback for platform unlock action.
+ *
+ * @see: hosting_task_action_info().
  */
-function hosting_platform_op_lock($nodes) {
-  foreach ($nodes as $nid) {
-    hosting_add_task($nid, 'lock');
-  }
+function hosting_platform_unlock_action($node) {
+  hosting_add_task($node->nid, 'unlock');
 }
 
 /**
- * Callback for platform unlock operation.
+ * Callback for platform delete action.
+ *
+ * @see: hosting_task_action_info().
  */
-function hosting_platform_op_unlock($nodes) {
-  foreach ($nodes as $nid) {
-    hosting_add_task($nid, 'unlock');
-  }
-}
-
-/**
- * Callback for platform delete operation.
- */
-function hosting_platform_op_delete($nodes) {
-  foreach ($nodes as $nid) {
-    hosting_add_task($nid, 'delete');
-  }
+function hosting_platform_delete_action($node) {
+  hosting_add_task($node->nid, 'delete');
 }
 
 /**
@@ -453,10 +427,6 @@ function hosting_platform_form_alter(&$form, &$form_state, $form_id) {
     if (isset($node->platform_status) && $node->platform_status !== '-2') {
       $form['action']['delete']['#type'] = 'hidden';
     }
-  }
-  // Override the 'Bulk operations' title.
-  if ($form_id == 'views_bulk_operations_form_hosting_platform_list_page_platforms') {
-    $form['select']['#title'] = 'Platform operations';
   }
 }
 

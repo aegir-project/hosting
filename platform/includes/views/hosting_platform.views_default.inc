@@ -162,6 +162,34 @@ function hosting_platform_views_default_views() {
         'url' => '',
       ),
     ),
+    'action::hosting_platform_delete_action' => array(
+      'selected' => 1,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 1,
+      'label' => 'Delete',
+    ),
+    'action::hosting_platform_lock_action' => array(
+      'selected' => 1,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 1,
+      'override_label' => 1,
+      'label' => 'Lock',
+    ),
+    'action::hosting_platform_unlock_action' => array(
+      'selected' => 1,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 1,
+      'override_label' => 1,
+      'label' => 'Unlock',
+    ),
+    'action::hosting_platform_verify_action' => array(
+      'selected' => 1,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 1,
+      'override_label' => 1,
+      'label' => 'Verify',
+    ),
     'action::node_promote_action' => array(
       'selected' => 0,
       'postpone_processing' => 0,
@@ -286,5 +314,3 @@ function hosting_platform_views_default_views() {
 
   return $views;
 }
-
-

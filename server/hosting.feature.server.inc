@@ -15,7 +15,7 @@ function hosting_server_hosting_feature() {
     'module' => 'hosting_server',
     'node' => 'server',
     'group' => 'required',
-    );
+  );
   return $features;
 }
 
