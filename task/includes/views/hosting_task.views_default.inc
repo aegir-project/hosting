@@ -125,6 +125,14 @@ function hosting_task_views_default_views() {
   $handler->display->display_options['fields']['executed']['field'] = 'executed';
   $handler->display->display_options['fields']['executed']['exclude'] = TRUE;
   $handler->display->display_options['fields']['executed']['date_format'] = 'long';
+  /* Field: Content: Post date */
+  $handler->display->display_options['fields']['created']['id'] = 'created';
+  $handler->display->display_options['fields']['created']['table'] = 'node';
+  $handler->display->display_options['fields']['created']['field'] = 'created';
+  $handler->display->display_options['fields']['created']['label'] = '';
+  $handler->display->display_options['fields']['created']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['created']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['created']['date_format'] = 'long';
   /* Sort criterion: Hosting Task: Default */
   $handler->display->display_options['sorts']['hosting_task_default']['id'] = 'hosting_task_default';
   $handler->display->display_options['sorts']['hosting_task_default']['table'] = 'hosting_task';
