@@ -156,8 +156,7 @@ function hosting_task_ajax_list($node) {
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * AJAX callback for refreshing task list.
  */
 function hosting_task_ajax_queue() {
   $view = views_get_view('hosting_task_list');
@@ -165,7 +164,7 @@ function hosting_task_ajax_queue() {
   $view->pre_execute();
   $return['markup'] = $view->render('block');
 
-  drupal_json($return);
+  drupal_json_output($return);
   exit();
 }
 

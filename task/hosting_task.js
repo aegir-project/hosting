@@ -38,19 +38,19 @@ function hostingTaskAddOverlay(elem) {
 }
 
 
-function hostingTaskRefreshQueueBlock() {
+hostingTaskRefreshQueueBlock = function() {
   if (Drupal.settings.hostingTaskRefresh.queueBlock != 1) {
     return null;
   }
 
   var hostingTaskQueueRefreshCallback = function(data, responseText) {
-    $("#block-views-hosting_task_list-block .content").html(data.markup);
+    $("#block-views-hosting-task-list-block .content").html(data.markup);
 
-    hostingTaskBindButtons('#block-views-hosting_task_list-block');
+    hostingTaskBindButtons('#block-views-hosting-task-list-block');
     setTimeout("hostingTaskRefreshQueueBlock()", 30000);
   }
 
-  hostingTaskAddOverlay('#block-views-hosting_task_list-block .view-content');
+  hostingTaskAddOverlay('#block-views-hosting-task-list-block .view-content');
   $.get(Drupal.settings.basePath + 'hosting/tasks/queue', null, hostingTaskQueueRefreshCallback , 'json');
 }
 
