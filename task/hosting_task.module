@@ -1341,53 +1341,6 @@ function hosting_task_list($filter_by = NULL, $filter_value = NULL) {
 }
 
 /**
- * Implements hook_summary().
- */
-function hosting_task_summary($filter_by = NULL, $filter_value = NULL) {
-
-  $more_link = l(t('More tasks'), 'hosting/queues/tasks');
-  return hosting_task_queue_block() . $more_link;
-}
-
-/**
- * Hosting task list queue block
- */
-function hosting_task_queue_block() {
-  drupal_add_js(drupal_get_path('module', 'hosting_task') . '/hosting_task.js');
-
-  $settings['hostingTaskRefresh'] = array(
-    'queueBlock' => 1,
-  );
-  drupal_add_js($settings, array('type' => 'setting', 'scope' => JS_DEFAULT));
-
-  $nodes = hosting_get_tasks('t.task-status', HOSTING_TASK_QUEUED, 5);
-
-  $headers = array(t('Task'), t('Actions'));
-  $rows[] = array();
-  foreach ($nodes as $node) {
-    $row = array();
-    $row['type'] = array(
-      'data' => drupal_ucfirst(str_replace(array('_', '-'), ' ', $node->task_type)) . ' ' . _hosting_node_link($node->rid),
-      'class' => array('hosting-status'),
-    );
-
-    $log_button = _hosting_task_button(t('View'), 'hosting/task/' . $node->nid, t("Display the task log"), 'hosting-button-log', isset($node->nid) &&  user_access('access task logs'), TRUE, FALSE);
-
-    $row['actions'] = array(
-      'data' => $log_button,
-      'class' => array('hosting-actions'),
-    );
-    $class = hosting_task_status_class($node->task_status);
-    $rows[] = array(
-      'data' => $row,
-      'class' => array($class),
-    );
-  }
-  return "<div id='hosting-task-queue-block'>" . theme('table', array('header' => $headers, 'rows' => $rows, 'attributes' => array('class' => array('hosting-table')))) . "</div>";
-
-}
-
-/**
  * A concise table listing of the tasks affecting this node
  *
  * This shows a table view of the tasks relevant to this node. It will show
