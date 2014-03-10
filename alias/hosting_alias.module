@@ -57,11 +57,9 @@ function hosting_alias_help($path, $arg) {
  * Add a textbox to site node forms with a newline
  * separated list of aliases to the site
  */
-function hosting_alias_form_alter(&$form, &$form_state, $form_id) {
-  if ($form_id == 'site_node_form') {
-    $form['#validate'][] = 'hosting_alias_site_form_validate';
-    return hosting_alias_form_data($form, $form_state);
-  }
+function hosting_alias_form_site_node_form_alter(&$form, &$form_state) {
+  $form['#validate'][] = 'hosting_alias_site_form_validate';
+  return hosting_alias_form_data($form, $form_state);
 }
 
 /**
@@ -346,22 +344,6 @@ function hosting_alias_node_revision_delete($node) {
 }
 
 /**
- * Implements hook_node_validate().
- */
-function hosting_alias_node_validate($node, $form, &$form_state) {
-  if ($node->type == 'site') {
-    $aliases = $node->aliases;
-    foreach ($aliases as $key => $alias) {
-      if ($alias = trim($alias)) {
-        if (!module_exists('hosting_subdirs')) {
-          hosting_alias_validate_alias($node, $alias, $key);
-        }
-      }
-    }
-  }
-}
-
-/**
  * Ensure that an alias is valid, and not already in use.
  *
  * @param object $site
@@ -384,25 +366,6 @@ function hosting_alias_validate_alias($site, $alias, $key) {
       form_set_error("aliases][$key", t('The domain name @alias is @long character(s) too long. Please shorten.', array('@alias' => $alias, '@long' => $long)));
     }
 
-  }
-}
-
-/**
- * Ensure that an alias is valid for subdir site.
- *
- * @param object $site
- *   A Hosting site node.
- * @param string $alias
- *   An alias to have point to the site.
- */
-function hosting_alias_validate_subdir($site, $alias) {
-  if ($alias = trim($alias)) {
-    if (!hosting_alias_allow_domain($alias, array('nid' => $site->nid)) || $alias == $site->title) {
-      form_set_error('aliases', t('The domain name @alias is already in use', array('@alias' => $alias)));
-    }
-    if (!_hosting_valid_fqdn_subdir($alias)) {
-      form_set_error('aliases', t('The domain name @alias is not a valid subdir url', array('@alias' => $alias)));
-    }
   }
 }
 

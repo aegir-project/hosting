@@ -10,43 +10,84 @@
  */
 function hosting_subdirs_form_alter(&$form, &$form_state, $form_id) {
   if($form_id == 'site_node_form') {
-    $form['aliases_wrapper']['#description'] .= 'Note: If the site is using a subdirectory, there should be at least one special alias with subdirectory path (e.g., example.com/foo) below. Redirection to this alias will also work, if enabled. This is useful if you do not want the site to be accessible from its subdomain (e.g., foo.example.com). You can also add more standard aliases (e.g., bar.example.com, green.example.com).';
+    $subdirs_text = 'Note: If the site is using a subdirectory, there should be at least one special alias with a subdirectory path (e.g., example.com/foo) below. Redirection to this alias will also work, if enabled. This is useful if you do not want the site to be accessible from its subdomain (e.g., foo.example.com). You can also add more standard aliases (e.g., bar.example.com, green.example.com).';
+    if (isset($form['aliases_wrapper']['#description'])) {
+      $form['aliases_wrapper']['#description'] .= $subdirs_text;
+    }
+    else {
+      $form['aliases_wrapper']['#description'] = $subdirs_text;
+    }
   }
+
+  // Replace the normal alias validation with one that will accept subdirs.
+  $alias_validation = array_search('hosting_alias_site_form_validate', $form['#validate']);
+  if ($alias_validation) {
+    unset($form['#validate'][$alias_validation]);
+  }
+  $form['#validate'][] = 'hosting_subdirs_site_form_validate';
 }
 
 /**
  * Implements hook_form_FORM_ID_alter().
  */
 function hosting_subdirs_form_site_node_form_alter(&$form, &$form_state) {
-  $form['title']['#description'] = 'Hint: To create a site using a subdirectory, name it using a subdomain (e.g., foo.example.com), and then enter an alias below for the desired subdirectory (e.g., example.com/foo). If you plan to use also the root domain (e.g., example.com), you must create a site with the root domain *before* adding sites in its subdirectories. Note: Once the first site in a subdirectory is created and the parent site also exists, the parent site must be re-verified (just once) to turn on the web server configuration for the first (and any future) sites in its subdirectory. All sites sharing the same parent URL can use any profile, in any platform, and can be freely migrated, cloned, etc.';
+  $form['title']['#description'] = 'Hint: To create a site using a subdirectory, name it using a subdomain (e.g., foo.example.com), and then enter an alias below for the desired subdirectory (e.g., example.com/foo). If you plan to also use the root domain (e.g., example.com), you must create a site with the root domain *before* adding sites in its subdirectories. Note: Once the first site in a subdirectory is created and the parent site also exists, the parent site must be re-verified (just once) to turn on the web server configuration for the first (and any future) sites in its subdirectory. All sites sharing the same parent URL can use any profile, on any platform, and can be freely migrated, cloned, etc.';
 }
 
 /**
- * Implementation of hook_nodeapi().
+ * Ensure that an alias is valid for subdir site.
+ *
+ * @param object $site
+ *   A Hosting site node.
+ * @param string $alias
+ *   An alias to have point to the site.
  */
-function hosting_subdirs_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
-  if ($node->type == 'site') {
-    switch ($op) {
-      case 'validate' :
-        $aliases = $node->aliases;
-        $subdirs = array();
-        foreach ($aliases as $alias) {
-          // If we're adding a subdirectory alias, it can't begin with '/'.
-          if (@strpos($alias, '/', 1)) {
-            $subdirs[$alias] = explode('/', $alias, 2);
-            hosting_alias_validate_subdir($node, $alias);
-            // We only support one level of subdirectories, for now.
-            if (@strpos($subdirs[$alias][1], '/')) {
-              form_set_error('aliases', t('Multi-level subdirectories are not currently supported. Check the subdirectory for <em>@alias</em>, which is set to <em>@subdir</em>.', array('@alias' => $alias, '@subdir' => $subdirs[$alias][1])));
-            }
-          }
-          else {
-            // No subdirectory in use, so validate normally.
-            hosting_alias_validate_alias($node, $alias);
-          }
-        }
-        break;
+function hosting_subdirs_validate_alias($site, $alias, $key) {
+  if ($alias = trim($alias)) {
+    // If we're adding a subdirectory alias, it can't begin with '/'.
+    if (@strpos($alias, '/', 1)) {
+      $subdir = explode('/', $alias, 2);
+      // We only support one level of subdirectories, for now.
+      if (@strpos($subdir[1], '/')) {
+        form_set_error("aliases][$key", t('Multi-level subdirectories are not currently supported. Check the subdirectory for <em>@alias</em>.', array('@alias' => $alias)));
+      }
+    }
+    else {
+      // No subdirectory in use, so validate normally.
+      return hosting_alias_validate_alias($site, $alias, $key);
+    }
+
+    if (!hosting_alias_allow_domain($alias, array('nid' => $site->nid)) || $alias == $site->title) {
+      form_set_error("aliases][$key", t('The domain name @alias is already in use', array('@alias' => $alias)));
+    }
+    if (!hosting_subdirs_valid_fqdn_subdir($alias)) {
+      form_set_error("aliases][$key", t('The domain name @alias is not a valid subdir url', array('@alias' => $alias)));
     }
   }
 }
 
+/**
+ * Validation handler for site form.
+ *
+ * Allow aliases with subdirectories.
+ */
+function hosting_subdirs_site_form_validate($form, &$form_state) {
+  $aliases = $form_state['values']['aliases'] = array_filter($form_state['values']['aliases']);
+  foreach ($aliases as $key => $alias) {
+    hosting_subdirs_validate_alias($form_state['node'], $alias, $key);
+  }
+}
+
+/**
+ * Check if the FQDN provided is valid for subdir alias.
+ *
+ * @param $fqdn
+ *   The Fully Qualified Domain Name (FQDN) to validate.
+ * @return
+ *   An integer greater than 0 if the $fqdn is valid, or 0 or FALSE if it not
+ *   valid.
+ */
+function hosting_subdirs_valid_fqdn_subdir($fqdn) {
+  return preg_match("/^([a-z0-9]([a-z0-9-\/]*[a-z0-9])?\.?)+$/i", $fqdn) &&
+         preg_match("/\//", $fqdn) && !preg_match("/\/\//", $fqdn);
+}
