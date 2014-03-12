@@ -249,8 +249,8 @@ function hosting_ssl_save_key($node) {
 
   $client = hosting_get_client($node->client);
 
-  $ssl_key = $node->ssl_key_new;
-  if ($ssl_key) {
+  if (!empty($node->ssl_key_new)) {
+    $ssl_key = $node->ssl_key_new;
     $result = db_query("SELECT * FROM {hosting_ssl_cert} WHERE ssl_key = '%s'", $ssl_key);
     if ($obj = db_fetch_object($result)) {
       // update
