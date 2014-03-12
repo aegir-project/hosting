@@ -535,6 +535,13 @@ function hosting_block_info() {
     'weight' => 1,
     'cache' => 'BLOCK_NO_CACHE',
   );
+  $blocks['hosting_supporting_aegir'] = array(
+    'info' => t('Support Aegir'),
+    'enabled' => 1,
+    'status' => 1,
+    'region' => 'sidebar_second',
+    'weight' => 1,
+  );
   return $blocks;
 }
 
@@ -553,6 +560,12 @@ function hosting_block_view($delta) {
       return array(
         'title' => t('Queues summary'),
         'content' => hosting_queue_summary_block(),
+      );
+
+    case 'hosting_supporting_aegir':
+      return array(
+        'title' => t('Support Aegir'),
+        'content' => hosting_supporting_aegir_block(),
       );
   }
 
@@ -610,6 +623,27 @@ function hosting_queue_block() {
         $output .= $func();
       }
     }
+    return $output;
+  }
+}
+
+/**
+ * Build a 'Support Aegir' block.
+ */
+function hosting_supporting_aegir_block() {
+  if (user_access('administer hosting')) {
+    $output = "
+
+      <p>Aegir will always cost you nothing to use, but that doesn't mean it costs us nothing to make.</p>
+
+      <p><strong>Aegir needs your continued support to grow and thrive.</strong></p>
+
+      <p>If you feel that Aegir has added significant value to your business or endeavour, please consider donating!</p>
+      <p><strong>How much is Aegir worth to you?</strong></p>
+      <a href=\"http://community.aegirproject.org/donate\" target=_blank>Donate Now ... </a>
+
+      <footer style=\"font-size: smaller;\">This block is only displayed to you, the superuser.</footer>
+      ";
     return $output;
   }
 }
