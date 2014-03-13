@@ -43,7 +43,7 @@ function hosting_ssl_site_form(&$form, &$form_state, $form_id) {
     '#description' => t("Choose an existing SSL certificate. If you do not wish to use any of your existing certificates, you may choose to generate a new one."),
     '#options' => hosting_ssl_get_keys(null, TRUE),
     '#required' => TRUE,
-    '#default_value' => ($node->ssl_key) ? $node->ssl_key : HOSTING_SSL_CUSTOM_KEY,
+    '#default_value' => isset($node->ssl_key) ? $node->ssl_key : HOSTING_SSL_CUSTOM_KEY,
     '#access' => user_access('create ssl certificate'),
     '#weight' => -8,
   ), 'hosting_ssl_output_key', $ssl_available, !$node->nid);
