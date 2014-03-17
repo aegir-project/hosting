@@ -303,7 +303,7 @@ function hosting_site_form($node, &$form_state) {
   }
   $languages = hosting_get_profile_languages($selected_profile, $selected_platform);
   _hosting_site_field($form, $node, 'site_language', array(
-    '#type' => 'radios',
+    '#type' => ((count($languages) > 10) ? 'select' : 'radios'),
     '#title' => t('Language'),
     '#description' => t('The language of site being installed.'),
     '#options' => $languages,
