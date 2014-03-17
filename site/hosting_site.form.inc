@@ -68,24 +68,6 @@ function _hosting_site_field(&$form, $node, $item, $element, $filter_display = '
   $form[$item]['#suffix'] = "</div>";
 }
 
-/**
- * pre_render form callback
- *
- * Add the needed .js and .css files to render the form correctly before printing it
- */
-function _hosting_site_form_pre_render($elements) {
-  static $settings_added = FALSE;
-  if (!$settings_added) {
-    $settings_added = TRUE;
-    $setting = array();
-    $setting['hosting']['site']['form_check_url'] = url('hosting/hosting_site_form_check');
-    drupal_add_js($setting, array('type' => 'setting', 'scope' => JS_DEFAULT));
-  }
-
-  drupal_add_js(drupal_get_path('module', 'hosting_site') . '/hosting_site.form.js');
-  return $elements;
-}
-
 
 /**
  * Pass in a site node and return an array of valid options for it's fields.
@@ -221,8 +203,7 @@ function hosting_site_available_options($node, $platform = NULL) {
 /**
  * Implements hook_form().
  */
-function hosting_site_form($node) {
-  $form['#pre_render'][] = '_hosting_site_form_pre_render';
+function hosting_site_form($node, &$form_state) {
   $form['#node'] = $node;
 
   if (isset($node->nid)) {
@@ -277,8 +258,24 @@ function hosting_site_form($node) {
     '#default_value' => isset($node->profile) ? $node->profile : hosting_get_default_profile(key($profiles)),
     '#required' => TRUE,
     '#attributes' => array('class' => array("hosting-site-form-profile-options")),
+    '#ajax' => array(
+      'callback' => 'hosting_site_platform_callback',
+      'wrapper' => 'hosting-site-field-platform' ,
+      'effect' => 'fade',
+      'event' => 'change',
+      'method' => 'replace',
+    ),
   ), '_hosting_node_link');
 
+  // Override the defaults if the profile has been changed.
+  if (isset($form_state['values']['profile'])) {
+    $selected_profile = $form_state['values']['profile'];
+  }
+  else{
+    $selected_profile = hosting_package_instance_load(array('p.nid' => hosting_get_default_profile()))->nid;
+  }
+
+  $platforms = hosting_get_profile_platforms($selected_profile);
   _hosting_site_field($form, $node, 'platform', array(
     '#type' => 'radios',
     '#title' => t('Platform'),
@@ -286,15 +283,30 @@ function hosting_site_form($node) {
     '#description' => t('The platform you want the site to be hosted on.<br />
                           Not seeing a certain platform? Platforms shown are those that support the profile above.
                           If a different profile is selected, this list may change automatically.'),
-    '#options' => _hosting_get_platforms(),
+    '#options' => $platforms,
     '#default_value' => isset($node->platform) ? $node->platform : NULL,
+    '#ajax' => array(
+      'callback' => 'hosting_site_language_callback',
+      'wrapper' => 'hosting-site-field-site-language' ,
+      'effect' => 'fade',
+      'event' => 'change',
+      'method' => 'replace',
+    ),
   ), '_hosting_node_link');
 
+  // Override the defaults if the profile has been changed.
+  if (isset($form_state['values']['platform'])) {
+    $selected_platform = $form_state['values']['platform'];
+  }
+  else{
+    $selected_platform = NULL;
+  }
+  $languages = hosting_get_profile_languages($selected_profile, $selected_platform);
   _hosting_site_field($form, $node, 'site_language', array(
     '#type' => 'radios',
     '#title' => t('Language'),
     '#description' => t('The language of site being installed.'),
-    '#options' => hosting_get_profile_languages(),
+    '#options' => $languages,
     '#required' => TRUE,
     '#default_value' => isset($node->site_language) ? $node->site_language : 'en',
     '#attributes' => array('class' => array("hosting-site-form-site-language-options")),
@@ -317,6 +329,14 @@ function hosting_site_form($node) {
   }
 
   return $form;
+}
+
+function hosting_site_platform_callback($form, &$form_state){
+  return $form['platform'];
+}
+
+function hosting_site_language_callback($form, &$form_state){
+  return $form['site_language'];
 }
 
 /**
