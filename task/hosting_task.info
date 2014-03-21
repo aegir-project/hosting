@@ -2,6 +2,8 @@ name = Hosting tasks
 description = Allow Hostmaster to keep track of tasks that have been processed on the servers.
 package = Hosting
 dependencies[] = hosting
+dependencies[] = overlay
+dependencies[] = overlay_paths
 core = 7.x
 
 files[] = includes/views/handlers/hosting_task_handler_field_status.inc
