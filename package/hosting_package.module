@@ -388,12 +388,19 @@ function _hosting_language_names($languages) {
 }
 
 /**
- * @todo document this function
+ * Lookup a language name based on the iso language code.
  */
 function _hosting_language_name($language) {
+  $name = $language;
   include_once DRUPAL_ROOT . '/includes/iso.inc';
   $locales = _locale_get_predefined_list();
-  return $locales[$language][0] . (isset($locales[$language][1]) ? ' ' . t('(@language)', array('@language' => $locales[$language][1])) : '');
+  if (isset($locales[$language])) {
+    $name = $locales[$language][0];
+    if (isset($locales[$language][1])) {
+      $name .= ' ' . t('(@language)', array('@language' => $locales[$language][1]));
+    }
+  }
+  return $name;
 }
 
 /**
