@@ -412,18 +412,18 @@ function hosting_ssl_clean_keys($node) {
                    INNER JOIN {hosting_ssl_site} siteB ON siteA.ssl_key = siteB.ssl_key
                    INNER JOIN {hosting_site} s ON s.nid = siteA.nid
                      WHERE siteA.nid <> siteB.nid
-                       AND siteA.ssl_enabled = :siteA.ssl_enabled
-                       AND s.status <> :s.status
-                       AND siteB.nid = :siteB.nid;",
+                       AND siteA.ssl_enabled = :siteA_ssl_enabled
+                       AND s.status <> :s_status
+                       AND siteB.nid = :siteB_nid;",
                  array(
-                   ':siteA.ssl_enabled' => 1,
-                   ':s.status' => HOSTING_SITE_DELETED,
-                   ':siteB.nid' => $node->nid
+                   ':siteA_ssl_enabled' => 1,
+                   ':s_status' => HOSTING_SITE_DELETED,
+                   ':siteB_nid' => $node->nid
                  ))->fetchField()) {
-    drupal_set_message(t("cleaning up unused certificate %cert associated with site %site", array('%cert' => $ssl_key, '%site' => $node->nid)));
     // We need to fetch the ssl_key field from the DB because the object comes
     // from the node edit, so it's gone.
-    $ssl_key = db_query('SELECT ssl_key FROM {hosting_ssl_site} WHERE nid = %d', $node->nid)->fetchField();
+    $ssl_key = db_query('SELECT ssl_key FROM {hosting_ssl_site} WHERE nid = ?', array($node->nid))->fetchField();
+    drupal_set_message(t("cleaning up unused certificate %cert associated with site %site", array('%cert' => $ssl_key, '%site' => $node->nid)));
     db_delete('hosting_ssl_cert')
       ->condition('cid', $ssl_key)
       ->execute();
