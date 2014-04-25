@@ -497,5 +497,4 @@ function hosting_site_update_7300() {
   db_change_field('hosting_site', 'db_name', 'db_name',
     array('type' => 'varchar', 'length' => 64, 'not null' => FALSE, 'default' => '')
   );
-  throw new DrupalUpdateException('Something with a database schema change. If you SQL-fu is up for it, consider running the following query on you Aegir site database: `ALTER hosting_site MODIFY db_name varchar(64) null;`');
 }
