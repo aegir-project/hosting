@@ -169,6 +169,8 @@ function hosting_queued_restart($signal = NULL) {
     unset($_ENV['argv']);
 
     watchdog('hosting_queued', 'Restarting queue daemon with @drush @args.', array('@drush' => $drush, '@args' => implode(" ", $args)));
+    // close all open database file descriptors
+    hosting_queued_db_close_all();
     pcntl_exec($drush, $args, $_ENV);
     watchdog('hosting_queued', 'Could not restart the queue daemon, aborting.', array(), WATCHDOG_ERROR);
     /* NOTREACHED */
@@ -179,6 +181,25 @@ function hosting_queued_restart($signal = NULL) {
 
   // Explicit exit in case we're handling a signal
   exit(1);
+}
+
+/**
+ * Close all database fiel descriptors, as exec() doesn't close them
+ *
+ * This only supports MySQLi right now, because there's no db_close() in
+ * Drupal.
+ */
+function hosting_queued_db_close_all() {
+  global $db_url, $active_db;
+  if (is_array($db_url)) {
+    foreach ($db_url as $name => $url) {
+      db_set_active($name);
+      mysqli_close($active_db);
+    }
+  }
+  else {
+    mysqli_close($active_db);
+  }
 }
 
 /**
