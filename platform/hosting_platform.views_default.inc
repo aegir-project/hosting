@@ -398,12 +398,6 @@ function hosting_platform_views_default_views() {
   $handler->display->display_options['sorts']['title']['id'] = 'title';
   $handler->display->display_options['sorts']['title']['table'] = 'node';
   $handler->display->display_options['sorts']['title']['field'] = 'title';
-  /* Argument: Node: Nid */
-  $handler->display->display_options['arguments']['nid']['id'] = 'nid';
-  $handler->display->display_options['arguments']['nid']['table'] = 'node';
-  $handler->display->display_options['arguments']['nid']['field'] = 'nid';
-  $handler->display->display_options['arguments']['nid']['style_plugin'] = 'default_summary';
-  $handler->display->display_options['arguments']['nid']['default_argument_type'] = 'fixed';
   /* Filter: Node: Type */
   $handler->display->display_options['filters']['type']['id'] = 'type';
   $handler->display->display_options['filters']['type']['table'] = 'node';
@@ -423,78 +417,18 @@ function hosting_platform_views_default_views() {
   $handler->display->display_options['filters']['status_1']['operator'] = '!=';
   $handler->display->display_options['filters']['status_1']['value']['value'] = '-2';
   $handler->display->display_options['filters']['status_1']['allow_null'] = 1;
-  /* Filter: Hosting Platform: Status */
-  $handler->display->display_options['filters']['status_2']['id'] = 'status_2';
-  $handler->display->display_options['filters']['status_2']['table'] = 'hosting_platform';
-  $handler->display->display_options['filters']['status_2']['field'] = 'status';
-  $handler->display->display_options['filters']['status_2']['value']['value'] = '1';
-  $handler->display->display_options['filters']['status_2']['exposed'] = TRUE;
-  $handler->display->display_options['filters']['status_2']['expose']['operator'] = 'status_2_op';
-  $handler->display->display_options['filters']['status_2']['expose']['limit_operators'] = array();
-  $handler->display->display_options['filters']['status_2']['expose']['label'] = 'Hosting Platform: Status';
-  $handler->display->display_options['filters']['status_2']['expose']['identifier'] = 'status_2';
-  $handler->display->display_options['filters']['status_2']['expose']['remember'] = 1;
-  $handler->display->display_options['filters']['status_2']['expose']['single'] = TRUE;
-  $handler->display->display_options['filters']['status_2']['allow_null'] = 1;
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page_platforms');
   $handler->display->display_options['defaults']['access'] = FALSE;
   $handler->display->display_options['access']['type'] = 'perm';
   $handler->display->display_options['access']['perm'] = 'view platform';
-  $handler->display->display_options['defaults']['filters'] = FALSE;
-  /* Filter: Node: Type */
-  $handler->display->display_options['filters']['type']['id'] = 'type';
-  $handler->display->display_options['filters']['type']['table'] = 'node';
-  $handler->display->display_options['filters']['type']['field'] = 'type';
-  $handler->display->display_options['filters']['type']['value'] = array(
-    'platform' => 'platform',
-  );
-  /* Filter: Node: Published */
-  $handler->display->display_options['filters']['status']['id'] = 'status';
-  $handler->display->display_options['filters']['status']['table'] = 'node';
-  $handler->display->display_options['filters']['status']['field'] = 'status';
-  $handler->display->display_options['filters']['status']['value'] = '1';
-  /* Filter: Hosting Platform: Status */
-  $handler->display->display_options['filters']['status_1']['id'] = 'status_1';
-  $handler->display->display_options['filters']['status_1']['table'] = 'hosting_platform';
-  $handler->display->display_options['filters']['status_1']['field'] = 'status';
-  $handler->display->display_options['filters']['status_1']['operator'] = '!=';
-  $handler->display->display_options['filters']['status_1']['value']['value'] = '-2';
-  $handler->display->display_options['filters']['status_1']['allow_null'] = 1;
-  /* Filter: Hosting Platform: Status */
-  $handler->display->display_options['filters']['status_2']['id'] = 'status_2';
-  $handler->display->display_options['filters']['status_2']['table'] = 'hosting_platform';
-  $handler->display->display_options['filters']['status_2']['field'] = 'status';
-  $handler->display->display_options['filters']['status_2']['exposed'] = TRUE;
-  $handler->display->display_options['filters']['status_2']['expose']['operator'] = 'status_2_op';
-  $handler->display->display_options['filters']['status_2']['expose']['label'] = 'Hosting Platform: Status';
-  $handler->display->display_options['filters']['status_2']['expose']['use_operator'] = FALSE;
-  $handler->display->display_options['filters']['status_2']['expose']['identifier'] = 'status_2';
-  $handler->display->display_options['filters']['status_2']['expose']['optional'] = TRUE;
-  $handler->display->display_options['filters']['status_2']['expose']['remember'] = FALSE;
-  $handler->display->display_options['filters']['status_2']['expose']['single'] = TRUE;
   $handler->display->display_options['path'] = 'hosting/platforms';
   $handler->display->display_options['menu']['type'] = 'normal';
   $handler->display->display_options['menu']['title'] = 'Platforms';
   $handler->display->display_options['menu']['description'] = 'List of platforms';
   $handler->display->display_options['menu']['weight'] = '1';
   $handler->display->display_options['menu']['name'] = 'primary-links';
-
-  /* Display: Block: Server */
-  $handler = $view->new_display('block', 'Block: Server', 'block_server');
-  $handler->display->display_options['defaults']['arguments'] = FALSE;
-  /* Argument: Node: Nid */
-  $handler->display->display_options['arguments']['nid']['id'] = 'nid';
-  $handler->display->display_options['arguments']['nid']['table'] = 'node';
-  $handler->display->display_options['arguments']['nid']['field'] = 'nid';
-  $handler->display->display_options['arguments']['nid']['relationship'] = 'web_server';
-  $handler->display->display_options['arguments']['nid']['default_action'] = 'default';
-  $handler->display->display_options['arguments']['nid']['style_plugin'] = 'default_summary';
-  $handler->display->display_options['arguments']['nid']['default_argument_type'] = 'node';
-  $handler->display->display_options['arguments']['nid']['default_argument_skip_url'] = 0;
-  $handler->display->display_options['arguments']['nid']['break_phrase'] = 0;
-  $handler->display->display_options['arguments']['nid']['not'] = 0;
 
   $views[$view->name] = $view;
 
