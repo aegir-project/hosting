@@ -10,7 +10,7 @@
 function hosting_client_views_default_views() {
   $views = array();
 
-  // Exported view: hosting_site_list
+  // Exported view: hosting_client_list
   $view = new view();
   $view->name = 'hosting_client_list';
   $view->description = 'Display a list of clients in Aegir.';
