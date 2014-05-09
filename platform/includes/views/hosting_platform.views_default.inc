@@ -317,7 +317,7 @@ function hosting_platform_views_default_views() {
   $handler->display->display_options['menu']['context_only_inline'] = 0;
 
   /* Display: Block: Server */
-  $handler = $view->new_display('block', 'Block: Server', 'block_server');
+  $handler = $view->new_display('block', 'Block: Server', 'block_1');
   $handler->display->display_options['defaults']['arguments'] = FALSE;
   /* Argument: Node: Nid */
   $handler->display->display_options['arguments']['nid']['id'] = 'nid';
