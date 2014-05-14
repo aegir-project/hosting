@@ -344,7 +344,16 @@ function hosting_platform_form(&$node) {
     );
   }
 
-  $form['makefile'] = array(
+  $form['frommakefile'] = array(
+    '#type' => 'fieldset',
+    '#tree' => TRUE,
+    '#title' => t('Deploy from makefile'),
+    '#collapsible' => TRUE,
+    '#description' => t('You may deploy this platform from a makefile.'),
+    '#weight' => -1,
+  );
+
+  $form['frommakefile']['makefile'] = array(
     '#type' => 'textfield',
     '#title' => t('Makefile'),
     '#description' => t('The absolute path on the filesystem or public URL of a makefile that will be used to create the platform in the directory specified above. If the directory already exists, this file will be ignored.'),
@@ -353,7 +362,7 @@ function hosting_platform_form(&$node) {
     '#maxlength' => 255,
   );
 
-  $form['make_working_copy'] = array(
+  $form['frommakefile']['make_working_copy'] = array(
     '#type' => 'radios',
     '#title' => t('Drush make option'),
     '#default_value' => isset($form['#node']->make_working_copy) ? $form['#node']->make_working_copy : 0,
@@ -400,18 +409,18 @@ function hosting_platform_form(&$node) {
 function hosting_platform_form_platform_after_build($form) {
   // @todo: what are the ifs for when we react the same either way?
   drupal_add_js(drupal_get_path('module', 'hosting_platform') . '/hosting_platform.js');
-  if (isset($form['makefile']['#attributes']['class'])) {
-    $form['makefile']['#attributes']['class'][] = ' hosting-platform-working-copy-source';
+  if (isset($form['frommakefile']['makefile']['#attributes']['class'])) {
+    $form['frommakefile']['makefile']['#attributes']['class'][] = ' hosting-platform-working-copy-source';
   }
   else {
-    $form['makefile']['#attributes']['class'][] = ' hosting-platform-working-copy-source';
+    $form['frommakefile']['makefile']['#attributes']['class'][] = ' hosting-platform-working-copy-source';
   }
 
-  if (isset($form['make_working_copy']['#attributes']['class'])) {
-    $form['make_working_copy']['#attributes']['class'][] = ' hosting-platform-working-copy-target';
+  if (isset($form['frommakefile']['make_working_copy']['#attributes']['class'])) {
+    $form['frommakefile']['make_working_copy']['#attributes']['class'][] = ' hosting-platform-working-copy-target';
   }
   else {
-    $form['make_working_copy']['#attributes']['class'][] = ' hosting-platform-working-copy-target';
+    $form['frommakefile']['make_working_copy']['#attributes']['class'][] = ' hosting-platform-working-copy-target';
   }
 
   return $form;
@@ -442,11 +451,11 @@ function hosting_platform_insert($node) {
       'vid' => $node->vid,
       'nid' => $node->nid,
       'publish_path' => $node->publish_path,
-      'makefile' => $node->makefile,
+      'makefile' => isset($node->makefile) ? $node->makefile : '',
       'verified' => isset($node->verified) ? $node->verified : 0,
       'web_server' => $node->web_server,
       'status' => isset($node->platform_status) ? $node->platform_status : 0,
-      'make_working_copy' => $node->make_working_copy,
+      'make_working_copy' => isset($node->make_working_copy) ? $node->make_working_copy : 0,
     ))
     ->execute();
   if (!isset($node->old_vid)) {
