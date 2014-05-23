@@ -488,7 +488,9 @@ function hosting_feature_rebuild_caches($features = array()) {
       return;
     }
   }
-  hosting_add_task(hosting_get_hostmaster_nid(), 'verify');
+  if ($nid = hosting_get_hostmaster_nid()) {
+    hosting_add_task($nid, 'verify');
+  }
 }
 
 /**
