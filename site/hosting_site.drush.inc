@@ -36,14 +36,13 @@ function hosting_site_drush_context_import($context, &$node) {
 
     // TODO: abstract this to remove duplication with import post hooks.
     $profile = hosting_package_instance_load(array(
-      'i.rid' => $platform,
+      'i.rid' => $node->platform,
       'p.short_name' => $context->profile,
     ));
+
+    // Log an error if there is still no profile.
     if (!$profile) {
-      $profile = hosting_package_instance_load(array(
-        'i.rid' => $node->platform,
-        'p.short_name' => 'default',
-      ));
+      drush_set_error("HOSTING_SITE_IMPORT_ERROR", dt("Could not find the Profile !profile for Platfrom ID !platform", array('!profile' => $context->profile, '!platform' => $node->platform)));
     }
     $node->profile = $profile->package_id;
 
