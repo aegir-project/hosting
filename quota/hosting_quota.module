@@ -66,7 +66,7 @@ function hosting_quota_menu() {
  *
  * @param $resource string
  *   The name of the requested resource
- * @return
+ * @return array|bool
  *   A multidimensional array containing the resource, or false if the provided resource does not validate
  */
 function hosting_quota_get($resource) {
@@ -132,11 +132,11 @@ function hosting_quota_get_usage($client, $resource, $start = NULL, $end = NULL)
 /**
  * Rendering function for quotas
  *
- * @param $resource
+ * @param $resource array|string
  *   Either a resource retrieved via hosting_quota_get or the machine name of a resource
  * @param $usage int
  *   The usage as returned by hosting_quota_get_usage
- * @return
+ * @return mixed
  *   The rendered usage string
  */
 function hosting_quota_resource_render($resource, $usage) {
@@ -195,7 +195,7 @@ function hosting_quota_set_limit($client, $resource, $value) {
  *   Optional start date of the checking perios, defaults to 1st of last month
  * @param $end string
  *   Optional end date of the checked period, defaults to 1st of this month
- * @return
+ * @return bool|null
  *   True if the limit is higher than usage, false otherwise, or null if the resource could not be checked
  */
 function hosting_quota_check($client, $resource, $start = NULL, $end = NULL) {
@@ -415,10 +415,9 @@ function hosting_quota_theme($existing, $resource, $theme, $path) {
 /**
  * Theme the admin list of client quotas
  *
- * @param $client_quotas array
- *   The client_quotas provided by hosting_quota_admin_client_list
- * @param $resources array
- *   The array of info about resources
+ * @param $variables array
+ * @return string
+ *   String containing table
  */
 function theme_hosting_quota_admin_list($variables) {
   $client_quotas = $variables['client_quotas'];
@@ -454,8 +453,9 @@ function theme_hosting_quota_admin_list($variables) {
 /**
  * Theme the client quota information.
  *
- * @param $node
- *   The client node object being themed.
+ * @param $variables array
+ *
+ * @return string
  */
 function theme_hosting_quota_client($variables) {
   $node = $variables['node'];

@@ -121,6 +121,8 @@ function _hosting_site_form_check() {
  *
  * @param arg
  *    Node's numeric nid
+ *
+ * @return object|bool
  */
 function hosting_site_wildcard_load($arg) {
   if (!is_numeric($arg)) {
@@ -600,6 +602,8 @@ function _hosting_site_status($node) {
  *
  * @param $type
  *   The type of status to return ('label' or 'class').
+ *
+ * @return array
  */
 function hosting_site_status_codes($type = NULL) {
   static $codes = array(

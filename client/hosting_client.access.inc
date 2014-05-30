@@ -285,9 +285,9 @@ function hosting_client_node_access_records($node) {
 /**
  * Get relationships a user has with different clients.
  *
- * @param $uid
+ * @param int $uid
  *   The user to get the relationships for.
- * @return
+ * @return array
  *   An array of clients and their contact type relationships to the specified
  *   user.
  */

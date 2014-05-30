@@ -57,6 +57,8 @@ function hook_hosting_quota_get_usage($client, $resource, $start, $end) {
  *   Machine name of the resource
  * @param $usage int
  *   Usage as returned by hosting_quota_get_usage
+ *
+ * @return string
  */
 function hook_hosting_quota_resource_render($resource, $usage) {
   switch ($resource) {

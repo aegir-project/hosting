@@ -591,6 +591,8 @@ function hosting_platform_load($nodes) {
  *
  * @param arg
  *    Node's numeric nid
+ *
+ * @return bool|object
  */
 function hosting_platform_wildcard_load($arg) {
   if (!is_numeric($arg)) {

@@ -140,6 +140,8 @@ function hosting_client_node_access($node, $op, $account) {
  *
  * @param $client
  *   Either the nid or the client title
+ *
+ * @return bool|object
  */
 function hosting_get_client($client) {
   if (is_numeric($client)) {
@@ -162,6 +164,8 @@ function hosting_get_client($client) {
  * @see hosting_get_client()
  * @param $uname
  *   The internal name of this client.
+ *
+ * @return object
  */
 function hosting_get_client_by_uname($uname) {
   $result = db_query("SELECT c.nid FROM {hosting_client} c JOIN {node} n ON c.nid = n.nid WHERE c.uname = :uname AND n.type = :type", array(':uname' => $uname, ':type' => 'client'))->fetchField();
@@ -331,6 +335,8 @@ function hosting_client_validate($node, $form, &$form_state) {
  *   The client name being validated.
  * @param $internal
  *   Whether this is an internal client name.
+ *
+ * @return string
  */
 function hosting_client_validate_suggest($name, $internal = FALSE) {
   $suggestion = FALSE;
@@ -543,8 +549,8 @@ function hosting_client_delete($node) {
 /**
  * Implements hook_load().
  *
- * @param $node
- *    Node object
+ * @param $nodes array
+ *    List of node objects
  */
 function hosting_client_load($nodes) {
   foreach ($nodes as $nid => &$node) {
@@ -560,6 +566,8 @@ function hosting_client_load($nodes) {
  *
  * @param $arg
  *    Node's numeric nid
+ *
+ * @return bool
  */
 function hosting_client_node_load($arg) {
   if (!is_numeric($arg)) {
@@ -576,9 +584,9 @@ function hosting_client_node_load($arg) {
 /**
  * Return a list of users for a given client.
  *
- * @param $node
+ * @param int|object $node
  *   Client node (as nid or node object).
- * @return
+ * @return array
  *   Array of user names indexed by uid.
  *
  */
@@ -649,8 +657,8 @@ function hosting_client_hosting_site_site_list_filters() {
  *
  * @param $name
  *   Client name.
- * @return
- *   The nid of the generated client.
+ * @return object
+ *   The node object of the generated client.
  */
 function hosting_import_client($name) {
   $client = hosting_get_client_by_uname($name);
@@ -861,6 +869,8 @@ function hosting_client_platform_access_form_submit($form, $form_state) {
  *
  * @param $node
  *   The site to the the clients for.
+ *
+ * @return string|null
  */
 function _hosting_client_site_default($node) {
   # find the right client

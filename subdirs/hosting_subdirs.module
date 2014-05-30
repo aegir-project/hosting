@@ -41,6 +41,7 @@ function hosting_subdirs_form_site_node_form_alter(&$form, &$form_state) {
  *   A Hosting site node.
  * @param string $alias
  *   An alias to have point to the site.
+ * @param string $key
  */
 function hosting_subdirs_validate_alias($site, $alias, $key) {
   if ($alias = trim($alias)) {
@@ -81,11 +82,10 @@ function hosting_subdirs_site_form_validate($form, &$form_state) {
 /**
  * Check if the FQDN provided is valid for subdir alias.
  *
- * @param $fqdn
+ * @param string $fqdn
  *   The Fully Qualified Domain Name (FQDN) to validate.
- * @return
- *   An integer greater than 0 if the $fqdn is valid, or 0 or FALSE if it not
- *   valid.
+ * @return bool
+ *   TRUE if the $fqdn is valid or FALSE if it not valid.
  */
 function hosting_subdirs_valid_fqdn_subdir($fqdn) {
   return preg_match("/^([a-z0-9]([a-z0-9-\/]*[a-z0-9])?\.?)+$/i", $fqdn) &&

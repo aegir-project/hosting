@@ -246,6 +246,8 @@ function hosting_package_views_plugins() {
  *   The display ID (machine_name).
  * @param $account
  *   The current user.
+ *
+ * @return bool
  */
 function hosting_package_views_access($type, $display, $account = NULL) {
   switch ($type) {

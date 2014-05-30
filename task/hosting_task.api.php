@@ -13,7 +13,7 @@
 /**
  * Define tasks that can be executed in the front-end.
  *
- * @return
+ * @return array
  *   An array of arrays of tasks that can be executed by the front-end.
  *   The keys of the outer array should be the object that tasks operate on, for
  *   example 'site', 'platform' or 'server'. The values of the outer array

@@ -372,6 +372,8 @@ function hosting_ssl_save_key($node) {
  *   The client to filter the keys by.
  * @param $ask_custom
  *   Include the special 'generate new key' value used by the site form.
+ *
+ * @return array
  */
 function hosting_ssl_get_keys($client = NULL, $ask_custom = FALSE) {
   $keys = array();

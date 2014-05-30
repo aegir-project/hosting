@@ -11,9 +11,9 @@
 /**
  * Check if a hostname provided is an ip address.
  *
- * @param $hostname
+ * @param string $hostname
  *   The hostname to check.
- * @return
+ * @return bool
  *   TRUE is the $hostname is a valid IP address, FALSE otherwise.
  */
 function _hosting_valid_ip($hostname) {
@@ -23,9 +23,9 @@ function _hosting_valid_ip($hostname) {
 /**
  * Check if the FQDN provided is valid.
  *
- * @param $fqdn
+ * @param string $fqdn
  *   The Fully Qualified Domain Name (FQDN) to validate.
- * @return
+ * @return int
  *   An integer greater than 0 if the $fqdn is valid, or 0 or FALSE if it not
  *   valid.
  */
@@ -42,11 +42,10 @@ function _hosting_valid_fqdn($fqdn) {
  * RFC and may not be allowed everywhere. For example, the main site
  * title shouldn't have a wildcard entry.
  *
- * @param $fqdn
+ * @param string $fqdn
  *   The Fully Qualified Domain Name (FQDN) to validate.
- * @return
- *   An integer greater than 0 if the $fqdn is valid, or 0 or FALSE if it not
- *   valid.
+ * @return bool
+ *   TRUE if the $fqdn is valid, or FALSE if it not valid.
  */
 function _hosting_valid_fqdn_wildcard($fqdn) {
   // regex is an implementation of RFC1035, but allows "star" for wildcards
@@ -57,9 +56,9 @@ function _hosting_valid_fqdn_wildcard($fqdn) {
 /**
  * Format a timestamp as a string in a friendly way.
  *
- * @param $ts
+ * @param int $ts
  *   The timestamp to format as a an interval.
- * @return
+ * @return string
  *    Returns a string representing the given timestamp:
  *    - If the timestamp is the current time: 'Now'.
  *    - If the timestamp is 0 or FALSE: 'Never'

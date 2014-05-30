@@ -203,6 +203,8 @@ function hosting_get_profile_languages($profile = NULL, $platform = NULL) {
  *    - old_short_name => The name that a package used to be called, for
  *      migration purposes.
  *    - package_type => The type of package. (theme|module|profile|engine)
+ *
+ * @return array|bool
  */
 function _hosting_package_load($param) {
   // Turn the conditions into a query.

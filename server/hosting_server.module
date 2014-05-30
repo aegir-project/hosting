@@ -592,10 +592,10 @@ function hosting_server_view(&$node, $teaser = FALSE, $page = FALSE) {
 /**
  * Get servers providing a service.
  *
- * @param $service
+ * @param string $service
  *   Service type string, like 'http' or 'db'
  *
- * @return
+ * @return array
  *   An array of enabled servers, keys are the nid's of the nodes representing
  *   them, values are the titles of the servers.
  *

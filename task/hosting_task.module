@@ -743,7 +743,7 @@ function hosting_task_count_running() {
  *   This function has an internal static cache, to reset the cache, pass in
  *   TRUE.
  *
- * @return
+ * @return array
  *   Depending on the value of the $type parameter, you will either be returned:
  *   - If $type is NULL: an associative array whose keys are things that can be
  *     acted upon by the tasks defined in the corresponding values.
@@ -1216,9 +1216,9 @@ function hosting_get_tasks($filter_by = NULL, $filter_value = NULL, $count = 5, 
 /**
  * Retrieve a list of outstanding tasks.
  *
- * @param limit
+ * @param int $limit
  *   The amount of items to return.
- * @return
+ * @return array
  *   An associative array containing task nodes, indexed by node id.
  */
 function _hosting_get_new_tasks($limit = 20) {

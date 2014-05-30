@@ -65,7 +65,7 @@ function hook_hosting_site_options_alter(&$return, $node) {
  * The list of sites can be filtered via the query string, and to avoid nasty
  * security exploits you must explicitly define what people can filter by.
  *
- * @return
+ * @return array
  *   An array of possible filter strings.
  *
  * @see hosting_site_get_possible_site_list_filters()

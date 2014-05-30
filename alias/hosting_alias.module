@@ -79,6 +79,7 @@ function hosting_alias_site_form_validate($form, &$form_state) {
  *
  * @param $form
  *   The form to alter, should come from hook_form_alter().
+ * @param $form_state
  */
 function hosting_alias_form_data(&$form, &$form_state) {
   if (user_access('create site aliases')) {
@@ -195,7 +196,7 @@ function hosting_alias_add_alias_callback($form, $form_state) {
  *   Restrict the type of aliases returned, defaults to returning all aliases. Should be one of:
  *   - HOSTING_ALIAS_CUSTOM
  *   - HOSTING_ALIAS_AUTOMATIC
- * @return
+ * @return array
  *   An array of aliases for the given site.
  */
 function hosting_alias_get_aliases($node, $type = NULL) {
@@ -350,6 +351,7 @@ function hosting_alias_node_revision_delete($node) {
  *   A Hosting site node.
  * @param string $alias
  *   An alias to have point to the site.
+ * @param string $key
  */
 function hosting_alias_validate_alias($site, $alias, $key) {
   if ($alias = trim($alias)) {

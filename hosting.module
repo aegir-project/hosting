@@ -167,7 +167,7 @@ function hosting_menu_alter(&$items) {
  *   The machine name of the host feature that should be additionally checked to
  *   see if it's enabled.
  *
- * @return
+ * @return bool
  *   TRUE if the user can access, FALSE otherwise.
  */
 function hosting_menu_access($type, $feature) {
@@ -381,10 +381,10 @@ function hosting_permission() {
 /**
  * Per node type description text. To be stored in the node_type table.
  *
- * @param $type
+ * @param string $type
  *   The node type.
  *
- * @return
+ * @return string
  *   Description text for the node type.
  */
 function hosting_node_help($type) {
@@ -1084,9 +1084,8 @@ function hosting_menu_rebuild() {
  *
  * @param $name
  *   The name of the context to load.
- * @return
+ * @return bool|object
  *   Either the node object associated with the context, or FALSE if no
- *   associated node can be found.
  */
 function hosting_context_load($name) {
   $name = ltrim($name, '@');
@@ -1155,7 +1154,7 @@ function hosting_context_delete($nid) {
  *
  * @param $nid
  *   The nid of the node to get the provision context name for.
- * @return
+ * @return string|bool
  *   The provision context name associated with the specified node, will be
  *   prefixed with '@' or FALSE if node doesnt exist.
  */

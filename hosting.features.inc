@@ -25,7 +25,7 @@ define('HOSTING_FEATURE_REQUIRED', 2);
  *
  * @param $feature
  *   The feature to check the status of, e.g. "client" or "platform".
- * @return
+ * @return bool
  *    TRUE if the feature is enabled, FALSE if it is disabled.
  */
 function hosting_feature($feature) {
@@ -52,7 +52,10 @@ function hosting_feature($feature) {
  * This returns a form with any known Hosting features grouped and listed. It
  * allows administrators to enable or disable the features.
  *
- * @return
+ * @param $form
+ * @param $form_state
+ *
+ * @return array
  *   A drupal form.
  *
  * @see hosting_features_form_submit()
@@ -234,10 +237,10 @@ function hosting_features_form_submit($form, &$form_state) {
 /**
  * Get a listing of all known Hosting features.
  *
- * @param $refresh
+ * @param bool $refresh
  *   (optional) Pass in TRUE to force the list of features to be rebuilt and not
  *   returned from the cache.
- * @return
+ * @return array
  *   An array of Hosting features.
  *
  * @see hook_hosting_feature()
@@ -298,10 +301,10 @@ function hosting_get_features($refresh = FALSE) {
 /**
  * Determine which node types are provided by Hosting features.
  *
- * @param $refresh
+ * @param bool $refresh
  *   (optional) Pass in TRUE to force the list of node types to be rebuilt and
  *   not returned from the cache.
- * @return
+ * @return true
  *   An array of node types keyed by the Hosting feature that provides them.
  */
 function hosting_feature_node_types($refresh = FALSE) {
