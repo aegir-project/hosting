@@ -697,3 +697,15 @@ function _hosting_server_preprocess_classes(&$classes, $rows) {
     }
   }
 }
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function hosting_server_form_hosting_settings_alter(&$form, $form_state) {
+  $form['hosting_default_db_server'] = array(
+    '#title' => 'Default database server',
+    '#description' => 'When importing sites, and during some other operations, Aegir will use this database, if none was specified.',
+    '#type' => 'select',
+    '#options' => hosting_get_servers('db'),
+  );
+}
