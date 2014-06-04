@@ -183,10 +183,10 @@ function hosting_features_form($form, &$form_state) {
     }
     // This feature is in the 'Hosting' module package
     else {
-      if ($info['group'] == 'required') {
+      if (isset($info['group']) && $info['group'] == 'required') {
         $required['hosting_feature_' . $feature] = $element;
       }
-      elseif ($info['group'] == 'optional') {
+      elseif (isset($info['group']) && $info['group'] == 'optional') {
         $optional['hosting_feature_' . $feature] = $element;
       }
       else {
