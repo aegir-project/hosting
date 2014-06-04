@@ -528,11 +528,3 @@ function hosting_add_permissions($module, $role_perms) {
     }
   }
 }
-
-/**
- * Check whether a Hosting feature is enabled.
- */
-function hosting_feature_enabled($feature) {
-  $features = drush_get_option('hosting_features', array());
-  return array_key_exists($feature, $features) && $features[$feature];
-}
