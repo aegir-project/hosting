@@ -249,20 +249,6 @@ function hook_nodeapi_TYPE_OP(&$node, $a3, $a4) {
 }
 
 /**
- * TODO: Remove this hook documentation?
- *
- * @param $task
- *   The task.
- * @param $task_type
- *   The type of the task, e.g. 'verify'.
- *
- * @see hosting_queues_get_arguments()
- */
-function hook_provision_args($task, $task_type) {
-
-}
-
-/**
  * Perform actions when a task has completed succesfully.
  *
  * Replace TASK_TYPE with the type of task that if completed you will be
