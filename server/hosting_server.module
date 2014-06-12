@@ -61,13 +61,10 @@ function hosting_server_hosting_tasks() {
     'provision_save' => TRUE,
   );
 
-  /**
-   * @TODO: support various other tasks like Delete
-   $tasks['server']['delete'] = array(
-   'title' => t('Delete'),
-   'description' => t('Delete the server.'),
-   );
-   */
+  $tasks['server']['delete'] = array(
+    'title' => t('Delete'),
+    'description' => t('Delete the server.'),
+  );
 
   return $tasks;
 }
