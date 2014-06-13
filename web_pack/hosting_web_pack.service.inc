@@ -25,7 +25,9 @@ class hostingService_http_pack extends hostingService_http {
     parent::form($form);
 
     $servers = hosting_get_servers('http');
-    unset($servers[$this->server->nid]);
+    if (isset($this->server->nid)) {
+      unset($servers[$this->server->nid]);
+    }
 
     $form['master_servers'] = array(
       '#title' => t('Master servers'),

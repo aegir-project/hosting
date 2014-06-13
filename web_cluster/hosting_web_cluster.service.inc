@@ -20,7 +20,9 @@ class hostingService_http_cluster extends hostingService_http {
     parent::form($form);
 
     $servers = hosting_get_servers('http');
-    unset($servers[$this->server->nid]);
+    if (isset($this->server->nid)) {
+      unset($servers[$this->server->nid]);
+    }
 
     $form['web_servers'] = array(
       '#title' => t('Servers'),
