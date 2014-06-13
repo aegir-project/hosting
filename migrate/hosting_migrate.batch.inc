@@ -7,15 +7,16 @@
 /**
  * Batch migration of sites between platforms.
  */
-function hosting_migrate_platform($form_state, $node) {
+function hosting_migrate_platform($form, $form_state, $node) {
   drupal_add_js(drupal_get_path('module', 'hosting_migrate') . '/hosting_migrate.js');
 
   $step = isset($form_state['storage']['step']) ? $form_state['storage']['step'] : 1;
 
   // Step 1 - choose target platform
   if ($step == 1) {
+    $result = db_query("SELECT count(nid) as site_count FROM {hosting_site} WHERE status = :status AND verified > :verified AND platform = :platform",
+              array(':status' => HOSTING_SITE_ENABLED, ':verified' => 0, ':platform' => $node->nid));
 
-    $result = db_query("SELECT count(nid) as site_count FROM {hosting_site} WHERE status = :status AND verified > :verified AND platform = :platform", array(':status' => HOSTING_SITE_ENABLED, ':verified' => 0, ':platform' => $node->nid));
     if ($obj = $result->fetch()) {
       if ($obj->site_count == 0) {
         $form['error'] = array(
