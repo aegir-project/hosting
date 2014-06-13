@@ -336,29 +336,28 @@ function hosting_package_comparison($current, $target) {
 
   $status = array();
   $result = db_query("SELECT count(c.nid) AS error
-                      FROM !current_table c
-                      LEFT JOIN !target_table t
+                      FROM $current_table c
+                      LEFT JOIN $target_table t
                       ON c.nid=t.nid
                       WHERE (t.schema_version > 0) && (c.schema_version > t.schema_version)
-                      AND c.status = !c.status",
-                      array('!current_table' => $current_table,
-                        '!target_table' => $target_table,
-                        '!c.status' => 1,
+                      AND c.status = :cstatus",
+                      array(
+                        ':cstatus' => 1,
                         )
                       );
+
   foreach ($result as $obj) {
     $status['error'] = $obj->error;
   }
 
   $result = db_query("SELECT COUNT(c.nid) AS missing
-                      FROM !current_table c
-                      LEFT JOIN !target_table t
+                      FROM $current_table c
+                      LEFT JOIN $target_table t
                       ON c.nid=t.nid
                       WHERE t.nid IS NULL
-                      AND c.status = !c.status",
-                      array('!current_table' => $current_table,
-                        '!target_table' => $target_table,
-                        '!c.status' => 1,
+                      AND c.status = :c_status",
+                      array(
+                        ':c_status' => 1,
                         )
                       );
   foreach ($result as $obj) {
@@ -366,29 +365,26 @@ function hosting_package_comparison($current, $target) {
   }
 
   $result = db_query("SELECT COUNT(c.nid) as upgrade
-                      FROM !current_table c
-                      LEFT JOIN !target_table t
+                      FROM $current_table c
+                      LEFT JOIN $target_table t
                       ON c.nid=t.nid
                       WHERE (c.version_code < t.version_code) OR (c.schema_version < t.schema_version)
-                      AND c.status = !c.status",
-                      array('!current_table' => $current_table,
-                        '!target_table' => $target_table,
-                        '!c.status' => 1,
+                      AND c.status = :c_status",
+                      array(
+                        ':c_status' => 1,
                         )
                       );
+
   foreach ($result as $obj) {
     $status['upgrade'] = $obj->upgrade;
   }
 
   $result = db_query("SELECT count(c.nid) AS downgrade
-                      FROM !current_table c
-                      LEFT JOIN !target_table t
+                      FROM $current_table c
+                      LEFT JOIN $target_table t
                       ON c.nid=t.nid
-                      WHERE (c.version_code > t.version_code)",
-                      array('!current_table' => $current_table,
-                        '!target_table' => $target_table,
-                        )
-                      );
+                      WHERE (c.version_code > t.version_code)");
+
   foreach ($result as $obj) {
     $status['downgrade'] = $obj->downgrade;
   }
@@ -402,16 +398,13 @@ function _hosting_package_temporary_table($ref) {
 
   if (!isset($names[$ref])) {
     // Generate a unique table name for this $ref.
-    $names[$ref] = '_hosting_comparision_' . trim($ref);
-
-    // Create the temporary table.
-    db_query("CREATE TEMPORARY TABLE %s
-              AS SELECT p.nid, p.short_name, p.old_short_name, i.version_code, i.schema_version, i.version, i.status
+    $names[$ref] = db_query_temporary("SELECT p.nid, p.short_name, p.old_short_name, i.version_code, i.schema_version, i.version, i.status
               FROM {hosting_package} p
               LEFT JOIN {hosting_package_instance} i
               ON p.nid = i.package_id
-              WHERE i.rid = %d and i.platform != -1", // @todo remove magic number
-              $names[$ref], $ref);
+              WHERE i.rid = :rid and i.platform != :platform",
+              array( ':rid' => $ref, ':platform' => HOSTING_PACKAGE_INSTANCE_EXCLUDE));
+
   }
 
   return $names[$ref];

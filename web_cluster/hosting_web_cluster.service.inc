@@ -12,7 +12,7 @@ class hostingService_http_cluster extends hostingService_http {
     $render['web_servers'] = array(
       '#type' => 'item',
       '#title' => t('Web servers'),
-      '#value' => theme('item_list', array('items' => array_map('_hosting_node_link', array_intersect_key($this->web_servers, hosting_get_servers('http'))))),
+      '#markup' => theme('item_list', array('items' => array_map('_hosting_node_link', array_intersect_key($this->web_servers, hosting_get_servers('http'))))),
     );
   }
 

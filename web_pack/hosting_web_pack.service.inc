@@ -12,12 +12,12 @@ class hostingService_http_pack extends hostingService_http {
     $render['master_servers'] = array(
       '#type' => 'item',
       '#title' => t('Master web servers'),
-      '#value' => theme('item_list', array('items' => array_map('_hosting_node_link', array_intersect_key($this->master_servers, hosting_get_servers('http'))))),
+      '#markup' => theme('item_list', array('items' => array_map('_hosting_node_link', array_intersect_key($this->master_servers, hosting_get_servers('http'))))),
     );
     $render['slave_servers'] = array(
       '#type' => 'item',
       '#title' => t('Slave web servers'),
-      '#value' => theme('item_list', array('items' => array_map('_hosting_node_link', array_intersect_key($this->slave_servers, hosting_get_servers('http'))))),
+      '#markup' => theme('item_list', array('items' => array_map('_hosting_node_link', array_intersect_key($this->slave_servers, hosting_get_servers('http'))))),
     );
   }
 

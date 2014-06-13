@@ -7,6 +7,8 @@
  * can be installed onto Drupal sites.
  */
 
+define('HOSTING_PACKAGE_INSTANCE_EXCLUDE', -1);
+
 require_once 'hosting_package.instance.inc';
 
 function _hosting_package_types() {
