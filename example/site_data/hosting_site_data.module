@@ -16,7 +16,7 @@ function hosting_site_data_form_alter(&$form, $form_state, $form_id) {
     $form['site_data']['site_data'] = array(
       '#type' => 'textfield',
       '#title' => t('Site data'),
-      '#default_value' => $form['#node']->site_data ? $form['#node']->site_data : '',
+      '#default_value' => isset($form['#node']->site_data) ? $form['#node']->site_data : '',
       '#weight' => 0,
     );
     return $form;

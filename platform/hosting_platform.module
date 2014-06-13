@@ -381,7 +381,7 @@ function hosting_platform_form(&$node) {
       '#title' => t('Web server'),
       '#description' => t('The web server the sites will be hosted on.'),
       '#options' => $servers,
-      '#default_value' => ($node->web_server) ? $node->web_server : HOSTING_DEFAULT_WEB_SERVER,
+      '#default_value' => isset($node->web_server) ? $node->web_server : HOSTING_DEFAULT_WEB_SERVER,
     );
   }
   else {
