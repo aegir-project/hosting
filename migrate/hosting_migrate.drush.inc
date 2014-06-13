@@ -70,6 +70,7 @@ function hosting_migrate_post_hosting_migrate_task($task, $data) {
     if ($site->db_server != $task->task_args['new_db_server']) {
       $site->db_server = $task->task_args['new_db_server'];
     }
+    $site->db_name = $data['context']['db_name'];
 
     $profile = hosting_package_instance_load(array(
       'i.rid' => $target,

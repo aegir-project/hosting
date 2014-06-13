@@ -90,6 +90,7 @@ function hosting_site_post_hosting_install_task($task, $data) {
     $task->ref->site_status = HOSTING_SITE_ENABLED;
     $task->ref->no_verify = TRUE;
     $task->ref->verified = REQUEST_TIME;
+    $task->ref->db_name = $data['self']['db_name'];
     if ($context['cron_key']) {
       $task->ref->cron_key = $context['cron_key'];
     }
@@ -205,6 +206,9 @@ function hosting_site_post_hosting_backup_task($task, $data) {
  */
 function hosting_site_post_hosting_import_task($task, $data) {
   hosting_import_site($task->ref->nid, $data['context'], $task->ref->platform);
+
+  $task->ref->db_name = $data['self']['db_name'];
+  node_save($task->ref);
 
   $packages = $data['context']['packages'];
   hosting_package_sync($packages);
