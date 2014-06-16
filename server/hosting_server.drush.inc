@@ -60,6 +60,8 @@ function hosting_server_drush_context_import($context, &$node) {
 function hosting_server_post_hosting_verify_task($task, $data) {
   if ($task->ref->type == 'server') {
     $task->ref->no_verify = TRUE;
+    $task->ref->verified = REQUEST_TIME; // set verified flag on server, to let it know it has been checked.
+    $task->ref->server_status = HOSTING_SERVER_ENABLED;
     node_save($task->ref);
 
     // Verify the platforms on this server
@@ -68,4 +70,14 @@ function hosting_server_post_hosting_verify_task($task, $data) {
       hosting_add_task($nid->nid, 'verify');
     }
   }
+}
+
+/**
+ * Implements hook_hosting_post_DELETE().
+ */
+function hosting_server_post_hosting_delete_task($task, $data) {
+  $task->ref->server_status = HOSTING_SERVER_DELETED;
+  $task->ref->no_verify = TRUE;
+  node_save($task->ref);
+  hosting_context_delete($task->ref->nid);
 }

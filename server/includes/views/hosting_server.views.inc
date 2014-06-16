@@ -38,6 +38,27 @@ function hosting_server_views_data() {
     ),
   );
 
+  $data['hosting_server']['verified'] = array(
+    'title' => t('Verified Date'),
+    'help' => t('The most recent date that this server was verified.'),
+    'field' => array(
+      'handler' => 'views_handler_field_date',
+      'click sortable' => TRUE,
+    ),
+  );
+
+  $data['hosting_server']['status'] = array(
+    'title' => t('Status'),
+    'help' => t('The current state of this server.'),
+    'field' => array(
+      'handler' => 'hosting_server_handler_field_status',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_numeric',
+    ),
+  );
+
   $data['hosting_service']['table'] = array(
     'group' => 'Hosting Service',
     'title' => 'Services',

@@ -28,6 +28,49 @@ define('HOSTING_SERVER_QUEUED', 0);
 define('HOSTING_SERVER_ENABLED', 1);
 
 /**
+ * Helper function to map status codes to labels and classes.
+ */
+function _hosting_server_status_codes() {
+  $codes = array(
+    HOSTING_SERVER_QUEUED => array(
+      'label' => 'Queued',
+      'class' => 'hosting-queue',
+    ),
+    HOSTING_SERVER_ENABLED => array(
+      'label' => 'Enabled',
+      'class' => 'hosting-success',
+    ),
+    HOSTING_SERVER_DELETED => array(
+      'label' => 'Deleted',
+      'class' => 'hosting-error',
+    ),
+    HOSTING_SERVER_LOCKED => array(
+      'label' => 'Locked',
+      'class' => 'hosting-disable',
+    ),
+  );
+  return $codes;
+}
+
+/**
+ * Return the appropriate status label.
+ */
+function _hosting_server_status($status) {
+  static $labels;
+  $labels = _hosting_server_status_codes();
+  return is_object($status) ? $labels[$status->server_status]['label'] : $labels[$status]['label'];
+}
+
+/**
+ * Define the classes that correspond to the platform status.
+ */
+function _hosting_server_list_class($status) {
+  static $labels;
+  $labels = _hosting_server_status_codes();
+  return is_object($status) ? $labels[$status->server_status]['class'] : $labels[$status]['class'];
+}
+
+/**
  * Implements hook_node_info().
  */
 function hosting_server_node_info() {
@@ -447,9 +490,15 @@ function hosting_server_update($node) {
     }
   }
 
+  if ($node->server_status == HOSTING_SERVER_DELETED) {
+    $node->no_verify = TRUE;
+  }
+ 
   $id = db_update('hosting_server')
     ->fields(array(
       'human_name' => $node->human_name,
+      'verified' => $node->verified,
+      'status' => $node->server_status,
     ))
     ->condition('nid', $node->nid)
     ->execute();
@@ -474,6 +523,8 @@ function hosting_server_insert($node) {
       'vid' => $node->vid,
       'nid' => $node->nid,
       'human_name' => $node->human_name,
+      'verified' => isset($node->verified) ? $node->verified : 0,
+      'status' => isset($node->platform_status) ? $node->platform_status : 0,
     ))
     ->execute();
 
@@ -516,11 +567,13 @@ function hosting_server_delete($node) {
  */
 function hosting_server_load($nodes) {
   foreach ($nodes as $nid => &$node) {
-    $node->human_name = db_query('SELECT human_name FROM {hosting_server} WHERE nid = :nid', array(':nid' => $nid))->fetchField();
+    $additions = db_query('SELECT human_name, verified, status AS server_status FROM {hosting_server} WHERE vid = :vid', array(':vid' => $node->vid))->fetch();
+    // Avoid PHP 5.4 warning when platform doesn't exist yet.
+    // See: https://drupal.org/node/1940378
+    $additions = $additions ? $additions : new stdClass();
+ 
     hosting_server_init_services($node);
     hosting_server_invoke_services($node, 'load');
-    $additions = new stdClass();
-    $additions->human_name = $node->human_name;
     $additions->services = $node->services;
     $additions->ip_addresses = hosting_ip_load($node);
 
@@ -563,8 +616,17 @@ function hosting_server_view(&$node, $teaser = FALSE, $page = FALSE) {
     '#prefix' => '<div id="hosting-server-info" class="hosting-info-list">',
     '#suffix' => '</div>',
   );
-
-
+  $node->content['info']['status'] = array(
+    '#type' => 'item',
+    '#title' => t('Status'),
+    '#markup' => _hosting_server_status($node->server_status),
+  );
+  $node->content['info']['verified'] = array(
+    '#type' => 'item',
+    '#title' => t('Verified'),
+    '#markup' => hosting_format_interval($node->verified),
+    '#weight' => -10,
+  );
   $node->content['info']['hostname'] = array(
     '#title' => 'hostname',
     '#type' => 'item',
