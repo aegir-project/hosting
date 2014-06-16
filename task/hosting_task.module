@@ -901,6 +901,16 @@ function hosting_task_delete($node) {
 }
 
 /**
+ * Delete tasks related to a given site, platform, server, etc.
+ */
+function hosting_task_delete_related_tasks($nid) {
+  $result = db_query("SELECT distinct nid FROM {hosting_task} WHERE rid = :rid", array(':rid' => $nid));
+  foreach ($result as $node) {
+    node_delete($node->nid);
+  }
+}
+
+/**
  * Implements hook_load().
  */
 function hosting_task_load($nodes) {

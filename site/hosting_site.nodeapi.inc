@@ -136,10 +136,7 @@ function hosting_site_delete($node) {
     ->condition('rid', $node->nid)
     ->execute();
   hosting_context_delete($node->nid);
-  $result = db_query("SELECT distinct nid FROM {hosting_task} WHERE rid = :rid", array(':rid' => $node->nid));
-  while ($nid = $result->fetch()) {
-    node_delete($nid->nid);
-  }
+  hosting_task_delete_related_tasks($node->nid);
 }
 
 /**
