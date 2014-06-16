@@ -433,8 +433,8 @@ function hosting_platform_form_alter(&$form, &$form_state, $form_id) {
   // Remove delete button from platform edit form, unless the platform's already been deleted via the Delete task
   if  ($form_id == 'platform_node_form') {
     $node = $form['#node'];
-    if (isset($node->platform_status) && $node->platform_status !== '-2') {
-      $form['action']['delete']['#type'] = 'hidden';
+    if (isset($node->platform_status) && $node->platform_status !== HOSTING_PLATFORM_DELETED) {
+      $form['actions']['delete']['#type'] = 'hidden';
     }
   }
 }

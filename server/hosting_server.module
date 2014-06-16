@@ -8,6 +8,26 @@ include_once "hosting_server.service.inc";
 include_once "hosting.ip.inc";
 
 /**
+ * This server has been deleted.
+ */
+define('HOSTING_SERVER_DELETED', -2);
+
+/**
+ * This server has been locked. Its services will not be available for use.
+ */
+define('HOSTING_SERVER_LOCKED', -1);
+
+/**
+ * This platform has been queued for registration (and eventually creation).
+ */
+define('HOSTING_SERVER_QUEUED', 0);
+
+/**
+ * This server is created and enabled. Its services will be available for use.
+ */
+define('HOSTING_SERVER_ENABLED', 1);
+
+/**
  * Implements hook_node_info().
  */
 function hosting_server_node_info() {
@@ -217,6 +237,19 @@ function hosting_server_services_from_post(&$node) {
 }
 
 /**
+ * Hide the delete button on server nodes.
+ */
+function hosting_server_form_alter(&$form, &$form_state, $form_id) {
+  // Remove delete button from server edit form, unless the server's already been deleted via the Delete task
+  if  ($form_id == 'server_node_form') {
+    $node = $form['#node'];
+    if (isset($node->server_status) && $node->server_status !== HOSTING_SERVER_DELETED) {
+      $form['actions']['delete']['#type'] = 'hidden';
+    }
+  }
+}
+
+/**
  * Invoke a method on all enabled services.
  */
 function hosting_server_invoke_services(&$node, $method, &$arg1 = NULL, &$arg2 = NULL, &$arg3 = NULL, &$arg4 = NULL) {
@@ -338,6 +371,12 @@ function hosting_server_form($node, &$form_state) {
         $service_object->form($form['services'][$name][$type]);
       }
     }
+  }
+  foreach (array('verified', 'platform_status') as $extra_attribute) {
+    $form["$extra_attribute"] = array(
+      '#type' => 'value',
+      '#value' => isset($node->$extra_attribute) ? $node->$extra_attribute : NULL,
+    );
   }
 
   return $form;

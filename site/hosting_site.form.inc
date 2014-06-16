@@ -407,9 +407,8 @@ function hosting_site_form_alter(&$form, &$form_state, $form_id) {
   // Remove delete button from site edit form, unless the site's already been deleted via the Delete task
   if ($form_id == 'site_node_form') {
     $node = $form['#node'];
-    //@todo: Remove magic number
-    if (isset($node->site_status) && $node->site_status !== '-2') {
-      $form['buttons']['delete']['#type'] = 'hidden';
+    if (isset($node->site_status) && $node->site_status !== HOSTING_SITE_DELETED) {
+      $form['actions']['delete']['#type'] = 'hidden';
     }
   }
   if (array_key_exists('views_bulk_operations', $form)) {
