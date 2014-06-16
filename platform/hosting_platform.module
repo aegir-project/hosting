@@ -686,7 +686,7 @@ function hosting_platform_hosting_site_site_list_filters() {
 }
 
 /**
- * @todo document this function
+ * Helper function to map status codes to labels and classes.
  */
 function _hosting_platform_status_codes() {
   $codes = array(
@@ -711,7 +711,7 @@ function _hosting_platform_status_codes() {
 }
 
 /**
- * @todo document this function
+ * Return the appropriate status label.
  */
 function _hosting_platform_status($status) {
   static $labels;
@@ -753,45 +753,3 @@ function _hosting_platform_list_class($status) {
   $labels = _hosting_platform_status_codes();
   return is_object($status) ? $labels[$status->platform_status]['class'] : $labels[$status]['class'];
 }
-
-/**
- * Simple list for top level navigation.
- * @todo: remove this?
- */
-function hosting_platform_listing() {
-  $platforms = _hosting_get_platforms();
-
-  $header = array(t('Platform'), t('Release'), t('Server'), t('Verified'), t('Sites'));
-
-  $rows[] = array();
-
-  $total = 0;
-  foreach ($platforms as $nid => $title) {
-    $row = array();
-    $node = node_load($nid);
-    $row[] = array(
-      'class' => array('hosting-status'),
-      'data' => _hosting_node_link($nid),
-    );
-    $release = sprintf("%s %s", $node->release->title, $node->release->version);
-    $row[] = _hosting_node_link($node->release->nid, $release);
-    $row[] = _hosting_node_link($node->web_server);
-    $row[] = hosting_format_interval($node->verified);
-    $total += $count = hosting_site_count($nid, array(HOSTING_SITE_ENABLED, HOSTING_SITE_DISABLED, HOSTING_SITE_QUEUED));
-    $row[] = $count;
-    $rows[] = array(
-      'data' => $row,
-      'class' => array(_hosting_platform_list_class($node->platform_status)),
-    );
-  }
-  $row = array();
-  $row[] = array(
-    'data' => t('Total sites hosted'),
-    'colspan' => 4,
-  );
-  $row[] = $total;
-  $rows[] = $row;
-
-  return theme('table', array('header' =>   $header, 'rows' => $rows, 'attributes' => array('class' => array('hosting-table'))));
-}
-
