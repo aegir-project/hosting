@@ -466,7 +466,7 @@ function _hosting_node_link($nid, $title = NULL) {
   if (!isset($title)) {
     $title = isset($node->title) ? $node->title : NULL;
     // Override with the human-readable name, when available.
-    $title = isset($node->human_name) ? $node->human_name : $title;
+    $title = isset($node->human_name) && strlen($node->human_name) ? $node->human_name : $title;
   }
   $title = filter_xss($title);
   if (isset($node->nid)) {
