@@ -190,9 +190,14 @@ function hosting_server_services() {
   static $services;
 
   if (!isset($services)) {
+    foreach (module_implements('hosting_service_type') as $module) {
+      // Load all service_type classes.
+      module_load_include('service.inc', $module);
+    }
     $services = module_invoke_all('hosting_service_type');
     foreach (module_implements('hosting_service') as $module) {
       foreach (module_invoke($module, 'hosting_service') as $service => $service_type) {
+        // Load all service classes.
         module_load_include('service.inc', $module);
         $services[$service_type]['types'][$service] = 'hostingService_' . $service_type . '_' . $service;
       }
