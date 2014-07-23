@@ -101,7 +101,7 @@ class hostingService_example_basic extends hostingService_example {
       '#type' => 'item',
       '#title' => t('Example field'),
       // Remember to pass the display through filter_xss!
-      '#value' => filter_xss($this->example_field),
+      '#markup' => filter_xss($this->example_field),
     );
   }
 
