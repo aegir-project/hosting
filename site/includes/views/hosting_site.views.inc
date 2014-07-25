@@ -300,7 +300,6 @@ function hosting_site_preprocess_views_view(&$vars) {
       // Ensure required css and js libs are added
       drupal_add_js('misc/form.js');
       drupal_add_js('misc/collapse.js');
-      drupal_add_css(drupal_get_path('module', 'hosting_site') . '/hosting_site.css');
 
       // Assume other get vars are exposed filters, so expand fieldset
       // to show applied filters
