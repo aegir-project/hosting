@@ -118,8 +118,15 @@ function drush_hosting_task() {
     $output = drush_invoke_process('@none', 'provision-save', array('@' . $task->ref->hosting_name), $task->context_options, array('method' => $mode));
   }
 
+  if ($task->ref->site_status == HOSTING_SITE_DELETED) {
+    // We're performing a task on a site that has been deleted... d() will not be returning a site object.
+    $alias = '@none';
+  } else {
+    $alias = $task->ref->hosting_name;
+  }
+
   // Run the actual command. Adding alias here to work around Drush API.
-  $output = provision_backend_invoke($task->ref->hosting_name, 'provision-' . $task->task_type, $task->args, $task->options, $mode);
+  $output = provision_backend_invoke($alias, 'provision-' . $task->task_type, $task->args, $task->options, $mode);
   drush_set_context('HOSTING_DRUSH_OUTPUT', $output);
 
   // On succesful delete, remove the named context.
