@@ -1,0 +1,70 @@
+<?php
+
+/**
+ * Implementation of hook_hosting_queues().
+ *
+ * Return a list of queues that this module needs to manage.
+ */
+function hosting_task_gc_hosting_queues() {
+  $count = hosting_task_gc_count_sites();
+  $queue['task_gc'] = array(
+    'name' => t('Task GC'),
+    'description' => t('Process the garbage collection of task logs.'),
+    'type' => 'batch',  # run queue sequentially. always with the same parameters.
+    'frequency' => strtotime("1 hour", 0),
+    'items' => 20,
+    'total_items' => $count,
+    'min_threads' => 6,
+    'max_threads' => 12,
+    'threshold' => 100,
+    'singular' => t('site'),
+    'plural' => t('sites'),
+  );
+  return $queue;
+}
+
+/**
+ * The main queue callback task_gc.
+ */
+function hosting_task_gc_queue() {
+  global $user;
+  $old_user = $user;
+  $user = user_load(1);
+  $result = hosting_task_gc_list_sites();
+  while ($site = $result->fetchObject()) {
+    $query = "SELECT nid FROM {hosting_task} WHERE rid = :nid";
+    $tasks_to_remove = db_query($query, array(':nid' => $site->nid));
+    while ($row = $tasks_to_remove->fetchObject()) {
+      node_delete($row->nid);
+      watchdog('hosting_task_gc', 'Deleted task node with nid @nid.', array('@nid' => $row->nid));
+    }
+  }
+  $user = $old_user;
+
+  // Look for orphaned task log entries.
+  $query = "SELECT DISTINCT h.vid
+              FROM {hosting_task_log} h
+                LEFT OUTER JOIN {node_revision} n ON h.vid = n.vid
+              WHERE n.vid IS NULL LIMIT 100";
+  $result = db_query($query);
+  while ($revision = $result->fetchObject()) {
+    $num = db_delete('hosting_task_log')
+      ->condition('vid', $revision->vid)
+      ->execute();
+    watchdog('hosting_task_gc', 'Deleted @num orphaned task log entries with vid @vid.', array('@num' => $num, '@vid' => $revision->vid));
+  }
+}
+
+function hosting_task_gc_list_sites() {
+  $query = "SELECT DISTINCT s.nid "
+          . "FROM {hosting_site} s INNER JOIN {hosting_task} t ON s.nid = t.rid "
+          . "WHERE s.status = :status LIMIT 5";
+  return db_query($query, array(':status' => HOSTING_SITE_DELETED));
+}
+
+function hosting_task_gc_count_sites() {
+  $query = "SELECT COUNT(DISTINCT s.nid) AS num_sites "
+          . "FROM {hosting_site} s INNER JOIN {hosting_task} t ON s.nid = t.rid "
+          . "WHERE s.status = :status";
+  return db_query($query, array(':status' => HOSTING_SITE_DELETED))->fetchField();
+}
