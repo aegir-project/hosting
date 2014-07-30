@@ -55,6 +55,11 @@ function hosting_task_gc_queue() {
   }
 }
 
+/**
+ * Prepare a list of sites with garbage to collect.
+ *
+ * @return DatabaseStatementInterface
+ */
 function hosting_task_gc_list_sites() {
   $query = "SELECT DISTINCT s.nid "
           . "FROM {hosting_site} s INNER JOIN {hosting_task} t ON s.nid = t.rid "
@@ -62,6 +67,11 @@ function hosting_task_gc_list_sites() {
   return db_query($query, array(':status' => HOSTING_SITE_DELETED));
 }
 
+/**
+ * Get the number of sites with garbage to collect.
+ *
+ * @return int
+ */
 function hosting_task_gc_count_sites() {
   $query = "SELECT COUNT(DISTINCT s.nid) AS num_sites "
           . "FROM {hosting_site} s INNER JOIN {hosting_task} t ON s.nid = t.rid "
