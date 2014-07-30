@@ -209,3 +209,24 @@ function hosting_platform_update_6208() {
   }
   return $ret;
 }
+
+/**
+ * Add a list of platforms on the server node.
+ *
+ * https://drupal.org/node/2259511
+ */
+function hosting_platform_update_6209() {
+  $ret = array();
+  $theme = 'eldir';
+
+  // Temporarily enable Install Profile API module and load includes.
+  module_enable(array('install_profile_api'));
+  drupal_load('module', 'install_profile_api');
+  install_include(array('block'));
+
+  install_set_block('views', 'hosting_platform_list-block_server' , $theme, 'content_bottom', 0, 1, 'hosting/c/server_*');
+
+  module_disable(array('install_profile_api'));
+
+  return $ret;
+}

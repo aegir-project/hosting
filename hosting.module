@@ -881,6 +881,11 @@ function hosting_context_register($nid, $name) {
   // because we do not want the overhead of having all the
   // path UI stuff on nodes.
   require_once("./modules/path/path.module");
+
+  // Delete an existing alias, could be left behind after migrating a site from this name.
+  path_set_alias(NULL, "hosting/c/$name");
+
+  // Add the new alias.
   path_set_alias("node/$nid", "hosting/c/$name");
 }
 
