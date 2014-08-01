@@ -1099,7 +1099,7 @@ function hosting_context_register($nid, $name) {
   require_once DRUPAL_ROOT . '/modules/path/path.module';
 
   // Delete an existing alias, could be left behind after migrating a site from this name.
-  path_delete(array('alias' => "hosting/c/$name");
+  path_delete(array('alias' => "hosting/c/$name"));
 
   // Add the new alias.
   $path = array('source' => "node/$nid", 'alias' => "hosting/c/$name");
