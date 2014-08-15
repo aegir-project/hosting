@@ -81,21 +81,3 @@ function hosting_cron_node_view($node, $view_mode, $langcode) {
     }
   }
 }
-
-/**
- * Get a number of sites that need to have cron executed.
- *
- * @param $limit
- *   Limit to a maximum of this number of sites.
- * @return
- *   An array of site nodes that need to have cron executed.
- *
- * @deprecated function unused
- */
-function hosting_cron_get_sites($limit = 5) {
-  $result = db_query("SELECT n.nid FROM {node} n LEFT JOIN {hosting_site} s ON n.nid=s.nid WHERE n.type = :n.type and s.status = :s.status ORDER BY s.last_cron ASC, n.nid ASC limit %d", array(':n.type' => 'site', ':s.status' => HOSTING_SITE_ENABLED, '' => $limit));
-  while ($nid = $result->fetch()) {
-    $sites[$nid->nid] = node_load($nid->nid);
-  }
-  return $sites;
-}

@@ -106,15 +106,6 @@ function hosting_ip_delete($node) {
     ->execute();
 }
 
-/**
- * IP Utility function for hook_delete_revision.
- *
- * @deprecated
- * @see hosting_ip_delete()
- */
-function hosting_ip_delete_revision($node) {
-  return hosting_ip_delete($node);
-}
 
 /**
  * Allocate an IP for a given site on a given server.
