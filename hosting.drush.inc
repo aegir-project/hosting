@@ -2,7 +2,7 @@
 
 /**
  * @file
- *   Drush include for the Hosting module.
+ * Drush include for the Hosting module.
  */
 
 /**
@@ -87,21 +87,22 @@ function hosting_drush_command() {
     'options' => array(
       'old_platform_name' => dt('The old platform name'),
       'new_platform_name' => dt('The new platform name'),
-    )
+    ),
   );
 
   return $items;
 }
 
 /**
- * Command to import an existing provision named context and
- * generate nodes for it.
+ * Command to import an existing provision named context.
  *
- * @param $alias
+ * It generate nodes for it.
+ *
+ * @param string $alias
  *   The name of the provision context to import.
  */
 function drush_hosting_import($alias) {
-  if (sizeof($alias)) {
+  if (!empty($alias)) {
     if (d($alias)->name) {
       drush_log("Importing $alias");
       hosting_drush_import($alias);
@@ -110,12 +111,12 @@ function drush_hosting_import($alias) {
 }
 
 /**
- * Imports a drush named context / "site alias" into the hostmaster front
- * end, by creating nodes and translating the value.
+ * Imports a drush named context / "site alias" into the hostmaster frontend.
  *
+ * By creating nodes and translating the value.
  * This is bascally the reverse of the context_options hook.
  *
- * @param $alias
+ * @param object|string $alias
  *   The name of the provision context to import.
  */
 function hosting_drush_import($alias) {
@@ -123,7 +124,7 @@ function hosting_drush_import($alias) {
 
   static $known_contexts = array();
 
-  // avoid re-importing the same object twice in one execution
+  // Avoid re-importing the same object twice in one execution
   // of the script.
   if (isset($known_contexts[$name])) {
     drush_log("Already re-imported {$name} in this process.");
@@ -139,14 +140,14 @@ function hosting_drush_import($alias) {
   }
   else {
     // First time we've seen this context.
-    $node = new stdClass;
+    $node = new stdClass();
     $node->type = $context->type;
-    // set the hosting name too
+    // Set the hosting name too.
     $node->hosting_name = trim($context->name, '@');
     $node->status = 1;
   }
 
-  // iterate through all the objects which may want to save this node.
+  // Iterate through all the objects which may want to save this node.
   $modules = drush_command_implements('drush_context_import');
   foreach ($modules as $name) {
     $func = "{$name}_drush_context_import";
@@ -168,7 +169,7 @@ function hosting_drush_import($alias) {
  * Update backend Hosting Features registry when modules are enabled via Drush.
  */
 function drush_hosting_post_pm_enable() {
-  // Generate a list of features keyed by module name
+  // Generate a list of features keyed by module name.
   foreach (hosting_get_features() as $feature => $info) {
     $features[] = $info['module'];
   }

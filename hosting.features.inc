@@ -23,7 +23,7 @@ define('HOSTING_FEATURE_REQUIRED', 2);
 /**
  * Determine whether a specific feature of the hosting system is turned on.
  *
- * @param $feature
+ * @param string $feature
  *   The feature to check the status of, e.g. "client" or "platform".
  * @return bool
  *    TRUE if the feature is enabled, FALSE if it is disabled.

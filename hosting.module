@@ -154,9 +154,9 @@ function hosting_menu_alter(&$items) {
 /**
  * Menu access callback for creating a node provided by a Hosting feature.
  *
- * @param $type
+ * @param string $type
  *   The node type that the user wants to create.
- * @param $feature
+ * @param string $feature
  *   The machine name of the host feature that should be additionally checked to
  *   see if it's enabled.
  *
@@ -190,7 +190,7 @@ function hosting_site_maintenance() {
  * @see hook_nodeapi_TYPE_OP()
  */
 function hosting_node_delete($node) {
-  // Redispatch through our custom nodeapi implementation
+  // Redispatch through our custom nodeapi implementation.
   hosting_nodeapi($node, 'delete');
 }
 
@@ -200,7 +200,7 @@ function hosting_node_delete($node) {
  * @see hook_nodeapi_TYPE_OP()
  */
 function hosting_node_insert($node) {
-  // Redispatch through our custom nodeapi implementation
+  // Redispatch through our custom nodeapi implementation.
   hosting_nodeapi($node, 'insert');
 }
 
@@ -217,7 +217,7 @@ function hosting_node_load($nodes, $types) {
     // Add our extra data to the node objects.
     foreach ($result as $nid => $hosting_name) {
       $nodes[$nid]->hosting_name = $hosting_name;
-      // Redispatch through our custom nodeapi implementation
+      // Redispatch through our custom nodeapi implementation.
       hosting_nodeapi($nodes[$nid], 'load');
     }
   }
@@ -229,7 +229,7 @@ function hosting_node_load($nodes, $types) {
  * @see hook_nodeapi_TYPE_OP()
  */
 function hosting_node_prepare($node) {
-  // Redispatch through our custom nodeapi implementation
+  // Redispatch through our custom nodeapi implementation.
   hosting_nodeapi($node, 'prepare');
 }
 
@@ -245,7 +245,7 @@ function hosting_node_presave($node) {
       $node->uid = $user->uid;
     }
   }
-  // Redispatch through our custom nodeapi implementation
+  // Redispatch through our custom nodeapi implementation.
   hosting_nodeapi($node, 'presave');
 }
 
@@ -255,17 +255,17 @@ function hosting_node_presave($node) {
  * @see hook_nodeapi_TYPE_OP()
  */
 function hosting_node_revision_delete($node) {
-  // Redispatch through our custom nodeapi implementation
+  // Redispatch through our custom nodeapi implementation.
   hosting_nodeapi($node, 'delete revision');
 }
 
 /**
- * Implements hook_node_search_result).
+ * Implements hook_node_search_result().
  *
  * @see hook_nodeapi_TYPE_OP()
  */
 function hosting_node_search_result($node) {
-  // Redispatch through our custom nodeapi implementation
+  // Redispatch through our custom nodeapi implementation.
   hosting_nodeapi($node, 'search result');
 }
 
@@ -275,7 +275,7 @@ function hosting_node_search_result($node) {
  * @see hook_nodeapi_TYPE_OP()
  */
 function hosting_node_update($node) {
-  // Redispatch through our custom nodeapi implementation
+  // Redispatch through our custom nodeapi implementation.
   hosting_nodeapi($node, 'update');
 }
 
@@ -285,7 +285,7 @@ function hosting_node_update($node) {
  * @see hook_nodeapi_TYPE_OP()
  */
 function hosting_node_update_index($node) {
-  // Redispatch through our custom nodeapi implementation
+  // Redispatch through our custom nodeapi implementation.
   hosting_nodeapi($node, 'update index');
 }
 
@@ -295,7 +295,7 @@ function hosting_node_update_index($node) {
  * @see hook_nodeapi_TYPE_OP()
  */
 function hosting_node_validate($node, $form, &$form_state) {
-  // Redispatch through our custom nodeapi implementation
+  // Redispatch through our custom nodeapi implementation.
   hosting_nodeapi($node, 'validate', $form);
 }
 
@@ -305,7 +305,7 @@ function hosting_node_validate($node, $form, &$form_state) {
  * @see hook_nodeapi_TYPE_OP()
  */
 function hosting_node_view($node, $view_mode, $langcode) {
-  // Redispatch through our custom nodeapi implementation
+  // Redispatch through our custom nodeapi implementation.
   if ($view_mode == 'teaser') {
     hosting_nodeapi($node, 'view', TRUE, FALSE);
   }
@@ -315,9 +315,10 @@ function hosting_node_view($node, $view_mode, $langcode) {
 }
 
 /**
- * Redirects to hosting_nodeapi_$nodetype_$op calls, to save ourselves from an
- * incessant amount of intricately nested code, and allow easier extension and
- * maintenance.
+ * Redirects to hosting_nodeapi_$nodetype_$op calls.
+ *
+ * To save ourselves from an incessant amount of intricately nested code,
+ * and allow easier extension and maintenance.
  *
  * @see hook_nodeapi_TYPE_OP()
  */
@@ -446,7 +447,7 @@ function hosting_theme() {
     ),
     'hosting_feature_dependencies' => array(
       'file' => 'hosting.features.inc',
-      'arguments' => array (
+      'arguments' => array(
         'dependencies' => NULL,
         'prefix' => NULL,
         'features' => NULL,
@@ -516,24 +517,27 @@ function hosting_block_info() {
 function hosting_block_view($delta) {
   switch ($delta) {
     case 'hosting_queues':
-      return array(
+      $out = array(
         'title' => t('Queues'),
         'content' => hosting_queue_block(),
       );
+      break;
 
     case 'hosting_queues_summary':
-      return array(
+      $out = array(
         'title' => t('Queues summary'),
         'content' => hosting_queue_summary_block(),
       );
+      break;
 
     case 'hosting_supporting_aegir':
-      return array(
+      $out = array(
         'title' => t('Support Aegir'),
         'content' => hosting_supporting_aegir_block(),
       );
+      break;
   }
-
+  return $out;
   // @todo where is 'hosting_summary'?
 }
 
@@ -583,7 +587,7 @@ function hosting_queue_block() {
     $queues = hosting_get_queues();
     $output = '';
     foreach ($queues as $queue => $info) {
-      $func = 'hosting_'.$info['singular'].'_summary';
+      $func = 'hosting_' . $info['singular'] . '_summary';
       if (function_exists($func)) {
         $output .= $func();
       }
@@ -780,7 +784,7 @@ function hosting_queues($key = '') {
 /**
  * Generate context sensitive breadcrumbs.
  *
- * @param $node
+ * @param object $node
  *   A node object to use for context of the breadcrumbs.
  */
 function hosting_set_breadcrumb($node) {
@@ -856,7 +860,7 @@ function hosting_queues_configure($form, &$form_state) {
         '#maxlength' => 3,
         '#default_value' => $info['items'],
         // @ignore i18n_11
-        '#suffix' => t(' %items every ', array('%items' => $info['plural'])),
+        '#suffix' => ' ' . t('%items every', array('%items' => $info['plural'])) . ' ',
         '#attributes' => array(
           'class' => array('hosting-select-frequency-items'),
         ),
@@ -992,7 +996,7 @@ function hosting_form_alter(&$form, &$form_state, $form_id) {
     );
   }
 
-  // Remove additional UI added by core modules, that conflict with the hosting UI.
+  // Remove additional UI added by core modules, it conflicts with the our UI.
   $node_types = array('site', 'platform', 'server', 'client');
   foreach ($node_types as $type) {
     if ($form_id == $type . '_node_form') {
@@ -1005,7 +1009,7 @@ function hosting_form_alter(&$form, &$form_state, $form_id) {
       $form['actions']['preview']['#access'] = FALSE;
 
       // Add message that verify is required for changes to take effect.
-      if (in_array($type, array('site', 'platform', 'server'))){
+      if (in_array($type, array('site', 'platform', 'server'))) {
         $form['#submit'][] = 'hosting_form_verify_reqd_submit';
       }
     }
@@ -1013,7 +1017,8 @@ function hosting_form_alter(&$form, &$form_state, $form_id) {
 }
 
 /**
- * Submit handler to add a message that verify is required for changes to take effect.
+ * Submit handler to mention that verify is required for changes to take effect.
+ *
  * See: https://drupal.org/node/1761932
  */
 function hosting_form_verify_reqd_submit() {
@@ -1021,7 +1026,8 @@ function hosting_form_verify_reqd_submit() {
 }
 
 /**
- * Hosting version of menu_rebuild() from Drupal 6.15
+ * Hosting version of menu_rebuild() from Drupal 6.15.
+ *
  * This is needed for the upgrade path of a hostmaster platform from
  * 6.15 to 6.16. The Hosting module calls update hooks that run
  * menu_rebuild() which break on a 6.16 platform as the semaphore
@@ -1047,8 +1053,9 @@ function hosting_menu_rebuild() {
 /**
  * Get the node associated with a given provision context.
  *
- * @param $name
+ * @param string $name
  *   The name of the context to load.
+ *
  * @return bool|object
  *   Either the node object associated with the context, or FALSE if no
  */
@@ -1067,9 +1074,9 @@ function hosting_context_load($name) {
 /**
  * Add a node to the context lookup db.
  *
- * @param $nid
+ * @param int $nid
  *   The nid of the node to associate to the given provision context name.
- * @param $name
+ * @param string $name
  *   The name of the provision context.
  */
 function hosting_context_register($nid, $name) {
@@ -1098,7 +1105,8 @@ function hosting_context_register($nid, $name) {
   // path UI stuff on nodes.
   require_once DRUPAL_ROOT . '/modules/path/path.module';
 
-  // Delete an existing alias, could be left behind after migrating a site from this name.
+  // Delete an existing alias,
+  // could be left behind after migrating a site from this name.
   path_delete(array('alias' => "hosting/c/$name"));
 
   // Add the new alias.
@@ -1109,7 +1117,7 @@ function hosting_context_register($nid, $name) {
 /**
  * Delete an alias from the context lookup table.
  *
- * @param $nid
+ * @param int $nid
  *   The nid of the node to remove the association from.
  */
 function hosting_context_delete($nid) {
@@ -1123,8 +1131,9 @@ function hosting_context_delete($nid) {
 /**
  * Return the hosting context name for a node.
  *
- * @param $nid
+ * @param int $nid
  *   The nid of the node to get the provision context name for.
+ *
  * @return string|bool
  *   The provision context name associated with the specified node, will be
  *   prefixed with '@' or FALSE if node doesnt exist.
@@ -1169,8 +1178,8 @@ function hosting_settings($form, &$form_state) {
   $profiles = array();
   foreach (hosting_get_profiles() as $id => $name) {
     $profile = hosting_package_instance_load(array('p.nid' => $id));
-    $profiles[$profile->short_name] = theme('hosting_site_profile', array('profile' => $profile, 'html'=> ''));
-    // Don't allow a site to be provisioned with hostslave or hostmaster profile
+    $profiles[$profile->short_name] = theme('hosting_site_profile', array('profile' => $profile, 'html' => ''));
+    // Don't allow a site to be provisioned a restricted profile.
     if (in_array($name, array('Hostslave', 'Hostmaster'))) {
       unset($profiles[$profile->short_name]);
     }
@@ -1193,7 +1202,7 @@ function hosting_settings($form, &$form_state) {
   $form['hosting_lock_platforms_by_default'] = array(
     '#type' => 'checkbox',
     '#title' => t('Lock platforms by default on initial creation'),
-    '#description' => t('When verifying a new platform, set its initial state to \'Locked\'. This can avoid having sites created on a new platform before there has been a chance to test it. Those users with the \'create sites on locked platforms\' permission (e.g., with the \'platform manager\' role) will still be able to build sites.'),
+    '#description' => t("When verifying a new platform, set its initial state to 'Locked'. This can avoid having sites created on a new platform before there has been a chance to test it. Those users with the 'create sites on locked platforms' permission (e.g., with the 'platform manager' role) will still be able to build sites."),
     '#default_value' => variable_get('hosting_lock_platforms_by_default', FALSE),
   );
   $form['hosting_require_disable_before_delete'] = array(
@@ -1202,7 +1211,7 @@ function hosting_settings($form, &$form_state) {
     '#description' => t('Check if you wish for users to run the Disable task on a site prior to running the Delete task.'),
     '#default_value' => variable_get('hosting_require_disable_before_delete', TRUE),
   );
-  if(hosting_feature('cron')) {
+  if (hosting_feature('cron')) {
     $form['hosting_cron_use_backend'] = array(
       '#type' => 'radios',
       '#title' => t('Cron method'),
@@ -1218,11 +1227,12 @@ function hosting_settings($form, &$form_state) {
  * Create the default hosting roles.
  */
 function hosting_create_roles() {
-  // Only allow access to our splash pages for anyone without a specific role
+  // Only allow access to our splash pages for anyone without a specific role.
   user_role_grant_permissions(DRUPAL_ANONYMOUS_RID, array('access disabled sites'));
   user_role_grant_permissions(DRUPAL_AUTHENTICATED_RID, array('access disabled sites'));
 
-  // Create a default role for site administrators, with all available permissions assigned.
+  // Create a default role for site administrators,
+  // with all available permissions assigned.
   $admin_role = new stdClass();
   $admin_role->name = 'administrator';
   $admin_role->weight = 2;
@@ -1241,7 +1251,6 @@ function hosting_create_roles() {
   $aegir_admin_role->name = 'aegir administrator';
   $aegir_admin_role->weight = 2;
   user_role_save($aegir_admin_role);
-
 
   // Create a default role for Aegir clients.
   $client_role = new stdClass();
