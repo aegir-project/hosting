@@ -8,7 +8,7 @@
  * @{
  *
  * Those hooks are hooks usable within contrib Drupal modules running
- * in the Aegir frontend site. 
+ * in the Aegir frontend site.
  */
 
 /**
@@ -18,15 +18,16 @@
  * this hook return TRUE, so in most cases you will be looking for domains that
  * you don't allow, and fallback to a default position of allowing the domain.
  *
- * @param $url
+ * @param string $url
  *   The URL of the site that hosting wishes to create.
- * @param $params
+ * @param array $params
  *   An array of paramters that may contain information about the site. None of
  *   the keys are required however, so you should not depend on the value of any
  *   particular key in this array. If the array is not empty it will usually
  *   contain at least a 'nid' key whose value is the nid of the site being
  *   created.
- * @return
+ *
+ * @return bool
  *   Return TRUE/FALSE if you allow or deny the domain respectively.
  *
  * @see hosting_domain_allowed()
@@ -57,9 +58,9 @@ function hook_allow_domain($url, $params) {
  * If you implement hook_hosting_TASK_OBJECT_context_options() then you will
  * probably want to implement this hook also, as they mirror each other.
  *
- * @param $context
+ * @param object $context
  *   The backend context that is being imported.
- * @param $node
+ * @param object $node
  *   The node object that is being built up from the $context. You should modify
  *   the fields and properties so that they reflect the contents of the
  *   $context.
@@ -88,7 +89,7 @@ function hook_drush_context_import($context, &$node) {
  * to be called. The frontend will use details in this hook to enable a module
  * if the feature is enabled.
  *
- * @return
+ * @return array
  *   An array of hosting features, keyed by the machine name of the feature.
  *   Inner arrays may contain the following keys:
  *   - 'title': The localised title of the feature.
@@ -109,22 +110,22 @@ function hook_drush_context_import($context, &$node) {
 function hook_hosting_feature() {
   // From hosting_example_hosting_feature().
   $features['example'] = array(
-    // title to display in form
+    // Title to display in form.
     'title' => t('Example feature'),
-    // description
+    // Description.
     'description' => t('Example feature documenting how to create your own extensions.'),
-    // initial status ( HOSTING_FEATURE_DISABLED, HOSTING_FEATURE_ENABLED, HOSTING_FEATURE_REQUIRED )
+    // Initial status ( HOSTING_FEATURE_DISABLED, HOSTING_FEATURE_ENABLED, HOSTING_FEATURE_REQUIRED )
     'status' => HOSTING_FEATURE_DISABLED,
-    // module to enable/disable alongside feature
+    // Module to enable/disable alongside feature.
     'module' => 'hosting_example',
-    // Callback functions to execute on enabling or disabling this feature
+    // Callback functions to execute on enabling or disabling this feature.
     'enable' => 'hosting_example_feature_enable_callback',
     'disable' => 'hosting_example_feature_disable_callback',
-    // associate with a specific node type.
-    //  'node' => 'nodetype',
-    // which group to display in ( null , experimental , required )
-    'group' => 'experimental'
-    );
+    // Associate with a specific node type.
+    // 'node' => 'nodetype',
+    // Which group to display in ( null , experimental , required )
+    'group' => 'experimental',
+  );
   return $features;
 }
 
@@ -155,7 +156,7 @@ function hook_hosting_queues() {
  * hook_drush_context_import() hook to re-create those properties on the node
  * when a context is imported.
  *
- * @param $task
+ * @param object $task
  *   The hosting task that is about to be executed, the task is passed by
  *   reference. The context_options property of this object is about to be saved
  *   to the backend, so you can make any changes before that happens. Note that
@@ -181,9 +182,9 @@ function hook_hosting_TASK_OBJECT_context_options(&$task) {
  * Replace TASK_TYPE with the type of task that if rolled back you will be
  * notified of.
  *
- * @param $task
+ * @param object $task
  *   The hosting task that has failed and has been rolled back.
- * @param $data
+ * @param array $data
  *   An associative array of the drush output of the backend task from
  *   drush_backend_output(). The array should contain at least the following:
  *   - "output": The raw output from the drush command executed.
@@ -226,14 +227,15 @@ function hook_hosting_TASK_TYPE_task_rollback($task, $data) {
  * hosting specific hook so you may confuse other developers that are not so
  * familar with the internals of hosting.
  *
- * @param &$node
+ * @param object &$node
  *   The node the action is being performed on.
- * @param $a3
+ * @param mixed $a3
  *   - When OP is "view", passes in the $teaser parameter from node_view().
  *   - When OP is "validate", passes in the $form parameter from node_validate().
- * @param $a4
+ * @param mixed $a4
  *   - When OP is "view", passes in the $page parameter from node_view().
- * @return
+ *
+ * @return mixed
  *   This varies depending on the operation (OP).
  *   - The "presave", "insert", "update", "delete", "print" and "view"
  *     operations have no return value.
@@ -258,9 +260,9 @@ function hook_nodeapi_TYPE_OP(&$node, $a3, $a4) {
  * 'standard' Drush hooks there, i.e. host_post_provision_verify(),
  * hook_post_provision_install() etc.
  *
- * @param $task
+ * @param object $task
  *   The hosting task that has completed.
- * @param $data
+ * @param array $data
  *   An associative array of the drush output of the completed backend task from
  *   drush_backend_output(). The array should contain at least the following:
  *   - "output": The raw output from the drush command executed.
@@ -299,7 +301,7 @@ function hook_post_hosting_TASK_TYPE_task($task, $data) {
  * Otherwise you can do all your processing in this function, or similarly call
  * drush_invoke_process() without the 'fork' option.
  *
- * @param $count
+ * @param int $count
  *   The maximum number of items to process.
  *
  * @see hosting_run_queue()

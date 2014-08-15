@@ -158,7 +158,7 @@ function drush_hosting_post_pm_enable() {
     $features[] = $info['module'];
   }
   // Check if any of the recently enabled modules is a Hosting Feature.
-  // N.B. We're ignoring that the first argument is actually 'pm-enable' or 'en',
+  // We're ignoring that the first argument is actually 'pm-enable' or 'en',
   // since it won't match anyway.
   foreach (drush_get_arguments() as $module) {
     if (in_array($module, $features)) {

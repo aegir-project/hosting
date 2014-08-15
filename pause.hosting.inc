@@ -2,7 +2,7 @@
 
 /**
  * @file
- *   Drush include for the Hosting module's hosting pause command.
+ * Drush include for the Hosting module's hosting pause command.
  */
 
 /**
@@ -22,6 +22,6 @@ function drush_hosting_pause_validate($url) {
  * This is really just deleting the crontab.
  */
 function drush_hosting_pause($url) {
-  // wipe out cron entry
+  // Wipe out cron entry.
   exec('crontab -r');
 }

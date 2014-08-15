@@ -2,7 +2,7 @@
 
 /**
  * @file
- *   Drush include for the Hosting module's hosting task command.
+ * Drush include for the Hosting module's hosting task command.
  */
 
 /**
@@ -59,7 +59,7 @@ function drush_hosting_task_validate($id, $type = NULL) {
     $task->executed = REQUEST_TIME;
     /* if not already running, remove the task from the queue
      * this is to avoid concurrent task runs */
-    if ($task->task_status == HOSTING_TASK_PROCESSING && !drush_get_option('force', false)) {
+    if ($task->task_status == HOSTING_TASK_PROCESSING && !drush_get_option('force', FALSE)) {
       return drush_set_error('HOSTING_TASK_RUNNING', dt("This task is already running, use --force"));
     }
     if ($task->task_status != HOSTING_TASK_QUEUED && !drush_get_option('force', FALSE)) {
@@ -72,11 +72,11 @@ function drush_hosting_task_validate($id, $type = NULL) {
     drush_set_context('DRUSH_LOG_CALLBACK', '_hosting_task_log');
     drush_log(dt("Task starts processing"), 'queue');
 
-    // Load Task Info
+    // Load Task Info.
     $tasks_info = hosting_available_tasks($task->ref->type);
 
-    // Find task type and pass through if it needs provision_save
-    if (isset($tasks_info[$task->task_type])){
+    // Find task type and pass through if it needs provision_save.
+    if (isset($tasks_info[$task->task_type])) {
       $task->task_info = $tasks_info[$task->task_type];
     }
   }
@@ -101,7 +101,7 @@ function drush_hosting_task() {
   $output = array();
   $mode = drush_get_option('debug', FALSE) ? 'GET' : 'POST';
 
-  // Make sure argument order is correct
+  // Make sure argument order is correct.
   ksort($task->args);
 
   // If this task type needs it, run provision-save to create the named context.
@@ -121,7 +121,8 @@ function drush_hosting_task() {
   if ($task->ref->site_status == HOSTING_SITE_DELETED) {
     // We're performing a task on a site that has been deleted... d() will not be returning a site object.
     $alias = '@none';
-  } else {
+  }
+  else {
     $alias = $task->ref->hosting_name;
   }
 

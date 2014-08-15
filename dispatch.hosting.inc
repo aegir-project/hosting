@@ -2,7 +2,7 @@
 
 /**
  * @file
- *   Drush include for the Hosting module's dispatch command.
+ * Drush include for the Hosting module's dispatch command.
  */
 
 /**
@@ -23,11 +23,11 @@ function drush_hosting_dispatch() {
   if (variable_get('hosting_dispatch_enabled', FALSE)) {
     $queues = hosting_get_queues();
     foreach ($queues as $queue => $info) {
-      // Check and release too old cron semaphore if exist
+      // Check and release too old cron semaphore if exist.
       $old_semaphore = variable_get('hosting_queue_' . $queue . '_running', FALSE);
       if ($old_semaphore) {
         if (REQUEST_TIME - $old_semaphore > 3600) {
-          // Release too old cron semaphore
+          // Release too old cron semaphore.
           variable_del('hosting_queue_' . $queue . '_running', FALSE);
         }
       }
@@ -42,7 +42,13 @@ function drush_hosting_dispatch() {
               drush_log(dt("maximum number of tasks (@count) already running", array('@count' => $info['running_items'])));
             }
             else {
-              drush_log(dt("found @running running tasks, starting @count out of @max items", array('@running' => $info['running_items'], '@count' => $count, '@max' => $info['calc_items'])));
+              drush_log(dt("found @running running tasks, starting @count out of @max items",
+                      array(
+                        '@running' => $info['running_items'],
+                        '@count' => $count,
+                        '@max' => $info['calc_items'])
+                        )
+                      );
               drush_invoke_process('@self', "hosting-" . $queue, array(), array('items' => $count, 'strict' => FALSE), array('fork' => TRUE));
             }
           }

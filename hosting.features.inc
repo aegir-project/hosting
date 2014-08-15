@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Include for functionality related to Hosting module features.
+ * Include for functionality related to Hosting module features.
  */
 
 /**
@@ -25,13 +25,14 @@ define('HOSTING_FEATURE_REQUIRED', 2);
  *
  * @param string $feature
  *   The feature to check the status of, e.g. "client" or "platform".
+ *
  * @return bool
- *    TRUE if the feature is enabled, FALSE if it is disabled.
+ *   TRUE if the feature is enabled, FALSE if it is disabled.
  */
 function hosting_feature($feature) {
   static $features = array();
 
-  if (!sizeof($features)) {
+  if (!count($features)) {
     $features = hosting_get_features();
   }
   if (isset($features[$feature]['status']) && ($features[$feature]['status'] == HOSTING_FEATURE_REQUIRED)) {
@@ -52,8 +53,10 @@ function hosting_feature($feature) {
  * This returns a form with any known Hosting features grouped and listed. It
  * allows administrators to enable or disable the features.
  *
- * @param $form
- * @param $form_state
+ * @param array $form
+ *   The built form.
+ * @param array $form_state
+ *   The current form state.
  *
  * @return array
  *   A drupal form.
@@ -100,7 +103,7 @@ function hosting_features_form($form, &$form_state) {
 
     if ($settings = variable_get('hosting_features_form_settings', FALSE)) {
       if ($settings['dependencies']) {
-        // Gather dependencies and their statuses
+        // Gather dependencies and their statuses.
         $depends_on = isset($info['dependencies']['features']) ? $info['dependencies']['features'] : FALSE;
         if (is_array($depends_on)) {
           $description .= theme('hosting_feature_dependencies', array(
@@ -109,7 +112,7 @@ function hosting_features_form($form, &$form_state) {
             'features' => $features));
         }
 
-        // Gather relying features and their statuses
+        // Gather relying features and their statuses.
         $required_by = isset($info['dependencies']['reverse']) ? $info['dependencies']['reverse'] : FALSE;
         if (is_array($required_by)) {
           $description .= theme('hosting_feature_dependencies', array(
@@ -181,7 +184,7 @@ function hosting_features_form($form, &$form_state) {
         $experimental[$info['package']]['hosting_feature_' . $feature] = $element;
       }
     }
-    // This feature is in the 'Hosting' module package
+    // This feature is in the 'Hosting' module package.
     else {
       if (isset($info['group']) && $info['group'] == 'required') {
         $required['hosting_feature_' . $feature] = $element;
@@ -209,9 +212,9 @@ function hosting_features_form($form, &$form_state) {
  * requested. This may involve enabling a module and their dependencies and/or
  * calling a specified callback function.
  *
- * @param $form
+ * @param array $form
  *   The built form.
- * @param $form_state
+ * @param array $form_state
  *   The current form state.
  *
  * @see hosting_features_form()
@@ -240,6 +243,7 @@ function hosting_features_form_submit($form, &$form_state) {
  * @param bool $refresh
  *   (optional) Pass in TRUE to force the list of features to be rebuilt and not
  *   returned from the cache.
+ *
  * @return array
  *   An array of Hosting features.
  *
@@ -249,9 +253,9 @@ function hosting_get_features($refresh = FALSE) {
   $cache = cache_get('hosting_features');
 
   if (empty($cache->data) || $refresh) {
-    // Include any optional hosting.feature.*.inc files
+    // Include any optional hosting.feature.*.inc files.
     $files = drupal_system_listing("/hosting\.feature\.[a-zA-Z_]*\.inc$/", "modules");
-    if (sizeof($files)) {
+    if (count($files)) {
       foreach ($files as $name => $info) {
         include_once DRUPAL_ROOT . '/' . $info->uri;
       }
@@ -269,18 +273,18 @@ function hosting_get_features($refresh = FALSE) {
       $features = array_merge($features, $func());
     }
 
-    // Add module dependencies, package and enabled status
+    // Add module dependencies, package and enabled status.
     $module_cache = system_rebuild_module_data();
     $modules = array();
     foreach ($features as $feature => $info) {
       $features[$feature]['enabled'] = $module_cache[$info['module']]->status;
       $features[$feature]['package'] = $module_cache[$info['module']]->info['package'];
       $features[$feature]['dependencies']['modules'] = $module_cache[$info['module']]->info['dependencies'];
-      // Generate a list of features keyed by module name
+      // Generate a list of features keyed by module name.
       $modules[$info['module']] = $feature;
     }
 
-    // Add Hosting feature dependencies, keyed by module
+    // Add Hosting feature dependencies, keyed by module.
     foreach ($features as $feature => $info) {
       foreach ($info['dependencies']['modules'] as $dependency) {
         if (in_array($dependency, $modules) && array_key_exists($modules[$dependency], $features)) {
@@ -304,6 +308,7 @@ function hosting_get_features($refresh = FALSE) {
  * @param bool $refresh
  *   (optional) Pass in TRUE to force the list of node types to be rebuilt and
  *   not returned from the cache.
+ *
  * @return true
  *   An array of node types keyed by the Hosting feature that provides them.
  */
@@ -370,7 +375,7 @@ function hosting_feature_role_perms_table($form, &$form_table, $role_perms) {
 function hosting_features_enable($features, $rebuild = TRUE, $enable = TRUE) {
   if (count($features)) {
 
-    include_once('includes/install.inc');
+    include_once 'includes/install.inc';
 
     $all_features = hosting_get_features();
     $titles = array();
@@ -409,7 +414,7 @@ function hosting_features_disable($disable, $rebuild = TRUE) {
       '%feature' => implode(", ", $disable),
       '!plural' => count($disable) > 1 ? 's' : '',
     )));
-    include_once('includes/install.inc');
+    include_once 'includes/install.inc';
     module_disable(array_keys($disable));
     $features = hosting_get_features();
     foreach ($disable as $module => $feature) {
@@ -451,8 +456,8 @@ function hosting_determine_features_status($values) {
     }
     elseif ($value) {
       $enable[$features[$feature]['module']] = $feature;
-      // Add dependencies to enable
-      if (isset($info['dependencies']['features']) && count($info['dependencies']['features'])){
+      // Add dependencies to enable.
+      if (isset($info['dependencies']['features']) && count($info['dependencies']['features'])) {
         foreach ($info['dependencies']['features'] as $module_dep => $feature_dep) {
           $enable[$module_dep] = $features[$feature_dep]['title'];
         }
@@ -499,9 +504,9 @@ function hosting_feature_rebuild_caches($features = array()) {
 /**
  * Add a module's permissions to the appropriate roles.
  *
- * @param $module
+ * @param string $module
  *   The name of the module whose permissions we're adding.
- * @param $role_perms
+ * @param array $role_perms
  *   An array of arrays keyed by the role name. The values are the permissions
  *   to enable.
  */
@@ -511,7 +516,7 @@ function hosting_add_permissions($module, $role_perms) {
     $roles = user_roles();
     foreach ($roles as $rid => $name) {
 
-      // The Aegir admin role gets all hosting module permissions
+      // The Aegir admin role gets all hosting module permissions.
       if ($name == 'aegir administrator') {
         $perms = call_user_func($module . '_permission');
         user_role_grant_permissions($rid, array_keys($perms));
