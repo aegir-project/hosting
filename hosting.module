@@ -515,6 +515,7 @@ function hosting_block_info() {
  * Implements hook_block_view().
  */
 function hosting_block_view($delta) {
+  $out = NULL;
   switch ($delta) {
     case 'hosting_queues':
       $out = array(
