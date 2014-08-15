@@ -117,7 +117,7 @@ function hosting_platform_update_6002() {
   $item['options'] = unserialize($item['options']);
   install_menu_update_menu_item($item);
 
-  hosting_menu_rebuild();
+  menu_rebuild();
 
   return $ret;
 }
