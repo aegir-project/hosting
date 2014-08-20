@@ -3,7 +3,7 @@
 
 /**
  * @file
- *   The hosting feature definition for site data example.
+ * The hosting feature definition for site data example.
  */
 
 /**
@@ -11,8 +11,8 @@
  *
  * This will be used to generate the 'admin/hosting' page.
  *
- * @return
- *  associative array indexed by feature key.
+ * @return array
+ *   associative array indexed by feature key.
  */
 function hosting_site_data_hosting_feature() {
   $features['site_data'] = array(

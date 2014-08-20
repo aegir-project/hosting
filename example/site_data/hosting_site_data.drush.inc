@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * The Drush integration for site data example.
+ */
+
+/**
  * Implements hook_hosting_site_context_options().
  */
 function hosting_site_data_hosting_site_context_options(&$task) {

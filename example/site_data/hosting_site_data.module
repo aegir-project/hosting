@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * The hosting site data example.
+ */
 
 
 /**
@@ -28,15 +32,12 @@ function hosting_site_data_form_alter(&$form, $form_state, $form_id) {
  */
 function hosting_site_data_insert($node) {
   if (!empty($node->site_data)) {
-    // TODO Please review the conversion of this statement to the D7 database API syntax.
-    /* db_query("INSERT INTO {hosting_site_data} (vid, nid, site_data) VALUES (%d, %d, '%s')", $node->vid, $node->nid, $node->site_data) */
-    $id = db_insert('hosting_site_data')
-  ->fields(array(
+    $id = db_insert('hosting_site_data')->fields(array(
       'vid' => $node->vid,
       'nid' => $node->nid,
       'site_data' => $node->site_data,
     ))
-  ->execute();
+    ->execute();
   }
 }
 
@@ -48,63 +49,61 @@ function hosting_site_data_update($node) {
     hosting_site_data_insert($node);
   }
   else {
-    // TODO Please review the conversion of this statement to the D7 database API syntax.
-    /* db_query("UPDATE {hosting_site_data} SET site_data = '%s' WHERE vid = %d", $node->site_data, $node->vid) */
     db_update('hosting_site_data')
-  ->fields(array(
-      'site_data' => $node->site_data,
-    ))
-  ->condition('vid', $node->vid)
-  ->execute();
+      ->fields(array(
+        'site_data' => $node->site_data,
+      ))
+      ->condition('vid', $node->vid)
+      ->execute();
   }
-
 }
 
 /**
  * Implements hook_delete().
  */
 function hosting_site_data_delete($node) {
-  // TODO Please review the conversion of this statement to the D7 database API syntax.
-  /* db_query("DELETE FROM {hosting_site_data} WHERE nid=%d", $node->nid) */
   db_delete('hosting_site_data')
-  ->condition('nid', $node->nid)
-  ->execute();
+    ->condition('nid', $node->nid)
+    ->execute();
 }
 
 /**
  * Implements hook_delete_revision().
  */
 function hosting_site_data_delete_revision($node) {
-  // TODO Please review the conversion of this statement to the D7 database API syntax.
-  /* db_query("DELETE FROM {hosting_site_data} WHERE vid=%d", $node->vid) */
   db_delete('hosting_site_data')
-  ->condition('vid', $node->vid)
-  ->execute();
+    ->condition('vid', $node->vid)
+    ->execute();
 }
 
 /**
  * Implements hook_nodeapi().
  */
 function hosting_site_data_nodeapi_OLD(&$node, $op, $a3 = NULL, $a4 = NULL) {
-  // TODO Remaining code in this function needs to be moved to the appropriate new hook function.
+  // TODO Remaining code in this function needs to be moved
+  // to the appropriate new hook function.
+  // https://www.drupal.org/update/modules/6/7#remove_op
   if ($node->type == 'site') {
     switch ($op) {
       case 'insert':
         hosting_site_data_insert($node);
         break;
+
       case 'update':
         hosting_site_data_update($node);
         break;
+
       case 'delete':
         hosting_site_data_delete($node);
         break;
+
       case 'delete revision':
         hosting_site_data_delete_revision($node);
         break;
+
       case 'load':
         $additions = db_fetch_array(db_query("SELECT site_data FROM {hosting_site_data} WHERE vid = :vid", array(':vid' => $node->vid)));
         return $additions;
-        break;
     }
   }
 }

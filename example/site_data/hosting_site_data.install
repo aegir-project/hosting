@@ -2,7 +2,6 @@
 /**
  * @file
  * Install, update and uninstall functions for the hosting_site_data module.
- *
  */
 
 
@@ -35,22 +34,4 @@ function hosting_site_data_schema() {
   );
 
   return $schema;
-}
-
-/**
- * Implements hook_install().
- */
-function hosting_site_data_install() {
-  // Create tables.
-  // TODO The drupal_(un)install_schema functions are called automatically in D7.
-  // drupal_install_schema('hosting_site_data')
-}
-
-/**
- * Implements hook_uninstall().
- */
-function hosting_site_data_uninstall() {
-  // Remove tables.
-  // TODO The drupal_(un)install_schema functions are called automatically in D7.
-  // drupal_uninstall_schema('hosting_site_data')
 }
