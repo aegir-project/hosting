@@ -1,7 +1,13 @@
 <?php
+/**
+ * @file
+ * Install, update and uninstall functions for the hosting_site_data module.
+ *
+ */
+
 
 /**
- * Implementation of hook_schema().
+ * Implements hook_schema().
  */
 function hosting_site_data_schema() {
   $schema['hosting_site_data'] = array(
@@ -32,17 +38,19 @@ function hosting_site_data_schema() {
 }
 
 /**
- * Implementation of hook_install().
+ * Implements hook_install().
  */
 function hosting_site_data_install() {
   // Create tables.
-  drupal_install_schema('hosting_site_data');
+  // TODO The drupal_(un)install_schema functions are called automatically in D7.
+  // drupal_install_schema('hosting_site_data')
 }
 
 /**
- * Implementation of hook_uninstall().
+ * Implements hook_uninstall().
  */
 function hosting_site_data_uninstall() {
   // Remove tables.
-  drupal_uninstall_schema('hosting_site_data');
+  // TODO The drupal_(un)install_schema functions are called automatically in D7.
+  // drupal_uninstall_schema('hosting_site_data')
 }

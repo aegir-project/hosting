@@ -20,7 +20,7 @@ function hosting_site_data_hosting_feature() {
     'description' => t('Example implementation of saving data into a site context.'),
     'status' => HOSTING_FEATURE_DISABLED,
     'module' => 'hosting_site_data',
-    'group' => 'experimental'
-    );
+    'group' => 'experimental',
+  );
   return $features;
 }
