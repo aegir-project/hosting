@@ -171,7 +171,7 @@ function theme_hosting_site_goto_link($variables) {
 function hosting_site_goto($node) {
   $cid = "hosting:site:" . $node->nid . ":login_link";
   $cache = cache_get($cid);
-  if (user_access('create login-reset task') && !is_null($cache) && (REQUEST_TIME < $cache->data['expire'])) {
+  if (user_access('create login-reset task') && is_object($cache) && (REQUEST_TIME < $cache->data['expire'])) {
     $theurl = $cache->data['link'];
     cache_clear_all($cid, 'cache');
   }
