@@ -193,15 +193,20 @@ function hosting_task_views_default_views() {
   $handler->display->display_options['fields']['view_node']['empty_zero'] = 0;
   $handler->display->display_options['fields']['view_node']['hide_alter_empty'] = 1;
   $handler->display->display_options['fields']['view_node']['text'] = 'View';
-  /* Sort criterion: Hosting Task: Default */
-  $handler->display->display_options['sorts']['hosting_task_default_1']['id'] = 'hosting_task_default_1';
-  $handler->display->display_options['sorts']['hosting_task_default_1']['table'] = 'hosting_task';
-  $handler->display->display_options['sorts']['hosting_task_default_1']['field'] = 'hosting_task_default';
   /* Sort criterion: Node: Updated date */
   $handler->display->display_options['sorts']['changed']['id'] = 'changed';
   $handler->display->display_options['sorts']['changed']['table'] = 'node';
   $handler->display->display_options['sorts']['changed']['field'] = 'changed';
   $handler->display->display_options['sorts']['changed']['order'] = 'DESC';
+  /* Sort criterion: Hosting Task: Executed */
+  $handler->display->display_options['sorts']['executed']['id'] = 'executed';
+  $handler->display->display_options['sorts']['executed']['table'] = 'hosting_task';
+  $handler->display->display_options['sorts']['executed']['field'] = 'executed';
+  $handler->display->display_options['sorts']['executed']['order'] = 'DESC';
+  /* Sort criterion: Hosting Task: Default */
+  $handler->display->display_options['sorts']['hosting_task_default_1']['id'] = 'hosting_task_default_1';
+  $handler->display->display_options['sorts']['hosting_task_default_1']['table'] = 'hosting_task';
+  $handler->display->display_options['sorts']['hosting_task_default_1']['field'] = 'hosting_task_default';
   /* Filter: Node: Type */
   $handler->display->display_options['filters']['type']['id'] = 'type';
   $handler->display->display_options['filters']['type']['table'] = 'node';
@@ -219,6 +224,21 @@ function hosting_task_views_default_views() {
 
   /* Display: Block */
   $handler = $view->new_display('block', 'Block', 'block');
+  $handler->display->display_options['defaults']['sorts'] = FALSE;
+  /* Sort criterion: Node: Updated date */
+  $handler->display->display_options['sorts']['changed']['id'] = 'changed';
+  $handler->display->display_options['sorts']['changed']['table'] = 'node';
+  $handler->display->display_options['sorts']['changed']['field'] = 'changed';
+  $handler->display->display_options['sorts']['changed']['order'] = 'DESC';
+  /* Sort criterion: Hosting Task: Executed */
+  $handler->display->display_options['sorts']['executed']['id'] = 'executed';
+  $handler->display->display_options['sorts']['executed']['table'] = 'hosting_task';
+  $handler->display->display_options['sorts']['executed']['field'] = 'executed';
+  $handler->display->display_options['sorts']['executed']['order'] = 'DESC';
+  /* Sort criterion: Hosting Task: Default */
+  $handler->display->display_options['sorts']['hosting_task_default_1']['id'] = 'hosting_task_default_1';
+  $handler->display->display_options['sorts']['hosting_task_default_1']['table'] = 'hosting_task';
+  $handler->display->display_options['sorts']['hosting_task_default_1']['field'] = 'hosting_task_default';
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page_tasks');
