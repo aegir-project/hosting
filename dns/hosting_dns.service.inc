@@ -33,7 +33,11 @@ class hostingService_dns_master extends hostingService_dns {
     parent::form($form);
 
     $servers = hosting_get_servers('dns');
-    unset($servers[$this->server->nid]);
+
+    // Exclude the current server from the list of possible slaves.
+    if (isset($this->server->nid)) {
+      unset($servers[$this->server->nid]);
+    }
 
     if (sizeof($servers)) {
       $form['slave_servers'] = array(
