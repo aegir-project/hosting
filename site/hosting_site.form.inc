@@ -101,11 +101,6 @@ function hosting_site_available_options($node, $platform = NULL) {
   $platform_profiles = array();
   foreach ($profiles as $id => $name) {
 
-    // Don't allow a site to be provisioned with hostslave or hostmaster profile
-    if (in_array($name, array('Hostslave', 'Hostmaster'))) {
-      unset($profiles[$id]);
-    }
-
     // Trim down the list of profiles to those that are available and the user has access to
     // XXX This hack (next 22 lines) hides profiles that can't be accessed
     // Eventually we should lighten up the content of this callback
@@ -241,10 +236,6 @@ function hosting_site_form($node, &$form_state) {
   foreach ($profiles as $id => $name) {
     $profile = hosting_package_instance_load(array('p.nid' => $id));
     $profiles[$id] = theme('hosting_site_profile', array('profile' => $profile, 'html' => TRUE));
-    // Don't allow a site to be provisioned with hostslave or hostmaster profile
-    if (in_array($name, array('Hostslave', 'Hostmaster'))) {
-      unset($profiles[$id]);
-    }
   }
   natcasesort($profiles);
   reset($profiles);

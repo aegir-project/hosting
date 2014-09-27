@@ -121,10 +121,6 @@ function hosting_get_profiles($platform_nid = NULL, $field = 'title') {
       'p.package_type' => 'profile',
       'n.status' => 1,
     ));
-
-    foreach ($instances as $iid => $instance) {
-      $profiles[$instance->package_id] = $instance->$field;
-    }
   }
   else {
     $instances = hosting_package_instances_load(array(
@@ -132,12 +128,14 @@ function hosting_get_profiles($platform_nid = NULL, $field = 'title') {
       'n.status' => 1,
       'r.type' => 'platform',
     ));
+  }
 
-    foreach ($instances as $iid => $instance) {
+  // Prepare list of available profiles, preventing the use of blocked ones.
+  foreach ($instances as $iid => $instance) {
+    if (!in_array($instance->short_name, variable_get('hosting_blocked_profiles', array('hostslave', 'hostmaster')))) {
       $profiles[$instance->package_id] = $instance->$field;
     }
   }
-
   return $profiles;
 }
 
