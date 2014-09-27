@@ -102,13 +102,22 @@ function hosting_package_node_access($node, $op, $account) {
 }
 
 /**
- * @todo document this function
+ * Return a list of available install profiles.
+ *
+ * @param null $platform_nid
+ *   Only load install profiles available on this platform.
+ *
+ * @param string $field
+ *   The field to use for the value of the return array.
+ *
+ * @return array
+ *   The list of available install profiles, ready to use as #options in a form.
  */
-function hosting_get_profiles($platform = NULL, $field = 'title') {
+function hosting_get_profiles($platform_nid = NULL, $field = 'title') {
   $profiles = array();
-  if (!is_null($platform)) {
+  if (!is_null($platform_nid)) {
     $instances = hosting_package_instances_load(array(
-      'i.rid' => $platform,
+      'i.rid' => $platform_nid,
       'p.package_type' => 'profile',
       'n.status' => 1,
     ));
