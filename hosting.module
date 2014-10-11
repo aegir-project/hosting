@@ -1009,21 +1009,51 @@ function hosting_form_alter(&$form, &$form_state, $form_id) {
       // this context.
       $form['actions']['preview']['#access'] = FALSE;
 
-      // Add message that verify is required for changes to take effect.
-      if (in_array($type, array('site', 'platform', 'server'))) {
-        $form['#submit'][] = 'hosting_form_verify_reqd_submit';
-      }
+      // Add our own helpful messages.
+      $form['#submit'][] = 'hosting_form_submit_messages';
     }
   }
 }
 
 /**
- * Submit handler to mention that verify is required for changes to take effect.
- *
- * See: https://drupal.org/node/1761932
+ * Submit handler for hosting node forms: Display helpful messages.
  */
-function hosting_form_verify_reqd_submit() {
-  drupal_set_message('Any changes will take effect once the scheduled Verify task has been processed.');
+function hosting_form_submit_messages($form, $form_state) {
+
+  // Only act on sites, platforms, & servers
+  if (in_array($form_state['node']->type, array('site', 'platform', 'server'))) {
+
+    // Translation array.
+    $t = array(
+      '@type' => $form_state['node']->type,
+      '%title' => $form_state['values']['title'],
+      '%task' => t('Verify'),
+    );
+
+    // If this is an add form...
+    if (!isset($form_state['node']->nid)) {
+      $t['!message'] = t('It will be available once the task is completed.');
+
+      // If node is a site, task is "install".
+      if ($form_state['node']->type == 'site') {
+        $t['%task'] = t('Install');
+      }
+    }
+    // If this is an edit form, mention changes being applied.
+    else {
+      $t['!message'] = t('Changes will be applied once the task is completed.');
+    }
+
+    // Display the message.
+    drupal_set_message(t('%task task has been queued for @type %title. !message', $t));
+
+    // If using the hosting queue, mention the scheduled time
+    $queues = hosting_get_queues();
+    if ($queues['tasks']['enabled']) {
+      $until = _hosting_queue_next_run('tasks') - REQUEST_TIME;
+      drupal_set_message(t('Task is scheduled to start in approximately %until.', array('%until' => format_interval($until))));
+    }
+  }
 }
 
 
