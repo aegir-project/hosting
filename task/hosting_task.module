@@ -555,11 +555,6 @@ function hosting_add_task($nid, $type, $args = NULL, $status = HOSTING_TASK_QUEU
     $task->task_args = $args;
   }
   node_save($task);
-
-  // @todo be more specific about the type. e.g. Task verify on site example.com...
-  // @todo only display the queue run info if the cron queue is running.
-  drupal_set_message(t("Task %type was added to the queue. Next queue run is %date, server time is %time.", array('%type' => $type, '%date' => format_date(_hosting_queue_next_run('tasks'), 'custom', 'H:i:sO'), '%time' => format_date(REQUEST_TIME, 'custom', 'H:i:sO'))));
-
   return $task;
 }
 
