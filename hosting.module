@@ -122,7 +122,7 @@ function hosting_js_page() {
     }
   }
   // Menu status constants are integers; page content is a string.
-  if (is_int($return)) {
+  if (is_int($return) && module_exists('overlay')) {
     overlay_close_dialog();
   }
   return $return;

@@ -648,7 +648,10 @@ function hosting_task_confirm_form_submit($form, &$form_state) {
   $parameters = isset($values['parameters']) ? $values['parameters'] : array();
   hosting_add_task($values['nid'], $values['task'], $parameters);
   $form_state['redirect'] = 'node/' . $values['nid'];
-  overlay_close_dialog();
+
+  if (module_exists('overlay')) {
+    overlay_close_dialog();
+  }
 }
 
 /**
@@ -945,7 +948,9 @@ function hosting_task_retry_form($form, $form_state, $nid) {
  */
 function hosting_task_retry_form_submit($form, &$form_state) {
   hosting_task_retry($form_state['values']['task']);
-  overlay_close_dialog();
+  if (module_exists('overlay')) {
+    overlay_close_dialog();
+  }
 }
 
 /**
@@ -970,7 +975,9 @@ function hosting_task_update_status_form($form, &$form_state, $vid) {
  */
 function hosting_task_update_status_form_submit($form, &$form_state) {
   hosting_task_update_status($form_state['values']['task']);
-  overlay_close_dialog();
+  if (module_exists('overlay')) {
+    overlay_close_dialog();
+  }
 }
 
 /**
