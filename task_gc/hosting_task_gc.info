@@ -1,5 +1,5 @@
 name = Hosting task garbage collection
-decsrtiption = Removes old tasks and task logs.
+description = Removes old tasks and task logs.
 core = 7.x
 package = Hosting
 dependencies[] = hosting_site
