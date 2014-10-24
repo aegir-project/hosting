@@ -133,6 +133,11 @@ function hosting_task_views_default_views() {
   $handler->display->display_options['fields']['created']['exclude'] = TRUE;
   $handler->display->display_options['fields']['created']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['created']['date_format'] = 'long';
+  /* Sort criterion: Content: Updated date */
+  $handler->display->display_options['sorts']['changed']['id'] = 'changed';
+  $handler->display->display_options['sorts']['changed']['table'] = 'node';
+  $handler->display->display_options['sorts']['changed']['field'] = 'changed';
+  $handler->display->display_options['sorts']['changed']['order'] = 'DESC';
   /* Sort criterion: Hosting Task: Default */
   $handler->display->display_options['sorts']['hosting_task_default']['id'] = 'hosting_task_default';
   $handler->display->display_options['sorts']['hosting_task_default']['table'] = 'hosting_task';

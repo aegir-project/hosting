@@ -319,3 +319,10 @@ function hosting_task_update_6200() {
   return $ret;
 }
 
+
+/**
+ * Clear cache for tasks view update.
+ */
+function hosting_task_update_7000() {
+  drupal_flush_all_caches();
+}
