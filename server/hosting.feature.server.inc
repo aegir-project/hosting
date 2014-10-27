@@ -1,11 +1,11 @@
 <?php
 /**
  * @file
- *   Expose the server feature to hostmaster.
+ * Expose the server feature to hostmaster.
  */
 
 /**
- * Implementation of hook_hosting_feature().
+ * Implements hook_hosting_feature().
  */
 function hosting_server_hosting_feature() {
   $features['server'] = array(
@@ -18,4 +18,3 @@ function hosting_server_hosting_feature() {
   );
   return $features;
 }
-

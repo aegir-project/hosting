@@ -1,10 +1,11 @@
 <?php
 /**
  * @file
+ * Provide a default view listing tasks.
  */
 
 /**
- * Implementation of hook_views_default_views().
+ * Implements hook_views_default_views().
  */
 function hosting_task_views_default_views() {
   $views = array();

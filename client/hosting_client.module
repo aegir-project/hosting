@@ -527,7 +527,7 @@ function hosting_client_update($node) {
 }
 
 /**
- * Implementation of hook_nodeapi_TYPE_OP().
+ * Implements hook_nodeapi_TYPE_OP().
  *
  * @see hosting_nodeapi()
  */

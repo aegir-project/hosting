@@ -1,11 +1,11 @@
 <?php
 /**
  * @file
- *   Expose the platform feature to hostmaster.
+ * Expose the platform feature to hostmaster.
  */
 
 /**
- * Implementation of hook_hosting_feature().
+ * Implements hook_hosting_feature().
  */
 function hosting_platform_hosting_feature() {
   $features['platform'] = array(
@@ -33,4 +33,3 @@ function hosting_platform_hosting_feature() {
   );
   return $features;
 }
-

@@ -5,7 +5,7 @@
  */
 
 /**
- * Implementation of hook_hosting_TASK_OBJECT_context_options().
+ * Implements hook_hosting_TASK_OBJECT_context_options().
  */
 function hosting_hosting_platform_context_options(&$task) {
   $task->context_options['server'] = '@server_master';

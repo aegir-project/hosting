@@ -65,7 +65,7 @@ function hosting_migrate_hosting_tasks() {
 }
 
 /**
- * Implementation of hook_validate().
+ * Implements hook_validate().
  *
  * A site may be migrated if it's URL, Platform or DB server has changed.
  * Only one of these needs to change for a valid migration to be possible.
@@ -114,7 +114,7 @@ function hosting_migrate_theme($existing, $type, $theme, $path) {
 }
 
 /**
- * Implementation of hook_form().
+ * Implements hook_form().
  */
 function hosting_task_migrate_form($node) {
   $node->check_profile_migrations =  TRUE;

@@ -113,7 +113,7 @@ function hosting_server_menu() {
 }
 
 /**
- * Implementation of hook_hosting_tasks()
+ * Implements hook_hosting_tasks()
  */
 function hosting_server_hosting_tasks() {
   $tasks = array();
@@ -431,7 +431,7 @@ function hosting_server_form($node, &$form_state) {
 }
 
 /**
- * Implementation of hook_presave()
+ * Implements hook_presave()
  *
  * We resolve the server name to IP addresses if none has been given
  * by the operator. we also fire up the regular services hooks.
@@ -544,7 +544,7 @@ function hosting_server_insert($node) {
 }
 
 /**
- * Implementation of hook_delete_revision().
+ * Implements hook_delete_revision().
  */
 function hosting_nodeapi_server_delete_revision(&$node) {
   db_delete('hosting_server')

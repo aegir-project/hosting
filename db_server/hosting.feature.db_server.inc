@@ -1,11 +1,11 @@
 <?php
 /**
  * @file
- *   Expose the db_server feature to hostmaster.
+ * Expose the db_server feature to hostmaster.
  */
 
 /**
- * Implementation of hook_hosting_feature().
+ * Implements hook_hosting_feature().
  */
 function hosting_db_server_hosting_feature() {
   $features['db_server'] = array(
@@ -14,7 +14,6 @@ function hosting_db_server_hosting_feature() {
     'status' => HOSTING_FEATURE_REQUIRED,
     'module' => 'hosting_db_server',
     'group' => 'required',
-    );
+  );
   return $features;
 }
-

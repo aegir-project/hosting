@@ -488,7 +488,7 @@ function hosting_platform_update($node) {
 }
 
 /**
- * Implementation of hook_nodeapi_TYPE_OP().
+ * Implements hook_nodeapi_TYPE_OP().
  */
 function hosting_nodeapi_platform_delete_revision(&$node) {
   db_delete('hosting_platform')

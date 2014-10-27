@@ -5,7 +5,7 @@
  */
 
 /**
- * Implementation of hook_views_data().
+ * Implements hook_views_data().
  */
 function hosting_package_views_data() {
   // Hosting package.
@@ -215,7 +215,7 @@ function hosting_package_views_data() {
 
 
 /**
- * Implementation of hook_views_plugins
+ * Implements hook_views_plugins
  */
 function hosting_package_views_plugins() {
   $plugins = array(

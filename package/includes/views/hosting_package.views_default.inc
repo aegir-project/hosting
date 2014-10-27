@@ -1,10 +1,11 @@
 <?php
 /**
  * @file
+ * Provide a default view listing packages.
  */
 
 /**
- * Implementation of hook_views_default_views().
+ * Implements hook_views_default_views().
  */
 function hosting_package_views_default_views() {
   $views = array();
@@ -446,4 +447,3 @@ function hosting_package_views_default_views() {
 
   return $views;
 }
-

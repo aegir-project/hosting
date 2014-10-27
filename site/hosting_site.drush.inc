@@ -123,7 +123,7 @@ function hosting_site_post_hosting_install_task($task, $data) {
 }
 
 /**
- * Implementation of the hosting_failed_install hook
+ * Implements the hosting_failed_install hook
  */
 function hosting_site_hosting_install_task_rollback($task, $data) {
   // @TODO : we need to check the returned list of errors, not the code.
@@ -251,7 +251,7 @@ function hosting_site_post_hosting_verify_task($task, $data) {
 }
 
 /**
- * Implementation of the hosting_failed_install hook
+ * Implements the hosting_failed_install hook
  */
 function hosting_site_hosting_verify_task_rollback($task, $data) {
   if ($task->ref->type == 'site') {
@@ -262,7 +262,7 @@ function hosting_site_hosting_verify_task_rollback($task, $data) {
 }
 
 /**
- * Implementation of the hosting_failed_install hook
+ * Implements the hosting_failed_install hook
  */
 function hosting_site_hosting_import_task_rollback($task, $data) {
   if ($task->ref->type == 'site') {
@@ -295,7 +295,7 @@ function hosting_site_post_hosting_login_reset_task($task, $data) {
 }
 
 /**
- * Implementation of the hosting_post_backup_delete hook
+ * Implements the hosting_post_backup_delete hook
  */
 function hosting_site_post_hosting_backup_delete_task($task, $data) {
   if ($task->ref->type == 'site') {

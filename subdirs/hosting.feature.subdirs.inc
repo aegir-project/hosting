@@ -1,11 +1,11 @@
 <?php
 /**
  * @file
- *   Expose the subdirs feature to hostmaster.
+ * Expose the subdirs feature to hostmaster.
  */
 
 /**
- * Implementation of hook_hosting_feature().
+ * Implements hook_hosting_feature().
  */
 function hosting_subdirs_hosting_feature() {
   $features['subdirs'] = array(
@@ -13,8 +13,7 @@ function hosting_subdirs_hosting_feature() {
     'description' => t('Subdirectory multisite support.'),
     'status' => HOSTING_FEATURE_DISABLED,
     'module' => 'hosting_subdirs',
-    'group' => 'experimental'
+    'group' => 'experimental',
     );
   return $features;
 }
-

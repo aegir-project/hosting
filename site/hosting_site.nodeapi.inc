@@ -117,7 +117,7 @@ function hosting_site_view(&$node, $teaser = FALSE) {
 }
 
 /**
- * Implementation of hook_nodeapi_delete_revision().
+ * Implements hook_nodeapi_delete_revision().
  */
 function hosting_nodeapi_site_delete_revision(&$node) {
   db_delete('hosting_site')

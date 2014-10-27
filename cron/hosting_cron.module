@@ -24,7 +24,7 @@ function hosting_cron_hosting_queues() {
 }
 
 /**
- * Implementation of hosting_QUEUE_TYPE_queue().
+ * Implements hosting_QUEUE_TYPE_queue().
  */
 function hosting_cron_queue($count) {
   $result = db_query("SELECT n.nid FROM {node} n LEFT JOIN {hosting_site} s ON n.nid=s.nid WHERE n.type = :n.type and s.status = :s.status ORDER BY s.last_cron ASC, n.nid ASC", array(':n.type' => 'site', ':s.status' => HOSTING_SITE_ENABLED));

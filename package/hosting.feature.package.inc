@@ -1,11 +1,11 @@
 <?php
 /**
  * @file
- *   Expose the package feature to hostmaster.
+ * Expose the package feature to hostmaster.
  */
 
 /**
- * Implementation of hook_hosting_feature().
+ * Implements hook_hosting_feature().
  */
 function hosting_package_hosting_feature() {
   $features['package'] = array(
@@ -26,4 +26,3 @@ function hosting_package_hosting_feature() {
   );
   return $features;
 }
-

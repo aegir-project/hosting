@@ -32,7 +32,7 @@ function hosting_clone_permission() {
 }
 
 /**
- * Implementation of hook_hosting_task_TASK_TYPE_form_validate().
+ * Implements hook_hosting_task_TASK_TYPE_form_validate().
  */
 function hosting_task_clone_form_validate($form, &$form_state) {
   $site = $form['parameters']['#node'];
@@ -54,7 +54,7 @@ function hosting_clone_theme($existing, $type, $theme, $path) {
 }
 
 /**
- * Implementation of hook_hosting_task_TASK_TYPE_form().
+ * Implements hook_hosting_task_TASK_TYPE_form().
  */
 function hosting_task_clone_form($node) {
   $form = hosting_task_migrate_form($node);

@@ -1,10 +1,11 @@
 <?php
 /**
  * @file
+ * Provide a default view listing servers.
  */
 
 /**
- * Implementation of hook_views_default_views().
+ * Implements hook_views_default_views().
  */
 function hosting_server_views_default_views() {
   $views = array();

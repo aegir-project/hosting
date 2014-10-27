@@ -1,11 +1,11 @@
 <?php
 /**
  * @file
- *   Expose the task feature to hostmaster.
+ * Expose the task feature to hostmaster.
  */
 
 /**
- * Implementation of hook_hosting_feature().
+ * Implements hook_hosting_feature().
  */
 function hosting_task_hosting_feature() {
   $features['task'] = array(
@@ -48,4 +48,3 @@ function hosting_task_hosting_feature() {
   );
   return $features;
 }
-
