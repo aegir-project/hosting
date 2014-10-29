@@ -313,7 +313,7 @@ function hosting_client_validate($node, $form, &$form_state) {
                               array('%suggestion' => hosting_client_validate_suggest($node->uname, TRUE))));
   }
 
-  if (!$node->nid && $node->email) {
+  if (!$node->nid && !empty($node->email)) {
     $user = user_load_by_mail($node->email);
     if ($user) {
       form_set_error('email', t("Email address already exists."));
