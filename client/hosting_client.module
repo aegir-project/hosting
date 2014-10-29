@@ -194,13 +194,20 @@ function hosting_client_form(&$node, &$form_state) {
   );
 
   $form['uname'] = array(
-    '#type' => 'textfield',
+    '#type' => 'machine_name',
     '#title' => t('Internal name'),
     '#size' => MAX_GROUP_LENGTH,
     '#maxlength' => MAX_GROUP_LENGTH,
     '#default_value' => isset($node->uname) ? $node->uname : '',
     '#access' => user_access('edit client uname'),
     '#description' => t('A machine-usable name that can be used internally, for example to map to a UNIX group in the backend. It is unique accross the system. If no value is provided, it is deduced from the client name, by stripping spaces and metacharacters and adding a prefix (%prefix).', array('%prefix' => variable_get('hosting_client_prefix', 'no prefix define'))),
+    '#machine_name' => array(
+      'exists' => 'hosting_get_client_by_uname',
+      'source' => array('title'),
+      'label' => t('Internal name'),
+      'replace_pattern' => '[^a-z0-9_-]+',
+      'replace' => '_',
+    ),
   );
   if (!isset($node->nid) && variable_get('hosting_client_register_user', FALSE)) {
     $form['email'] = array(
