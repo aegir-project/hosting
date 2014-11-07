@@ -443,7 +443,7 @@ function hosting_platform_insert($node) {
       'vid' => $node->vid,
       'nid' => $node->nid,
       'publish_path' => $node->publish_path,
-      'makefile' => isset($node->makefile) ? $node->makefile : '',
+      'makefile' => isset($node->frommakefile['makefile']) ? $node->frommakefile['makefile'] : '',
       'verified' => isset($node->verified) ? $node->verified : 0,
       'web_server' => $node->web_server,
       'status' => isset($node->platform_status) ? $node->platform_status : 0,
@@ -473,7 +473,7 @@ function hosting_platform_update($node) {
     db_update('hosting_platform')
       ->fields(array(
         'publish_path' => $node->publish_path,
-        'makefile' => $node->makefile,
+        'makefile' => isset($node->frommakefile['makefile']) ? $node->frommakefile['makefile'] : $node->makefile,
         'web_server' => $node->web_server,
         'verified' => $node->verified,
         'status' => $node->platform_status,
@@ -555,6 +555,17 @@ function hosting_platform_load($nodes) {
                        ':rid' => $node->nid
                      )
                    )->fetchField();
+
+    if (empty($node->frommakefile)) {
+      $node->frommakefile = array('makefile' => '', 'make_working_copy' => '');
+    }
+    if (!empty($additions->makefile)) {
+      $node->frommakefile['makefile'] = $additions->makefile;
+    }
+    if (!empty($additions->make_working_copy)) {
+      $node->frommakefile['make_working_copy'] = $additions->make_working_copy;
+    }
+
     $additions->release = hosting_package_instance_load($iid);
     $additions->profiles = hosting_get_profiles($node->nid, 'short_name');
 
