@@ -1,0 +1,88 @@
+<?php
+/**
+ * @file
+ * The hosting server data example.
+ */
+
+/**
+ * Implements hook_form_alter().
+ */
+function hosting_server_data_form_alter(&$form, $form_state, $form_id) {
+  if ($form_id == 'server_node_form') {
+
+    $form['server_data'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Server data example'),
+      '#description' => t('Example implementation of saving data into the server context.'),
+    );
+
+    $form['server_data']['server_data'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Server data'),
+      '#default_value' => isset($form['#node']->server_data) ? $form['#node']->server_data : '',
+      '#weight' => 0,
+    );
+    return $form;
+  }
+}
+
+/**
+ * Implements hook_node_insert().
+ */
+function hosting_server_data_node_insert($node) {
+  if ($node->type == 'server' && !empty($node->server_data)) {
+    $id = db_insert('hosting_server_data')->fields(array(
+      'vid' => $node->vid,
+      'nid' => $node->nid,
+      'server_data' => $node->server_data,
+    ))
+    ->execute();
+  }
+}
+
+/**
+ * Implements hook_node_update().
+ */
+function hosting_server_data_node_update($node) {
+  if (FALSE === db_query("SELECT server_data FROM {hosting_server_data} WHERE vid = :vid", array(':vid' => $node->vid))->fetchField()) {
+    hosting_server_data_node_insert($node);
+  }
+  else {
+    db_update('hosting_server_data')
+      ->fields(array(
+        'server_data' => $node->server_data,
+      ))
+      ->condition('vid', $node->vid)
+      ->execute();
+  }
+}
+
+/**
+ * Implements hook_node_load().
+ */
+function hosting_server_data_node_load($nodes, $types) {
+  foreach ($nodes as $nid => &$node) {
+    if ($node->type == 'server') {
+      // array instead
+      $nodes[$nid]->server_data = db_query("SELECT server_data FROM {hosting_server_data} WHERE vid = :vid", array(':vid' => $node->vid))->fetchField();;
+    }
+  }
+}
+
+/**
+ * Implements hook_node_delete().
+ */
+function hosting_server_data_node_delete($node) {
+  db_delete('hosting_server_data')
+    ->condition('nid', $node->nid)
+    ->execute();
+}
+
+/**
+ * Implements hook_revision_revision().
+ */
+function hosting_server_data_node_revision_delete($node) {
+  db_delete('hosting_server_data')
+    ->condition('vid', $node->vid)
+    ->execute();
+}
