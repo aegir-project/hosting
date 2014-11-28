@@ -99,7 +99,7 @@ function drush_hosting_task_validate($id, $type = NULL) {
 function drush_hosting_task() {
   $task = &drush_get_context('HOSTING_TASK');
   $output = array();
-  $mode = 'POST';
+  $mode = drush_get_option('debug', FALSE) ? 'GET' : 'POST';
 
   // Make sure argument order is correct.
   ksort($task->args);
