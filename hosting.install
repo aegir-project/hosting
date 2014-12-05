@@ -529,3 +529,14 @@ function hosting_update_6207() {
   db_change_field($ret, 'hosting_context', 'name', 'name', $spec);
   return $ret;
 }
+
+/**
+ * Enable the ctools module in preparation of a future upgrade to 7.x-3.x.
+ *
+ * @see https://www.drupal.org/node/2267057
+ */
+function hosting_update_6208() {
+  $ret = array();
+  module_enable(array('ctools'));
+  return $ret;
+}

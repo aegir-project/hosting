@@ -5,6 +5,7 @@ dependencies[] = modalframe
 dependencies[] = jquery_update
 dependencies[] = views
 dependencies[] = views_bulk_operations
+dependencies[] = ctools
 #dependencies[] = hosting_task
 #dependencies[] = hosting_client
 #dependencies[] = hosting_db_server
