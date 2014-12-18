@@ -531,6 +531,7 @@ function hosting_add_task($nid, $type, $args = NULL, $status = HOSTING_TASK_QUEU
   $node = db_query("SELECT nid, uid, title FROM {node} WHERE nid = :nid", array(':nid' => $nid))->fetchObject();
   if (!$task) {
     $task = new stdClass();
+    $task->language = LANGUAGE_NONE;
   }
   $task->type = 'task';
   # TODO: make this pretty
