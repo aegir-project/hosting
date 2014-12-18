@@ -1,14 +1,15 @@
 <?php
 
 /**
- * @file Site nodeapi implementations.
+ * @file
+ * Site nodeapi implementations.
  */
 
 /**
  * Implements hook_node_info().
  */
 function hosting_site_node_info() {
-  $types["site"] =  array(
+  $types["site"] = array(
     "type" => 'site',
     "name" => 'Site',
     'base' => 'hosting_site',
@@ -143,7 +144,8 @@ function hosting_site_delete($node) {
  * Implements hook_nodeapi().
  */
 function hosting_site_nodeapi_site_presave(&$node) {
-  $node->title = strtolower(trim($node->title)); // domain names are case-insensitive
+  // Domain names are case-insensitive.
+  $node->title = strtolower(trim($node->title));
 }
 
 /**
@@ -157,7 +159,7 @@ function hosting_site_insert(&$node) {
   $node->cron_key = isset($node->cron_key) ? $node->cron_key : '';
   // Ensure that the last_cron value is set.
   $node->last_cron = isset($node->last_cron) ? $node->last_cron : 0;
-  // Provide a dummy profile, if one isn't set in the node; e.g. on hosting-import.
+  // Provide a dummy profile, e.g. for hosting-import.
   $node->profile = isset($node->profile) ? $node->profile : 0;
 
   $id = db_insert('hosting_site')
@@ -200,7 +202,7 @@ function hosting_site_node_insert($node) {
  * Implements hook_update().
  */
 function hosting_site_update(&$node) {
-  // if this is a new node or we're adding a new revision,
+  // If this is a new node or we're adding a new revision.
   if (!empty($node->revision)) {
     hosting_site_insert($node);
   }
@@ -242,9 +244,6 @@ function hosting_site_node_update($node) {
 
 /**
  * Implements hook_load().
- *
- * @param node
- *    Node object
  */
 function hosting_site_load($nodes) {
   foreach ($nodes as $nid => &$node) {
