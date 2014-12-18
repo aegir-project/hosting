@@ -176,13 +176,22 @@ function hosting_site_insert(&$node) {
       'verified' => isset($node->verified) ? $node->verified : 0,
     ))
     ->execute();
-  if ((empty($node->old_vid))) {
-    hosting_context_register($node->nid, isset($node->hosting_name) ? $node->hosting_name : $node->title);
-    if (isset($node->import)) {
-      hosting_add_task($node->nid, 'import');
-    }
-    else {
-      hosting_add_task($node->nid, 'install');
+
+}
+
+/**
+ * Implements hook_node_insert().
+ */
+function hosting_site_node_insert($node) {
+  if ($node->type == "site") {
+    if ((empty($node->old_vid))) {
+      hosting_context_register($node->nid, isset($node->hosting_name) ? $node->hosting_name : $node->title);
+      if (isset($node->import)) {
+        hosting_add_task($node->nid, 'import');
+      }
+      else {
+        hosting_add_task($node->nid, 'install');
+      }
     }
   }
 }
@@ -218,8 +227,16 @@ function hosting_site_update(&$node) {
       ->condition('vid', $node->vid)
       ->execute();
   }
-  if ((isset($node->no_verify) && $node->no_verify) == FALSE) {
-    hosting_add_task($node->nid, 'verify');
+}
+
+/**
+ * Implements hook_node_update().
+ */
+function hosting_site_node_update($node) {
+  if ($node->type == "site") {
+    if ((isset($node->no_verify) && $node->no_verify) == FALSE) {
+      hosting_add_task($node->nid, 'verify');
+    }
   }
 }
 
