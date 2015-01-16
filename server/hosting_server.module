@@ -1,7 +1,8 @@
 <?php
 
 /**
- * Hook implementations for the Hosting server module
+ * @file
+ * Hook implementations for the Hosting server module.
  */
 
 include_once "hosting_server.service.inc";
@@ -74,7 +75,7 @@ function _hosting_server_list_class($status) {
  * Implements hook_node_info().
  */
 function hosting_server_node_info() {
-  $types["server"] =  array(
+  $types["server"] = array(
     "type" => 'server',
     "name" => t('Server'),
     'base' => 'hosting_server',
@@ -113,7 +114,7 @@ function hosting_server_menu() {
 }
 
 /**
- * Implements hook_hosting_tasks()
+ * Implements hook_hosting_tasks().
  */
 function hosting_server_hosting_tasks() {
   $tasks = array();
@@ -139,23 +140,18 @@ function hosting_server_permission() {
   return array(
     'administer server' => array(
       'title' => t('administer server'),
-      'description' => t('TODO Add a description for \'administer server\''),
     ),
     'create server' => array(
       'title' => t('create server'),
-      'description' => t('TODO Add a description for \'create server\''),
     ),
     'view server' => array(
       'title' => t('view server'),
-      'description' => t('TODO Add a description for \'view server\''),
     ),
     'edit server' => array(
       'title' => t('edit server'),
-      'description' => t('TODO Add a description for \'edit server\''),
     ),
     'delete server' => array(
       'title' => t('delete server'),
-      'description' => t('TODO Add a description for \'delete server\''),
     ),
   );
 }
@@ -164,7 +160,7 @@ function hosting_server_permission() {
  * Implements hook_node_access().
  */
 function hosting_server_node_access($node, $op, $account) {
-  //@todo Verify that this ought not be going through node_grants()
+  // @todo Verify that this ought not be going through node_grants()
   if (!hosting_feature('server')) {
     return FALSE;
   }
@@ -234,10 +230,10 @@ function hosting_services_add(&$node, $name, $type, $values = array()) {
 /**
  * Initializes the service objects associated with a server node object.
  *
- * @param
- *   $node The server node object.
+ * @paramc $node
+ *   The server node object.
  *
- * @return
+ * @return Object
  *   The server node object with an additional 'services' property. The
  *   services property is an associative array with the name of the service
  *   as key, and the service object as value.
@@ -288,8 +284,9 @@ function hosting_server_services_from_post(&$node) {
  * Hide the delete button on server nodes.
  */
 function hosting_server_form_alter(&$form, &$form_state, $form_id) {
-  // Remove delete button from server edit form, unless the server's already been deleted via the Delete task
-  if  ($form_id == 'server_node_form') {
+  // Remove delete button from server edit form,
+  // unless the server's already been deleted via the Delete task.
+  if ($form_id == 'server_node_form') {
     $node = $form['#node'];
     if (isset($node->server_status) && $node->server_status !== HOSTING_SERVER_DELETED) {
       $form['actions']['delete']['#type'] = 'hidden';
@@ -347,45 +344,45 @@ function hosting_server_form($node, &$form_state) {
     $node->ip_addresses = array();
   }
 
-  // taken mostly from the hosting_site alias stuff
+  // Taken mostly from the hosting_site alias stuff.
   $form['ips_wrapper'] = array(
-      '#title' => t('IP addresses'),
-      '#description' => t('A list of IP addresses this server is publicly available under, one per line. If none is specified, a DNS lookup will be performed based on the server hostname above. <br /><strong>This should point to the public network, if you have such a separation.</strong>'),
-      '#type' => 'fieldset',
-      '#tree' => FALSE,
-      '#weight' => 2,
-      '#prefix' => '<div class="clear-block" id="hosting-ips-wrapper">',
-      '#suffix' => '</div>',
+    '#title' => t('IP addresses'),
+    '#description' => t('A list of IP addresses this server is publicly available under, one per line. If none is specified, a DNS lookup will be performed based on the server hostname above. <br /><strong>This should point to the public network, if you have such a separation.</strong>'),
+    '#type' => 'fieldset',
+    '#tree' => FALSE,
+    '#weight' => 2,
+    '#prefix' => '<div class="clear-block" id="hosting-ips-wrapper">',
+    '#suffix' => '</div>',
   );
 
   $form['ips_wrapper']['ip_addresses'] = array(
-      '#prefix' => '<div id="hosting-ip-addresses">',
-      '#suffix' => '</div>',
-      '#tree' => TRUE,
-      // '#theme' => 'hosting_alias_form',
+    '#prefix' => '<div id="hosting-ip-addresses">',
+    '#suffix' => '</div>',
+    '#tree' => TRUE,
+    // '#theme' => 'hosting_alias_form',
   );
 
-  // Get the list of existing IPs
+  // Get the list of existing IPs.
   $ips = $node->ip_addresses;
   $ips_count = max(3, empty($ips) ? 3 : count($ips) + 1);
 
-  // Add alias textfields
+  // Add alias textfields.
   foreach ($ips as $id => $ip) {
     $form['ips_wrapper']['ip_addresses'][$id] = array(
-        '#type' => 'textfield',
-        '#default_value' => $ip,
+      '#type' => 'textfield',
+      '#default_value' => $ip,
     );
     $ips_count--;
   }
   $form['ips_wrapper']['new_ip_addresses'] = array(
-      '#prefix' => '<div id="hosting-ip-addresses">',
-      '#suffix' => '</div>',
-      '#tree' => TRUE,
-      // '#theme' => 'hosting_alias_form',
+    '#prefix' => '<div id="hosting-ip-addresses">',
+    '#suffix' => '</div>',
+    '#tree' => TRUE,
+    // '#theme' => 'hosting_alias_form',
   );
   for ($delta = 0; $delta < $ips_count; $delta++) {
     $form['ips_wrapper']['new_ip_addresses'][$delta] = array(
-        '#type' => 'textfield',
+      '#type' => 'textfield',
     );
   }
 
@@ -431,17 +428,19 @@ function hosting_server_form($node, &$form_state) {
 }
 
 /**
- * Implements hook_presave()
+ * Implements hook_presave().
  *
  * We resolve the server name to IP addresses if none has been given
  * by the operator. we also fire up the regular services hooks.
  */
 function hosting_nodeapi_server_presave(&$node) {
   if (empty($node->ip_addresses)) {
-    // this returns an array or FALSE
+    // This returns an array or FALSE.
     $ips = gethostbynamel($node->title);
     if ($ips) {
-      drupal_set_message(t('Initialized the IP to %ip based on hostname %name. If an HTTP service is enabled, this will be used to create database grants so make sure it is the right address, as seen from the database server.', array('%ip' => join(',', $ips), '%name' => $node->title)), 'message');
+      drupal_set_message(t('Initialized the IP to %ip based on hostname %name. If an HTTP service is enabled, this will be used to create database grants so make sure it is the right address, as seen from the database server.',
+        array('%ip' => implode(',', $ips), '%name' => $node->title)
+        ), 'message');
       $node->new_ip_addresses = $ips;
     }
     else {
@@ -478,7 +477,7 @@ function hosting_server_validate(&$node, &$form) {
  * database updates.
  */
 function hosting_server_update($node) {
-  // if this is a new node or we're adding a new revision,
+  // If this is a new node or we're adding a new revision.
   if (!empty($node->revision)) {
     hosting_server_insert($node);
   }
@@ -486,7 +485,7 @@ function hosting_server_update($node) {
     hosting_server_invoke_services($node, 'save', $node);
     hosting_server_invoke_services($node, 'update', $node);
 
-    // Remove disabled services
+    // Remove disabled services.
     foreach (array_diff(array_keys(hosting_server_services()), array_keys($node->services)) as $name) {
       db_delete('hosting_service')
         ->condition('service', $name)
@@ -498,7 +497,7 @@ function hosting_server_update($node) {
   if ($node->server_status == HOSTING_SERVER_DELETED) {
     $node->no_verify = TRUE;
   }
- 
+
   $id = db_update('hosting_server')
     ->fields(array(
       'human_name' => $node->human_name,
@@ -521,7 +520,7 @@ function hosting_server_update($node) {
 function hosting_server_insert($node) {
   // Always generate a new context.
   $hosting_name = isset($node->hosting_name) ? $node->hosting_name : 'server_' . preg_replace("/[!\W\.\-]/", "", $node->title);
-  hosting_context_register($node->nid, $hosting_name );
+  hosting_context_register($node->nid, $hosting_name);
 
   $id = db_insert('hosting_server')
     ->fields(array(
@@ -576,7 +575,7 @@ function hosting_server_load($nodes) {
     // Avoid PHP 5.4 warning when platform doesn't exist yet.
     // See: https://drupal.org/node/1940378
     $additions = $additions ? $additions : new stdClass();
- 
+
     hosting_server_init_services($node);
     hosting_server_invoke_services($node, 'load');
     $additions->services = $node->services;
@@ -592,7 +591,7 @@ function hosting_server_load($nodes) {
  * Menu wildcard loader callback.
  *
  * Loads a hosting_server node.
- * @see hosting_task_menu().
+ * @see hosting_task_menu()
  *
  * @arg $arg a numeric nid
  */
@@ -666,7 +665,7 @@ function hosting_server_view(&$node, $teaser = FALSE, $page = FALSE) {
   }
 
   if ($page) {
-    // Task list
+    // Task list.
     if (isset($node->nid)) {
       $node->content['tasks_view'] = array(
         '#type' => 'item',
@@ -722,7 +721,7 @@ function hosting_get_servers($service) {
 }
 
 /**
- * Views integration
+ * Views integration.
  */
 function hosting_server_views_api() {
   return array(
@@ -766,8 +765,8 @@ function hosting_server_preprocess(&$variables) {
 function _hosting_server_preprocess_explode(&$element, $depth = 0) {
   if ($depth) {
     foreach ($element as $i => $sub_element) {
-        _hosting_server_preprocess_explode($sub_element, $depth - 1);
-        $element[$i] = $sub_element;
+      _hosting_server_preprocess_explode($sub_element, $depth - 1);
+      $element[$i] = $sub_element;
     }
   }
   else {
