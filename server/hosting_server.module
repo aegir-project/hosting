@@ -527,7 +527,7 @@ function hosting_server_insert($node) {
     ->fields(array(
       'vid' => $node->vid,
       'nid' => $node->nid,
-      'human_name' => $node->human_name,
+      'human_name' => isset($node->human_name) ? $node->human_name : '',
       'verified' => isset($node->verified) ? $node->verified : 0,
       'status' => isset($node->platform_status) ? $node->platform_status : 0,
     ))
