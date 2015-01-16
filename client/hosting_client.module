@@ -23,7 +23,7 @@ function hosting_client_init() {
  * @see hosting_client_sanitize()
  * @see http://community.aegirproject.org/node/557
  */
-define('MAX_GROUP_LENGTH', 16);
+define('HOSTING_CLIENT_MAX_GROUP_LENGTH', 16);
 
 /**
  * Implements hook_node_info().
@@ -196,8 +196,8 @@ function hosting_client_form(&$node, &$form_state) {
   $form['uname'] = array(
     '#type' => 'machine_name',
     '#title' => t('Internal name'),
-    '#size' => MAX_GROUP_LENGTH,
-    '#maxlength' => MAX_GROUP_LENGTH,
+    '#size' => HOSTING_CLIENT_MAX_GROUP_LENGTH,
+    '#maxlength' => HOSTING_CLIENT_MAX_GROUP_LENGTH,
     '#default_value' => isset($node->uname) ? $node->uname : '',
     '#access' => user_access('edit client uname'),
     '#description' => t('A machine-usable name that can be used internally, for example to map to a UNIX group in the backend. It is unique accross the system. If no value is provided, it is deduced from the client name, by stripping spaces and metacharacters and adding a prefix (%prefix).', array('%prefix' => variable_get('hosting_client_prefix', 'no prefix define'))),
@@ -1193,7 +1193,7 @@ function _hosting_get_allowed_platforms($uid = NULL, $reset = FALSE) {
  *
  * It adds a prefix configured in the frontend settings (defaulting to
  * 'cl-'), and strips the total length of the string (including the
- * prefix) to MAX_GROUP_LENGTH.
+ * prefix) to HOSTING_CLIENT_MAX_GROUP_LENGTH.
  *
  * This can also be used to validate user-provided client unames, as
  * it strips and readds the prefix and performs the same validation
@@ -1201,7 +1201,7 @@ function _hosting_get_allowed_platforms($uid = NULL, $reset = FALSE) {
  *
  * This is inspired from the context sanitization stuff.
  *
- * @see MAX_GROUP_LENGTH
+ * @see HOSTING_CLIENT_MAX_GROUP_LENGTH
  */
 function hosting_client_sanitize($title) {
   $prefix = variable_get('hosting_client_prefix', '');
@@ -1209,7 +1209,7 @@ function hosting_client_sanitize($title) {
   // remove the prefix in case we are validating an existing uname
   // TODO: optimize in one call
   $title = preg_replace("/[!\W\.\-]/", "", preg_replace("/^$prefix/", "", $title));
-  return substr(strtolower($prefix . $title), 0, MAX_GROUP_LENGTH);
+  return substr(strtolower($prefix . $title), 0, HOSTING_CLIENT_MAX_GROUP_LENGTH);
 }
 
 /**
