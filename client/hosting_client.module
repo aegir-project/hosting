@@ -1,10 +1,10 @@
 <?php
 /**
  * @file
- *   Allow clients to be created and granted permissions over sites, tasks etc.
+ * Allow clients to be created and granted permissions over sites, tasks etc.
  */
 
-include drupal_get_path( 'module', 'node' ) . '/node.pages.inc';
+include drupal_get_path('module', 'node') . '/node.pages.inc';
 include dirname(__FILE__) . '/hosting_client.access.inc';
 
 /**
@@ -29,7 +29,7 @@ define('HOSTING_CLIENT_MAX_GROUP_LENGTH', 16);
  * Implements hook_node_info().
  */
 function hosting_client_node_info() {
-  $types["client"] =  array(
+  $types["client"] = array(
     "name" => t('Client'),
     'base' => 'hosting_client',
     "has_title" => TRUE,
@@ -70,31 +70,24 @@ function hosting_client_permission() {
   return array(
     'create client' => array(
       'title' => t('create client'),
-      'description' => t('TODO Add a description for \'create client\''),
     ),
     'view client' => array(
       'title' => t('view client'),
-      'description' => t('TODO Add a description for \'view client\''),
     ),
     'edit own client' => array(
       'title' => t('edit own client'),
-      'description' => t('TODO Add a description for \'edit own client\''),
     ),
     'delete own client' => array(
       'title' => t('delete own client'),
-      'description' => t('TODO Add a description for \'delete own client\''),
     ),
     'administer clients' => array(
       'title' => t('administer clients'),
-      'description' => t('TODO Add a description for \'administer clients\''),
     ),
     'edit client users' => array(
       'title' => t('edit client users'),
-      'description' => t('TODO Add a description for \'edit client users\''),
     ),
     'edit client uname' => array(
       'title' => t('edit client uname'),
-      'description' => t('TODO Add a description for \'edit client uname\''),
     ),
   );
 }
@@ -104,7 +97,7 @@ function hosting_client_permission() {
  */
 function hosting_client_node_access($node, $op, $account) {
   if (!hosting_feature('client')) {
-    // multiple client support has been disabled for this site.
+    // Multiple client support has been disabled for this site.
     return FALSE;
   }
 
@@ -116,19 +109,22 @@ function hosting_client_node_access($node, $op, $account) {
     switch ($op) {
       case 'create':
         return user_access('create client', $account);
-        break;
+
       case 'view':
         return user_access('view client', $account) && db_query("SELECT user FROM {hosting_client_user} WHERE user = :user and client = :client", array(':user' => $account->uid, ':client' => $node->nid))->fetchAssoc();
+
       case 'update':
         if (user_access('edit own client', $account) && $account->uid == $node->uid) {
           return TRUE;
         }
         break;
+
       case 'delete':
         if ((user_access('delete own client', $account) && $account->uid == $node->uid)) {
           return TRUE;
         }
         break;
+
       default:
         break;
     }
@@ -138,7 +134,7 @@ function hosting_client_node_access($node, $op, $account) {
 /**
  * Get a client by name or nid.
  *
- * @param $client
+ * @param int|object $client
  *   Either the nid or the client title
  *
  * @return bool|object
@@ -162,6 +158,7 @@ function hosting_get_client($client) {
  * Get a client by internal name.
  *
  * @see hosting_get_client()
+ *
  * @param $uname
  *   The internal name of this client.
  *
@@ -298,7 +295,7 @@ function theme_hosting_client_form($variables) {
  * Implements hook_validate().
  */
 function hosting_client_validate($node, $form, &$form_state) {
-  // We don't allow duplicate client names
+  // We don't allow duplicate client names.
   $title = $node->form_id == 'hosting_signup_form' ? 'client_name' : 'title';
   $node_nid = db_query("SELECT nid FROM {node} WHERE type = 'client' AND title = ':title'", array(':title' => $node->title))->fetchField();
   if ($node_nid && $node->nid != $node_nid) {
@@ -306,7 +303,7 @@ function hosting_client_validate($node, $form, &$form_state) {
                               array('%suggestion' => hosting_client_validate_suggest($node->title))));
   }
 
-  // We don't allow duplicate internal client names
+  // We don't allow duplicate internal client names.
   if ($node->uname) {
     $node->uname = hosting_client_sanitize($node->uname);
   }
@@ -338,6 +335,7 @@ function hosting_client_validate($node, $form, &$form_state) {
  * Helper for hosting_client_validate to suggest a new client name.
  *
  * @see hosting_client_validate()
+ *
  * @param $name
  *   The client name being validated.
  * @param $internal
@@ -361,7 +359,7 @@ function hosting_client_validate_suggest($name, $internal = FALSE) {
                       ':table' => $table,
                       ':field' => $field,
                       ':name' => $name . $i,
-                     )
+                    )
                    )->fetchField();
     if (!$nid) {
       return $name . $i;
@@ -496,7 +494,7 @@ function hosting_client_mail($key, &$message, $params) {
  * database updates.
  */
 function hosting_client_update($node) {
-  // if this is a new node or we're adding a new revision,
+  // If this is a new node or we're adding a new revision.
   if ($node->revision) {
     hosting_client_insert($node);
   }
@@ -559,9 +557,6 @@ function hosting_client_delete($node) {
 
 /**
  * Implements hook_load().
- *
- * @param $nodes array
- *    List of node objects
  */
 function hosting_client_load($nodes) {
   foreach ($nodes as $nid => &$node) {
@@ -574,11 +569,6 @@ function hosting_client_load($nodes) {
 
 /**
  * Implements hook_node_load().
- *
- * @param $arg
- *    Node's numeric nid
- *
- * @return bool
  */
 function hosting_client_node_load($arg) {
   if (!is_numeric($arg)) {
@@ -599,7 +589,6 @@ function hosting_client_node_load($arg) {
  *   Client node (as nid or node object).
  * @return array
  *   Array of user names indexed by uid.
- *
  */
 function hosting_client_users($node) {
   if (is_object($node)) {
@@ -765,9 +754,9 @@ function hosting_client_platform_access_form($form, $form_state, $node) {
       $client_node = hosting_get_client($client);
       $form['names'][$client] = array(
         '#type' => 'markup',
-        '#value' => l($client_node->title, 'node/' . $client)
+        '#value' => l($client_node->title, 'node/' . $client),
       );
-      // Remove the label for the checkbox
+      // Remove the label for the checkbox.
       $clients[$client] = '';
     }
   }
@@ -775,12 +764,12 @@ function hosting_client_platform_access_form($form, $form_state, $node) {
     // No access control on this platform.
     $form['names']['_all'] = array(
       '#type' => 'markup',
-      '#value' => 'All clients have access to this platform.'
+      '#value' => 'All clients have access to this platform.',
     );
   }
   $form['clients'] = array(
     '#type' => 'checkboxes',
-    '#options' => $clients
+    '#options' => $clients,
   );
   $form['header'] = array(
     '#type' => 'value',
@@ -817,11 +806,9 @@ function theme_hosting_client_platform_access_form($variables) {
   foreach (element_children($form['names'], FALSE) as $client) {
     $row = array();
 
-    //$row['data'][] = drupal_render($form['name'][$client]);
     $row['data'][] = $form['names'][$client]['#value'];
     if ($client != '_all' && user_access('administer clients')) {
       $row['data'][] = drupal_render($form['clients'][$client]);
-      //$row['data'][] = $form['clients'][$client];
     }
     else {
       // Nothing to remove if there aren't any clients...
@@ -867,7 +854,7 @@ function hosting_client_platform_access_form_submit($form, $form_state) {
     else {
       $add_client = '';
       if (user_access('create client') || user_access('administer clients')) {
-        $add_client = ' or ' . l('add a new client', 'node/add/client');
+        $add_client = ' ' . t('or') . '' . l(t('add a new client'), 'node/add/client');
       }
       form_set_error('new_client', t('The client name (%client) was not recognized. Please try again', array('%client' => $new_client)) . $add_client . '.');
     }
@@ -884,7 +871,7 @@ function hosting_client_platform_access_form_submit($form, $form_state) {
  * @return string|null
  */
 function _hosting_client_site_default($node) {
-  # find the right client
+  // Find the right client.
   global $user;
   $current_client_id = 0;
 
@@ -915,8 +902,8 @@ function _hosting_client_site_default($node) {
 
   $client = node_load($current_client_id);
   if (!$client) {
-    # we give up, couldn't find a client, we're probably in a preview so
-    # just use the node client
+    // We give up, couldn't find a client, we're probably in a preview so
+    // just use the node client.
     $client = new stdClass();
     $client->title = isset($node->client) ? $node->client : NULL;
   }
@@ -925,7 +912,7 @@ function _hosting_client_site_default($node) {
 }
 
 /**
- * Wrapper around the regular site_node_form that passes a dummy site with a proper client
+ * Wrapper around the regular site_node_form that passes a dummy site with a proper client.
  */
 function hosting_client_site_form($form, $node) {
   $site = new stdClass();
@@ -958,7 +945,7 @@ function _hosting_client_configure_access() {
 }
 
 /**
- * Expand the client registration email message based on the variables
+ * Expand the client registration email message based on the variables.
  *
  * This will check for a custom message set in the
  * hosting_client_mail_welcome_subject and
@@ -973,6 +960,7 @@ function _hosting_client_mail_text($messageid, $variables = array()) {
   switch ($messageid) {
     case 'welcome_subject':
       return t('Account details for !username at !site', $variables);
+
     case 'welcome_body':
       return t("!username,\n\nThank you for registering at !site. You may now log in to !login_uri using the following username and password:\n\nusername: !username\npassword: !password\n\nYou may also log in by clicking on this link or copying and pasting it in your browser:\n\n!login_url\n\nThis is a one-time login, so it can be used only once.\n\nAfter logging in, you will be redirected to !edit_uri so you can change your password.\n\n\n--  !site team", $variables);
 
@@ -1028,9 +1016,7 @@ function hosting_client_configure($form, &$form_state) {
     . ' ' . t('Available variables are:') . ' !username, !site, !password, !uri, !uri_brief, !login_uri, !edit_uri, !login_url.',
   );
 
-
   return system_settings_form($form);
-
 }
 
 /**
@@ -1038,8 +1024,6 @@ function hosting_client_configure($form, &$form_state) {
  */
 function _hosting_get_clients() {
   $return = array();
-  // TODO: Confirm that these are equivalent.
-  //$result = pager_query(db_rewrite_sql('SELECT n.nid, n.title from {node} n WHERE n.type = "client"'), 25);
   $query = db_select('node', 'n')->extend('PagerDefault');
   $result = $query
     ->fields('n', array('nid', 'title'))
@@ -1107,9 +1091,9 @@ function hosting_client_autocomplete($type, $keyword) {
       ->condition('type', $type);
     $query->addField('n', 'title');
     $query = $query
-      ->condition('title', '%' . $keyword . '%' , 'LIKE')
+      ->condition('title', '%' . $keyword . '%', 'LIKE')
       ->addTag('node_access');
-      $result = $query->execute();
+    $result = $query->execute();
     foreach ($result as $client) {
       $matches[$client->title] = $client->title;
     }
@@ -1179,7 +1163,7 @@ function _hosting_get_allowed_platforms($uid = NULL, $reset = FALSE) {
                           ':type' => 'platform',
                           ':nstatus' => 1,
                           ':hstatus' => HOSTING_PLATFORM_LOCKED,
-                          ':cuser' => $uid
+                          ':cuser' => $uid,
                         )
                       );
     foreach ($result as $server) {
@@ -1208,10 +1192,13 @@ function _hosting_get_allowed_platforms($uid = NULL, $reset = FALSE) {
  */
 function hosting_client_sanitize($title) {
   $prefix = variable_get('hosting_client_prefix', '');
-  // remove anything but "word characters", dots and dashes
-  // remove the prefix in case we are validating an existing uname
-  // TODO: optimize in one call
-  $title = preg_replace("/[!\W\.\-]/", "", preg_replace("/^$prefix/", "", $title));
+
+  // Remove anything but "word characters", dots and dashes.
+  $title = preg_replace("/^$prefix/", "", $title);
+
+  // Remove the prefix in case we are validating an existing uname.
+  $title = preg_replace("/[!\W\.\-]/", "", $title);
+
   return substr(strtolower($prefix . $title), 0, HOSTING_CLIENT_MAX_GROUP_LENGTH);
 }
 
