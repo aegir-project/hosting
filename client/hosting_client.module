@@ -552,6 +552,9 @@ function hosting_client_delete($node) {
   db_delete('hosting_client')
     ->condition('nid', $node->nid)
     ->execute();
+  db_delete('hosting_client_user')
+    ->condition('client', $node->nid)
+    ->execute();
 }
 
 /**
