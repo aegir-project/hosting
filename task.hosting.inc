@@ -151,7 +151,9 @@ function drush_hosting_task() {
  */
 function drush_hosting_task_rollback() {
   $task = &drush_get_context('HOSTING_TASK');
-  module_invoke_all(sprintf("hosting_%s_task_rollback", str_replace('-', '_', $task->task_type)), $task, drush_get_context('HOSTING_DRUSH_OUTPUT'));
+  $hook = sprintf("hosting_%s_task_rollback", str_replace('-', '_', $task->task_type));
+  drush_log(dt('Invoking :hook hooks.', array(':hook' => $hook)));
+  module_invoke_all($hook, $task, drush_get_context('HOSTING_DRUSH_OUTPUT'));
 }
 
 /**
@@ -162,5 +164,7 @@ function drush_hosting_task_rollback() {
 function drush_hosting_post_hosting_task($task) {
   $task = &drush_get_context('HOSTING_TASK');
 
-  module_invoke_all(sprintf("post_hosting_%s_task", str_replace('-', '_', $task->task_type)), $task, drush_get_context('HOSTING_DRUSH_OUTPUT'));
+  $hook = sprintf("post_hosting_%s_task", str_replace('-', '_', $task->task_type));
+  drush_log(dt('Invoking :hook hooks.', array(':hook' => $hook)));
+  module_invoke_all($hook, $task, drush_get_context('HOSTING_DRUSH_OUTPUT'));
 }
