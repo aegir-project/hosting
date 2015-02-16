@@ -143,7 +143,7 @@ function hosting_migrate_platform_submit($form, &$form_state) {
       $form_state['storage']['current_platform'] = $form['#current_platform']->nid;
       $form_state['storage']['target_platform'] = $form_state['values']['target_platform'];
       $max_per_batch = 5;
-      $result = db_query("SELECT n.nid, n.title FROM  {hosting_site} s LEFT JOIN {node} n ON n.nid=s.nid WHERE platform = :platform AND s.status = :s.status and s.verified > :s.verified ORDER BY n.title", array(':platform' => $form['#current_platform']->nid, ':s.status' => HOSTING_SITE_ENABLED, ':s.verified' => 0));
+      $result = db_query("SELECT n.nid, n.title FROM  {hosting_site} s LEFT JOIN {node} n ON n.nid=s.nid WHERE platform = :platform AND s.status = :status and s.verified > :verified ORDER BY n.title", array(':platform' => $form['#current_platform']->nid, ':status' => HOSTING_SITE_ENABLED, ':verified' => 0));
       $operations = array();
       while ($site = $result->fetch()) {
         $operations[] = array(
