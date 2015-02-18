@@ -12,7 +12,7 @@ function drush_hosting_pause_validate($url) {
   // Wait for the task queue to be processed and tasks to complete.
   while (hosting_task_count() + hosting_task_count_running() > 0) {
     drush_log(dt('Waiting for the task queue to be processed and tasks to complete.'), 'message');
-    sleep 1;
+    sleep(1);
   }
 }
 
