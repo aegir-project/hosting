@@ -521,7 +521,8 @@ function hosting_client_update($node) {
     }
   }
   if ($node->new_user) {
-    $user = array_shift(user_load_multiple(array(), array('name' => $node->new_user)));
+    $user = user_load_multiple(array(), array('name' => $node->new_user));
+    $user = array_shift($user);
     $id = db_insert('hosting_client_user')
       ->fields(array(
         'client' => $node->nid,
