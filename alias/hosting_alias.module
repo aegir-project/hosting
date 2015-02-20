@@ -85,91 +85,91 @@ function hosting_alias_site_form_validate($form, &$form_state) {
  */
 function hosting_alias_form_data(&$form, &$form_state) {
 
-    // List the automatic aliasses first.
-    $automatic_aliases = hosting_alias_get_aliases($form['#node'], HOSTING_ALIAS_AUTOMATIC);
-    if (sizeof($automatic_aliases)) {
-      foreach ($automatic_aliases as $link) {
-        $links[] = l($link, "http://$link");
-      }
-      $form['aliases_automatic'] = array(
-        '#type' => 'item',
-        '#title' => t('Automatic domain aliases'),
-        '#value' => implode(', ', $links),
-        '#weight' => 10,
-      );
+  // List the automatic aliasses first.
+  $automatic_aliases = hosting_alias_get_aliases($form['#node'], HOSTING_ALIAS_AUTOMATIC);
+  if (sizeof($automatic_aliases)) {
+    foreach ($automatic_aliases as $link) {
+      $links[] = l($link, "http://$link");
     }
-
-    // Add a wrapper for the aliases and more button.
-    $form['aliases_wrapper'] = array(
-      '#tree' => FALSE,
-      '#title' => t('Domain Aliases'),
-      '#type' => 'fieldset',
-      '#prefix' => '<div class="clear-block" id="hosting-aliases-wrapper">',
-      '#suffix' => '</div>',
+    $form['aliases_automatic'] = array(
+      '#type' => 'item',
+      '#title' => t('Automatic domain aliases'),
+      '#value' => implode(', ', $links),
+      '#weight' => 10,
     );
-    $form['aliases_wrapper']['aliases'] = array(
-      '#prefix' => '<div id="hosting-aliases">',
-      '#suffix' => '</div>',
-      '#tree' => TRUE,
-     // '#theme' => 'hosting_alias_form',
+  }
+
+  // Add a wrapper for the aliases and more button.
+  $form['aliases_wrapper'] = array(
+    '#tree' => FALSE,
+    '#title' => t('Domain Aliases'),
+    '#type' => 'fieldset',
+    '#prefix' => '<div class="clear-block" id="hosting-aliases-wrapper">',
+    '#suffix' => '</div>',
+  );
+  $form['aliases_wrapper']['aliases'] = array(
+    '#prefix' => '<div id="hosting-aliases">',
+    '#suffix' => '</div>',
+    '#tree' => TRUE,
+   // '#theme' => 'hosting_alias_form',
+  );
+
+  // Get the list of existing aliases, either from form_state or the node.
+  if (isset($form_state['input']['aliases'])) {
+    $aliases = array_filter($form_state['input']['aliases']);
+  }
+  elseif (isset($form['#node']->aliases)) {
+    $aliases = array_filter($form['#node']->aliases);
+  } else {
+    $aliases = array();
+  }
+
+  // Add alias textfields
+  for ($delta = 0; $delta <= count($aliases); $delta++) {
+    $form['aliases_wrapper']['aliases'][$delta] = array(
+      '#type' => 'textfield',
+      '#default_value' => isset($aliases[$delta]) ? $aliases[$delta] : '',
     );
+  }
 
-    // Get the list of existing aliases, either from form_state or the node.
-    if (isset($form_state['input']['aliases'])) {
-      $aliases = array_filter($form_state['input']['aliases']);
-    }
-    elseif (isset($form['#node']->aliases)) {
-      $aliases = array_filter($form['#node']->aliases);
-    } else {
-      $aliases = array();
-    }
+  // "Add Alias" button
+  $form['aliases_wrapper']['add_alias'] = array(
+    '#type' => 'submit',
+    '#value' => t('Add an alias'),
+    '#description' => t("Click here to add another alias."),
+    '#weight' => 1,
+    '#submit' => array('hosting_alias_add_alias_submit'),
+    '#ajax' => array(
+      'callback' => 'hosting_alias_add_alias_callback',
+      'wrapper' => 'hosting-aliases-wrapper',
+      'method' => 'replace',
+      'effect' => 'fade',
+    ),
+  );
 
-    // Add alias textfields
-    for ($delta = 0; $delta <= count($aliases); $delta++) {
-      $form['aliases_wrapper']['aliases'][$delta] = array(
-        '#type' => 'textfield',
-        '#default_value' => isset($aliases[$delta]) ? $aliases[$delta] : '',
-      );
-    }
+  // Redirection Domain
+  $options = array();
+  $options[0] = t('No redirection');
+  if (isset($form['#node']->title)) {
+    $options[$form['#node']->title] = $form['#node']->title;
+  }
+  if (!empty($aliases)) {
+    $options += array_combine($aliases, $aliases);
+  }
+  if (!empty($automatic_aliases)) {
+    $options += array_combine($automatic_aliases, $automatic_aliases);
+  }
 
-    // "Add Alias" button
-    $form['aliases_wrapper']['add_alias'] = array(
-      '#type' => 'submit',
-      '#value' => t('Add an alias'),
-      '#description' => t("Click here to add another alias."),
-      '#weight' => 1,
-      '#submit' => array('hosting_alias_add_alias_submit'),
-      '#ajax' => array(
-        'callback' => 'hosting_alias_add_alias_callback',
-        'wrapper' => 'hosting-aliases-wrapper',
-        'method' => 'replace',
-        'effect' => 'fade',
-      ),
-    );
+  $default = isset($form['#node']->redirection) ? $form['#node']->redirection : '';
 
-    // Redirection Domain
-    $options = array();
-    $options[0] = t('No redirection');
-    if (isset($form['#node']->title)) {
-      $options[$form['#node']->title] = $form['#node']->title;
-    }
-    if (!empty($aliases)) {
-      $options += array_combine($aliases, $aliases);
-    }
-    if (!empty($automatic_aliases)) {
-      $options += array_combine($automatic_aliases, $automatic_aliases);
-    }
-
-    $default = isset($form['#node']->redirection) ? $form['#node']->redirection : '';
-
-    $form['aliases_wrapper']['redirection'] = array(
-      '#type' => 'select',
-      '#title' => t('Redirect all domain aliases to'),
-      '#options' => $options,
-      '#default_value' => $default,
-      '#weight' => -1,
-    );
-    return $form;
+  $form['aliases_wrapper']['redirection'] = array(
+    '#type' => 'select',
+    '#title' => t('Redirect all domain aliases to'),
+    '#options' => $options,
+    '#default_value' => $default,
+    '#weight' => -1,
+  );
+  return $form;
 }
 
 /**
