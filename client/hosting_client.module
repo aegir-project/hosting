@@ -138,6 +138,7 @@ function hosting_client_node_access($node, $op, $account) {
  *   Either the nid or the client title
  *
  * @return bool|object
+ *   The client node object of FALSE.
  */
 function hosting_get_client($client) {
   if (is_numeric($client)) {
@@ -159,10 +160,11 @@ function hosting_get_client($client) {
  *
  * @see hosting_get_client()
  *
- * @param $uname
+ * @param string $uname
  *   The internal name of this client.
  *
- * @return object
+ * @return object|bool
+ *   The client node object of FALSE.
  */
 function hosting_get_client_by_uname($uname) {
   $result = db_query("SELECT c.nid FROM {hosting_client} c JOIN {node} n ON c.nid = n.nid WHERE c.uname = :uname AND n.type = :type", array(':uname' => $uname, ':type' => 'client'))->fetchField();
@@ -336,12 +338,13 @@ function hosting_client_validate($node, $form, &$form_state) {
  *
  * @see hosting_client_validate()
  *
- * @param $name
+ * @param string $name
  *   The client name being validated.
- * @param $internal
+ * @param bool $internal
  *   Whether this is an internal client name.
  *
  * @return string
+ *   Suggested client name.
  */
 function hosting_client_validate_suggest($name, $internal = FALSE) {
   $suggestion = FALSE;
@@ -468,7 +471,8 @@ function hosting_client_register_user($node) {
       '!edit_uri' => url('user/' . $user->uid . '/edit', array('absolute' => TRUE)),
       '!login_url' => user_pass_reset_url($user),
     );
-    // No e-mail verification is required, create new user account, and login user immediately.
+    // No e-mail verification is required.
+    // Create new user account, and login user immediately.
     $language = user_preferred_language($user);
     drupal_mail('hosting_client', 'hosting-client-register-welcome', $to, $language, $params);
   }
@@ -588,6 +592,7 @@ function hosting_client_node_load($arg) {
  *
  * @param int|object $node
  *   Client node (as nid or node object).
+ *
  * @return array
  *   Array of user names indexed by uid.
  */
@@ -656,8 +661,9 @@ function hosting_client_hosting_site_site_list_filters() {
 /**
  * Helper function to generate new client node during import.
  *
- * @param $name
+ * @param string $name
  *   Client name.
+ *
  * @return object
  *   The node object of the generated client.
  */
@@ -866,10 +872,11 @@ function hosting_client_platform_access_form_submit($form, $form_state) {
 /**
  * Get the default value of the client field for a site node.
  *
- * @param $node
+ * @param object $node
  *   The site to the the clients for.
  *
  * @return string|null
+ *   The client name.
  */
 function _hosting_client_site_default($node) {
   // Find the right client.
@@ -1123,10 +1130,10 @@ function hosting_client_node_delete($node) {
  * caching for speed, and because the platforms that are available are unlikely
  * to change during a single page request.
  *
- * @param $uid
+ * @param int $uid
  *   The user ID to retrieve the allowed platforms for. If none is specified the
  *   currently logged in user will be used.
- * @param $reset
+ * @param bool $reset
  *   Whether to reset the internal static cache or not.
  *
  * @todo this is not the right way. we need to implement node-level
