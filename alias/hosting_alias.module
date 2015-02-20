@@ -58,8 +58,10 @@ function hosting_alias_help($path, $arg) {
  * separated list of aliases to the site
  */
 function hosting_alias_form_site_node_form_alter(&$form, &$form_state) {
-  $form['#validate'][] = 'hosting_alias_site_form_validate';
-  return hosting_alias_form_data($form, $form_state);
+  if (user_access('create site aliases')) {
+    $form['#validate'][] = 'hosting_alias_site_form_validate';
+    return hosting_alias_form_data($form, $form_state);
+  }
 }
 
 /**
@@ -82,7 +84,6 @@ function hosting_alias_site_form_validate($form, &$form_state) {
  * @param $form_state
  */
 function hosting_alias_form_data(&$form, &$form_state) {
-  if (user_access('create site aliases')) {
 
     // List the automatic aliasses first.
     $automatic_aliases = hosting_alias_get_aliases($form['#node'], HOSTING_ALIAS_AUTOMATIC);
@@ -169,7 +170,6 @@ function hosting_alias_form_data(&$form, &$form_state) {
       '#weight' => -1,
     );
     return $form;
-  }
 }
 
 /**
