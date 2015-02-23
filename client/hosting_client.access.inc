@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Control client node access.
+ * Control client node access.
  */
 
 /**
@@ -67,7 +67,7 @@ function hosting_client_view_user($user) {
       $rows[] = array(_hosting_node_link($client));
     }
 
-    // this is a table because we'll have types for clients eventually
+    // This is a table because we'll have types for clients eventually.
     $header = array(t('Hosting client'));
     $items['client_list'] = array(
       'value' => theme('table', array('header' => $header, 'rows' => $rows)),
@@ -185,8 +185,7 @@ function hosting_client_user_form_submit($edit, $user) {
 }
 
 /**
- * Simple function to make sure we don't respond with grants when disabling
- * ourselves.
+ * Function to make sure we don't respond with grants when disabling ourselves.
  */
 function hosting_client_disabling($set = NULL) {
   static $disabling = FALSE;
@@ -236,7 +235,7 @@ function hosting_client_node_access_records($node) {
     'priority' => 1,
   );
 
-  // tasks inherit from their parent
+  // Tasks inherit from their parent.
   if ($node->type == 'task') {
     $node = node_load($node->rid);
     $base_grant['grant_update'] = 0;
@@ -246,17 +245,21 @@ function hosting_client_node_access_records($node) {
     case 'site':
       $base_grant['gid'] = $node->client;
       break;
+
     case 'client':
       $base_grant['gid'] = $node->nid;
       break;
+
     case 'package':
       $base_grant['grant_update'] = 0;
       break;
+
     case 'task':
     case 'server':
       // The rest of the node types are configuration, so only admin should see them.
       $base_grant['gid'] = HOSTING_ADMIN_CLIENT;
       break;
+
     case 'platform':
       $base_grant['gid'] = HOSTING_ADMIN_CLIENT;
       if (isset($node->clients)) {
@@ -267,15 +270,16 @@ function hosting_client_node_access_records($node) {
         }
       }
       break;
+
     default:
-      //Not hosting node, don't change access.
+      // Not hosting node, don't change access.
       return;
   }
 
   if (isset($base_grant['gid'])) {
     $grants[] = $base_grant;
 
-    // this should _always_ happen.
+    // This should _always_ happen.
     if ($base_grant['gid'] != HOSTING_ADMIN_CLIENT) {
       // Also give full access to the administrator user.
       $base_grant['gid'] = HOSTING_ADMIN_CLIENT;
@@ -290,6 +294,7 @@ function hosting_client_node_access_records($node) {
  *
  * @param int $uid
  *   The user to get the relationships for.
+ *
  * @return array
  *   An array of clients and their contact type relationships to the specified
  *   user.
