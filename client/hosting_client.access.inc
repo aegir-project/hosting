@@ -202,6 +202,9 @@ function hosting_client_disabling($set = NULL) {
 function hosting_client_node_grants($account, $op) {
   $account->client_id = hosting_get_client_from_user($account->uid);
   $types = hosting_feature_node_types();
+
+  $grants = array();
+
   foreach ($types as $type) {
     if (user_access('administer ' . $type . 's', $account)) {
       $grants['hosting ' . $type] = array(1);
