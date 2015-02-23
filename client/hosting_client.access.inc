@@ -199,24 +199,29 @@ function hosting_client_disabling($set = NULL) {
  * Implements hook_node_grants().
  */
 function hosting_client_node_grants($account, $op) {
-  $account->client_id = hosting_get_client_from_user($account->uid);
-  $types = hosting_feature_node_types();
+  $grants = &drupal_static(__FUNCTION__);
+  if (!isset($grants)) {
+    $grants = array();
+  }
+  $cache_id = $account->uid . $op;
+  if (!isset($grants[$cache_id])) {
+    $account->client_id = hosting_get_client_from_user($account->uid);
+    $types = hosting_feature_node_types();
 
-  $grants = array();
-
-  foreach ($types as $type) {
-    if (user_access('administer ' . $type . 's', $account)) {
-      $grants['hosting ' . $type] = array(1);
-    }
-    elseif (user_access($op . ' ' . $type, $account)) {
-      // TODO: restrict access to certain op-type based on the user relationship to this client - see content of $client_relations
-      $grants['hosting ' . $type] = array_keys($account->client_id);
-    }
-    elseif ($op == 'update' && user_access('edit ' . $type, $account)) {
-      $grants['hosting ' . $type] = array_keys($account->client_id);
+    foreach ($types as $type) {
+      if (user_access('administer ' . $type . 's', $account)) {
+        $grants[$cache_id]['hosting ' . $type] = array(1);
+      }
+      elseif (user_access($op . ' ' . $type, $account)) {
+        // TODO: restrict access to certain op-type based on the user relationship to this client - see content of $client_relations
+        $grants[$cache_id]['hosting ' . $type] = array_keys($account->client_id);
+      }
+      elseif ($op == 'update' && user_access('edit ' . $type, $account)) {
+        $grants[$cache_id]['hosting ' . $type] = array_keys($account->client_id);
+      }
     }
   }
-  return $grants;
+  return isset($grants[$cache_id]) ? $grants[$cache_id] : array();
 }
 
 /**
