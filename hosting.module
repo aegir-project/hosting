@@ -1293,3 +1293,19 @@ function hosting_modules_enabled($modules) {
 
   hosting_features_enable($enable, TRUE, FALSE);
 }
+
+/**
+ * Implements hook_modules_disabled().
+ */
+function hosting_modules_disabled($modules) {
+  // List any features whose module was just disabled.
+  $features = hosting_get_features();
+  $disable = array();
+  foreach ($features as $feature => $info) {
+    if (in_array($info['module'], $modules) && variable_get('hosting_feature_' . $feature, TRUE)) {
+      $disable[$info['module']] = $feature;
+    }
+  }
+
+  hosting_features_disable($disable, $rebuild = TRUE, $disable_module = FALSE);
+}

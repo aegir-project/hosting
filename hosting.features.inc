@@ -408,14 +408,16 @@ function hosting_features_enable($features, $rebuild = TRUE, $enable = TRUE) {
 /**
  * Disable one or more Hosting features.
  */
-function hosting_features_disable($disable, $rebuild = TRUE) {
+function hosting_features_disable($disable, $rebuild = TRUE, $disable_module = TRUE) {
   if (count($disable)) {
     drupal_set_message(t("Disabling %feature feature!plural.", array(
       '%feature' => implode(", ", $disable),
       '!plural' => count($disable) > 1 ? 's' : '',
     )));
     include_once 'includes/install.inc';
-    module_disable(array_keys($disable));
+    if ($disable_module) {
+      module_disable(array_keys($disable));
+    }
     $features = hosting_get_features();
     foreach ($disable as $module => $feature) {
       if (isset($features[$feature]['disable']) && function_exists($callback = $features[$feature]['disable'])) {
