@@ -1238,11 +1238,33 @@ function hosting_create_roles() {
   user_role_grant_permissions(DRUPAL_ANONYMOUS_RID, array('access disabled sites'));
   user_role_grant_permissions(DRUPAL_AUTHENTICATED_RID, array('access disabled sites'));
 
+  // Create a default role for Aegir clients.
+  $client_role = new stdClass();
+  $client_role->name = 'aegir client';
+  $client_role->weight = 4;
+  user_role_save($client_role);
+  // Create a default role for Aegir account managers.
+  $acct_mgr_role = new stdClass();
+  $acct_mgr_role->name = 'aegir account manager';
+  $acct_mgr_role->weight = 6;
+  user_role_save($acct_mgr_role);
+  // Create a default role for Aegir platform managers.
+  $plat_mgr_role = new stdClass();
+  $plat_mgr_role->name = 'aegir platform manager';
+  $plat_mgr_role->weight = 8;
+  user_role_save($plat_mgr_role);
+
+  // Create a default role for Aegir administrators.
+  $aegir_admin_role = new stdClass();
+  $aegir_admin_role->name = 'aegir administrator';
+  $aegir_admin_role->weight = 10;
+  user_role_save($aegir_admin_role);
+
   // Create a default role for site administrators,
   // with all available permissions assigned.
   $admin_role = new stdClass();
   $admin_role->name = 'administrator';
-  $admin_role->weight = 2;
+  $admin_role->weight = 20;
   user_role_save($admin_role);
   user_role_grant_permissions($admin_role->rid, array_keys(module_invoke_all('permission')));
   // Set this as the administrator role.
@@ -1252,28 +1274,6 @@ function hosting_create_roles() {
   db_insert('users_roles')
     ->fields(array('uid' => 1, 'rid' => $admin_role->rid))
     ->execute();
-
-  // Create a default role for Aegir administrators.
-  $aegir_admin_role = new stdClass();
-  $aegir_admin_role->name = 'aegir administrator';
-  $aegir_admin_role->weight = 2;
-  user_role_save($aegir_admin_role);
-
-  // Create a default role for Aegir clients.
-  $client_role = new stdClass();
-  $client_role->name = 'aegir client';
-  $client_role->weight = 2;
-  user_role_save($client_role);
-  // Create a default role for Aegir account managers.
-  $acct_mgr_role = new stdClass();
-  $acct_mgr_role->name = 'aegir account manager';
-  $acct_mgr_role->weight = 2;
-  user_role_save($acct_mgr_role);
-  // Create a default role for Aegir platform managers.
-  $plat_mgr_role = new stdClass();
-  $plat_mgr_role->name = 'aegir platform manager';
-  $plat_mgr_role->weight = 2;
-  user_role_save($plat_mgr_role);
 
   node_access_rebuild();
 }
