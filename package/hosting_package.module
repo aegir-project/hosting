@@ -61,19 +61,15 @@ function hosting_package_permission() {
   return array(
     'create package' => array(
       'title' => t('create package'),
-      'description' => t('TODO Add a description for \'create package\''),
     ),
     'view package' => array(
       'title' => t('view package'),
-      'description' => t('TODO Add a description for \'view package\''),
     ),
     'edit package' => array(
       'title' => t('edit package'),
-      'description' => t('TODO Add a description for \'edit package\''),
     ),
     'delete package' => array(
       'title' => t('delete package'),
-      'description' => t('TODO Add a description for \'delete package\''),
     ),
   );
 }

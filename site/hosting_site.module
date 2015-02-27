@@ -313,23 +313,18 @@ function hosting_site_permission() {
   return array(
     'create site' => array(
       'title' => t('create site'),
-      'description' => t('TODO Add a description for \'create site\''),
     ),
     'view site' => array(
       'title' => t('view site'),
-      'description' => t('TODO Add a description for \'view site\''),
     ),
     'edit site' => array(
       'title' => t('edit site'),
-      'description' => t('TODO Add a description for \'edit site\''),
     ),
     'delete site' => array(
       'title' => t('delete site'),
-      'description' => t('TODO Add a description for \'delete site\''),
     ),
     'administer sites' => array(
       'title' => t('administer sites'),
-      'description' => t('TODO Add a description for \'administer sites\''),
     ),
   );
 }

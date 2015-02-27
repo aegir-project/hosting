@@ -26,7 +26,6 @@ function hosting_clone_permission() {
   return array(
     'create clone task' => array(
       'title' => t('create clone task'),
-      'description' => t('TODO Add a description for \'create clone task\''),
     ),
   );
 }

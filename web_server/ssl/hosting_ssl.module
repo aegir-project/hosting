@@ -37,7 +37,6 @@ function hosting_ssl_permission() {
   return array(
     'create ssl certificate' => array(
       'title' => t('create ssl certificate'),
-      'description' => t('TODO Add a description for \'create ssl certificate\''),
     ),
   );
 }

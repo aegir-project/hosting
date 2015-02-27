@@ -30,7 +30,6 @@ function hosting_signup_permission() {
   return array(
     'access hosting signup form' => array(
       'title' => t('access hosting signup form'),
-      'description' => t('TODO Add a description for \'access hosting signup form\''),
     ),
   );
 }

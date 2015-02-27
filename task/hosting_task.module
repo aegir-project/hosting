@@ -369,71 +369,54 @@ function hosting_task_permission() {
   return array(
     'administer tasks' => array(
       'title' => t('administer tasks'),
-      'description' => t('TODO Add a description for \'administer tasks\''),
     ),
     'create backup task' => array(
       'title' => t('create backup task'),
-      'description' => t('TODO Add a description for \'create backup task\''),
     ),
     'create restore task' => array(
       'title' => t('create restore task'),
-      'description' => t('TODO Add a description for \'create restore task\''),
     ),
     'create disable task' => array(
       'title' => t('create disable task'),
-      'description' => t('TODO Add a description for \'create disable task\''),
     ),
     'create enable task' => array(
       'title' => t('create enable task'),
-      'description' => t('TODO Add a description for \'create enable task\''),
     ),
     'create delete task' => array(
       'title' => t('create delete task'),
-      'description' => t('TODO Add a description for \'create delete task\''),
     ),
     'create verify task' => array(
       'title' => t('create verify task'),
-      'description' => t('TODO Add a description for \'create verify task\''),
     ),
     'create lock task' => array(
       'title' => t('create lock task'),
-      'description' => t('TODO Add a description for \'create lock task\''),
     ),
     'create unlock task' => array(
       'title' => t('create unlock task'),
-      'description' => t('TODO Add a description for \'create unlock task\''),
     ),
     'create login-reset task' => array(
       'title' => t('create login-reset task'),
-      'description' => t('TODO Add a description for \'create login-reset task\''),
     ),
     'create backup-delete task' => array(
       'title' => t('create backup-delete task'),
-      'description' => t('TODO Add a description for \'create backup-delete task\''),
     ),
     'view own tasks' => array(
       'title' => t('view own tasks'),
-      'description' => t('TODO Add a description for \'view own tasks\''),
     ),
     'view task' => array(
       'title' => t('view task'),
-      'description' => t('TODO Add a description for \'view task\''),
     ),
     'access task logs' => array(
       'title' => t('access task logs'),
-      'description' => t('TODO Add a description for \'access task logs\''),
     ),
     'retry failed tasks' => array(
       'title' => t('retry failed tasks'),
-      'description' => t('TODO Add a description for \'retry failed tasks\''),
     ),
     'cancel own tasks' => array(
       'title' => t('cancel own tasks'),
-      'description' => t('TODO Add a description for \'cancel own tasks\''),
     ),
     'update status of tasks' => array(
       'title' => t('update status of tasks'),
-      'description' => t('TODO Add a description for \'update status of tasks\''),
     ),
   );
 }

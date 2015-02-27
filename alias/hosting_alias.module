@@ -424,11 +424,9 @@ function hosting_alias_permission() {
   return array(
     'create site aliases' => array(
       'title' => t('create site aliases'),
-      'description' => t('TODO Add a description for \'create site aliases\''),
     ),
     'administer hosting aliases' => array(
       'title' => t('administer hosting aliases'),
-      'description' => t('TODO Add a description for \'administer hosting aliases\''),
     ),
   );
 }

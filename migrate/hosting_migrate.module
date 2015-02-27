@@ -13,7 +13,6 @@ function hosting_migrate_permission() {
   return array(
     'create migrate task' => array(
       'title' => t('create migrate task'),
-      'description' => t('TODO Add a description for \'create migrate task\''),
     ),
   );
 }

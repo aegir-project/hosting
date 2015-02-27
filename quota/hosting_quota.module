@@ -10,15 +10,12 @@ function hosting_quota_permission() {
   return array(
     'edit all quotas' => array(
       'title' => t('edit all quotas'),
-      'description' => t('TODO Add a description for \'edit all quotas\''),
     ),
     'view all quotas' => array(
       'title' => t('view all quotas'),
-      'description' => t('TODO Add a description for \'view all quotas\''),
     ),
     'view own quota' => array(
       'title' => t('view own quota'),
-      'description' => t('TODO Add a description for \'view own quota\''),
     ),
   );
 }

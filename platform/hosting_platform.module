@@ -116,31 +116,24 @@ function hosting_platform_permission() {
   return array(
     'administer platforms' => array(
       'title' => t('administer platforms'),
-      'description' => t('TODO Add a description for \'administer platforms\''),
     ),
     'create platform' => array(
       'title' => t('create platform'),
-      'description' => t('TODO Add a description for \'create platform\''),
     ),
     'view platform' => array(
       'title' => t('view platform'),
-      'description' => t('TODO Add a description for \'view platform\''),
     ),
     'edit platform' => array(
       'title' => t('edit platform'),
-      'description' => t('TODO Add a description for \'edit platform\''),
     ),
     'delete platform' => array(
       'title' => t('delete platform'),
-      'description' => t('TODO Add a description for \'delete platform\''),
     ),
     'view locked platforms' => array(
       'title' => t('view locked platforms'),
-      'description' => t('TODO Add a description for \'view locked platforms\''),
     ),
     'create sites on locked platforms' => array(
       'title' => t('create sites on locked platforms'),
-      'description' => t('TODO Add a description for \'create sites on locked platforms\''),
     ),
   );
 }
