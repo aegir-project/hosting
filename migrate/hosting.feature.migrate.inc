@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Expose the migrate feature to hostmaster.
+ * Expose the migrate feature to hostmaster.
  */
 
 /**
@@ -25,4 +25,3 @@ function hosting_migrate_hosting_feature() {
   );
   return $features;
 }
-

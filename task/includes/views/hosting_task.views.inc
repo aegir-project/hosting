@@ -1,6 +1,7 @@
 <?php
 /**
- * @file Hosting task views integration.
+ * @file
+ * Hosting task views integration.
  */
 
 /**
@@ -101,4 +102,3 @@ function hosting_task_views_data() {
 
   return $data;
 }
-

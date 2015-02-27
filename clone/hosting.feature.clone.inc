@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Expose the clone feature to hostmaster.
+ * Expose the clone feature to hostmaster.
  */
 
 /**
@@ -25,4 +25,3 @@ function hosting_clone_hosting_feature() {
   );
   return $features;
 }
-

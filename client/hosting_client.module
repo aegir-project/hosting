@@ -387,6 +387,7 @@ function hosting_client_insert($node) {
       'uname' => $node->uname,
     ))
     ->execute();
+
   if (variable_get('hosting_client_register_user', FALSE)
      && user_load_multiple(array(), array('mail' => $node->email)) == FALSE) {
     $user = hosting_client_register_user($node);
@@ -736,7 +737,6 @@ function hosting_client_menu() {
     'access arguments' => array(1),
   );
 
-
   return $items;
 }
 
@@ -903,7 +903,7 @@ function _hosting_client_site_default($node) {
     $current_client_id = HOSTING_DEFAULT_CLIENT;
   }
 
-  // allow admins to override
+  // Allow admins to override.
   if (isset($node->client) && $node->client && user_access('administer clients')) {
     $current_client_id = $node->client;
   }
@@ -1123,8 +1123,7 @@ function hosting_client_node_delete($node) {
 }
 
 /**
- * Small helper function to get platforms that haven't been deleted or locked,
- * and are accessible by this user.
+ * Get accessible platforms that haven't been deleted or locked.
  *
  * We can get called a few times during a page request, so we implement static
  * caching for speed, and because the platforms that are available are unlikely

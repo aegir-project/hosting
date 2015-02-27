@@ -1020,7 +1020,7 @@ function hosting_form_alter(&$form, &$form_state, $form_id) {
  */
 function hosting_form_submit_messages($form, $form_state) {
 
-  // Only act on sites, platforms, & servers
+  // Only act on sites, platforms, & servers.
   if (in_array($form_state['node']->type, array('site', 'platform', 'server'))) {
 
     // Translation array.
@@ -1047,7 +1047,7 @@ function hosting_form_submit_messages($form, $form_state) {
     // Display the message.
     drupal_set_message(t('%task task has been queued for @type %title. !message', $t));
 
-    // If using the hosting queue, mention the scheduled time
+    // If using the hosting queue, mention the scheduled time.
     $queues = hosting_get_queues();
     if ($queues['tasks']['enabled']) {
       $until = _hosting_queue_next_run('tasks') - REQUEST_TIME;
