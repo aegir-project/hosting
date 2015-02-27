@@ -18,8 +18,6 @@ function hosting_task_hosting_feature() {
     'role_permissions' => array(
       'aegir platform manager' => array(
         'administer tasks',
-        'create clone task',
-        'create migrate task',
         'create lock task',
         'create unlock task',
         'create verify task',
@@ -36,8 +34,6 @@ function hosting_task_hosting_feature() {
         'create enable task',
         'create restore task',
         'create verify task',
-        'create clone task',
-        'create migrate task',
         'access task logs',
         'view own tasks',
         'view task',

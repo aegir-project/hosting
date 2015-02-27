@@ -14,6 +14,14 @@ function hosting_clone_hosting_feature() {
     'status' => HOSTING_FEATURE_ENABLED,
     'module' => 'hosting_clone',
     'group' => 'optional',
+    'role_permissions' => array(
+      'aegir platform manager' => array(
+        'create clone task',
+      ),
+      'aegir client' => array(
+        'create clone task',
+      ),
+    ),
   );
   return $features;
 }
