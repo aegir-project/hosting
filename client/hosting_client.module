@@ -397,7 +397,7 @@ function hosting_client_insert($node) {
       ))
       ->condition('nid', $node->nid)
       ->execute();
-    db_update('node_revisions')
+    db_update('node_revision')
       ->fields(array(
         'uid' => $user->uid,
       ))

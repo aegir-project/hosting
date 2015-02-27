@@ -15,7 +15,7 @@ function hosting_task_views_data() {
         'left_field' => 'vid',
         'field' => 'vid',
       ),
-      'node_revisions' => array(
+      'node_revision' => array(
         'left_field' => 'vid',
         'field' => 'vid',
       ),
