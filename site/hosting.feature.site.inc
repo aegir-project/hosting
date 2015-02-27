@@ -24,7 +24,7 @@ function hosting_site_hosting_feature() {
         'view site',
       ),
       'aegir account manager' => array(
-        'view_site',
+        'view site',
       ),
       'aegir client' => array(
         'create site',
