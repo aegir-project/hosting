@@ -388,7 +388,7 @@ function hosting_client_insert($node) {
     ))
     ->execute();
   if (variable_get('hosting_client_register_user', FALSE)
-     && !array_shift(user_load_multiple(array(), array('mail' => $node->email)))) {
+     && user_load_multiple(array(), array('mail' => $node->email)) == FALSE) {
     $user = hosting_client_register_user($node);
     $node->uid = $user->uid;
     db_update('node')
