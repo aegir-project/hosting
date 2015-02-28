@@ -498,6 +498,11 @@ function hosting_feature_rebuild_caches($features = array()) {
       return;
     }
   }
+  // Allow scripts to skip automatic verify tasks by passing '--no-verify'
+  if (function_exists('drush_get_option') &&
+      drush_get_option('no-verify', FALSE)) {
+    return;
+  }
   if ($nid = hosting_get_hostmaster_nid()) {
     hosting_add_task($nid, 'verify');
   }
