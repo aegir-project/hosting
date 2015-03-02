@@ -890,7 +890,7 @@ function _hosting_client_site_default($node) {
       $client_id = $client_id ? $client_id : HOSTING_DEFAULT_CLIENT;
       $client = node_load($client_id);
       $clients[$client->title] = $client->title;
-      if (isset($node->client) && ($node->client == $client_id || !$current_client_id)) {
+      if ((isset($node->client) && $node->client == $client_id) || !$current_client_id) {
         $current_client_id = $client_id;
       }
     }
