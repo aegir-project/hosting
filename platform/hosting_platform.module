@@ -350,7 +350,7 @@ function hosting_platform_form(&$node) {
   $form['frommakefile']['make_working_copy'] = array(
     '#type' => 'radios',
     '#title' => t('Drush make option'),
-    '#default_value' => isset($form['#node']->make_working_copy) ? $form['#node']->make_working_copy : 0,
+    '#default_value' => isset($node->make_working_copy) ? $node->make_working_copy : 0,
     '#options' => array(
       0 => t('Normal - Discards SCM files'),
       1 => t('Working copy - preserves SCM files'),
@@ -440,7 +440,7 @@ function hosting_platform_insert($node) {
       'verified' => isset($node->verified) ? $node->verified : 0,
       'web_server' => $node->web_server,
       'status' => isset($node->platform_status) ? $node->platform_status : 0,
-      'make_working_copy' => isset($node->make_working_copy) ? $node->make_working_copy : 0,
+      'make_working_copy' => isset($node->frommakefile['make_working_copy']) ? $node->frommakefile['make_working_copy'] : 0,
     ))
     ->execute();
   if (!isset($node->old_vid)) {
@@ -470,7 +470,7 @@ function hosting_platform_update($node) {
         'web_server' => $node->web_server,
         'verified' => $node->verified,
         'status' => $node->platform_status,
-        'make_working_copy' => $node->make_working_copy,
+        'make_working_copy' => isset($node->frommakefile['make_working_copy']) ? $node->frommakefile['make_working_copy'] : $node->make_working_copy,
       ))
       ->condition('nid', $node->nid)
       ->execute();
