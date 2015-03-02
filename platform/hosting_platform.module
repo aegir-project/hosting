@@ -2,7 +2,7 @@
 
 /**
  * @file
- *   Platform node type definition.
+ * Platform node type definition.
  */
 
 /**
@@ -30,7 +30,7 @@ define('HOSTING_PLATFORM_ENABLED', 1);
  */
 function hosting_platform_menu() {
   $items = array();
-  
+
   $items['hosting/platforms/list'] = array(
     'title' => 'List',
     'type' => MENU_DEFAULT_LOCAL_TASK,
@@ -53,8 +53,7 @@ function hosting_platform_menu() {
  * Implements hook_node_info().
  */
 function hosting_platform_node_info() {
-  #configuration
-  $types["platform"] =  array(
+  $types["platform"] = array(
     "type" => 'platform',
     "name" => 'Platform',
     'base' => 'hosting_platform',
@@ -144,20 +143,19 @@ function hosting_platform_permission() {
  */
 function hosting_platform_node_access($node, $op, $account) {
   if ($op != 'create' && hosting_feature('client')) {
-    // we rely on hosting_client_node_grants() instead of global configuration
+    // We rely on hosting_client_node_grants() instead of global configuration.
     return NULL;
   }
 
   switch ($op) {
     case 'create':
       return user_access('create platform', $account);
-      break;
+
     case 'update':
       return user_access('edit platform', $account);
-      break;
+
     case 'view':
       return user_access('view platform', $account);
-      break;
   }
 }
 
@@ -360,7 +358,7 @@ function hosting_platform_form(&$node) {
   $form['#after_build'][] = 'hosting_platform_form_platform_after_build';
 
   $servers = hosting_get_servers('http');
-  if (sizeof($servers) > 1) {
+  if (count($servers) > 1) {
     $form['web_server'] = array(
       '#type' => 'radios',
       '#title' => t('Web server'),
@@ -416,7 +414,7 @@ function hosting_platform_form_platform_after_build($form) {
  */
 function hosting_platform_form_alter(&$form, &$form_state, $form_id) {
   // Remove delete button from platform edit form, unless the platform's already been deleted via the Delete task
-  if  ($form_id == 'platform_node_form') {
+  if ($form_id == 'platform_node_form') {
     $node = $form['#node'];
     if (isset($node->platform_status) && $node->platform_status !== HOSTING_PLATFORM_DELETED) {
       $form['actions']['delete']['#type'] = 'hidden';
@@ -455,7 +453,7 @@ function hosting_platform_insert($node) {
  * database updates.
  */
 function hosting_platform_update($node) {
-  // if this is a new node or we're adding a new revision,
+  // If this is a new node or we're adding a new revision.
   if (!empty($node->revision)) {
     hosting_platform_insert($node);
   }
@@ -527,9 +525,6 @@ function hosting_platform_validate($node, &$form) {
 
 /**
  * Implements hook_load().
- *
- * @param node
- *    Node object
  */
 function hosting_platform_load($nodes) {
   foreach ($nodes as $nid => &$node) {
@@ -545,7 +540,7 @@ function hosting_platform_load($nodes) {
                      AND i.rid = :rid",
                      array(
                        ':package_type' => 'platform',
-                       ':rid' => $node->nid
+                       ':rid' => $node->nid,
                      )
                    )->fetchField();
 
@@ -580,10 +575,10 @@ function hosting_platform_load($nodes) {
  * Menu wildcard loader callback.
  *
  * Loads a hosting_platform node.
- * @see hosting_task_menu().
+ * @see hosting_task_menu()
  *
- * @param arg
- *    Node's numeric nid
+ * @param int $arg
+ *   Node's numeric nid
  *
  * @return bool|object
  */
@@ -653,7 +648,7 @@ function hosting_platform_view($node, $teaser = FALSE, $page = FALSE) {
     );
   }
 
-  // Task list
+  // Task list.
   if ($page && $node->nid) {
     $node->content['tasks_view'] = array(
       '#type' => 'item',
