@@ -545,7 +545,7 @@ function hosting_platform_load($nodes) {
                    )->fetchField();
 
     if (empty($node->frommakefile)) {
-      $node->frommakefile = array('makefile' => '', 'make_working_copy' => '');
+      $node->frommakefile = array('makefile' => '', 'make_working_copy' => 0);
     }
     if (!empty($additions->makefile)) {
       $node->frommakefile['makefile'] = $additions->makefile;
