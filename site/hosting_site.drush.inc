@@ -214,8 +214,7 @@ function hosting_site_post_hosting_backup_task($task, $data) {
 
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Implements hook_post_hosting_import_task().
  */
 function hosting_site_post_hosting_import_task($task, $data) {
   hosting_import_site($task->ref->nid, $data['context'], $task->ref->platform);
@@ -230,8 +229,7 @@ function hosting_site_post_hosting_import_task($task, $data) {
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Implements hook_post_hosting_verify_task().
  */
 function hosting_site_post_hosting_verify_task($task, $data) {
   if ($task->ref->type == 'site') {
@@ -262,7 +260,7 @@ function hosting_site_hosting_verify_task_rollback($task, $data) {
 }
 
 /**
- * Implements the hosting_failed_install hook
+ * Implements hook_hosting_import_task_rollback().
  */
 function hosting_site_hosting_import_task_rollback($task, $data) {
   if ($task->ref->type == 'site') {
@@ -274,7 +272,7 @@ function hosting_site_hosting_import_task_rollback($task, $data) {
 }
 
 /**
- * implementation of the hosting_post_login_reset hook
+ * Implements hook_post_hosting_login_reset_task().
  */
 function hosting_site_post_hosting_login_reset_task($task, $data) {
   if ($task->ref->type == 'site') {

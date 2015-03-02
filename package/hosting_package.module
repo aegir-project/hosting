@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Defines package node types
+ * Defines package node types
  *
  * Packages are somewhat analogous to Drupal.org projects. i.e.: components that
  * can be installed onto Drupal sites.
