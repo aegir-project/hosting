@@ -20,7 +20,9 @@ function hosting_hosting_site_context_options(&$task) {
 
   $client = node_load($task->ref->client);
   $user = user_load($task->uid);
-  $task->options['client_email'] = $user->mail;
+  if ($task->task_type != 'import' && $task->task_type != 'delete' && $task->task_type != 'verify') {
+    $task->options['client_email'] = $user->mail;
+  }
   $task->context_options['client_name'] = $client->uname;
 }
 

@@ -10,7 +10,7 @@ function drush_hosting_package_pre_hosting_task() {
     // populate the profile option, if it hasn't been specified yet.
     if (empty($task->options['profile'])) {
       $profile = node_load($task->ref->profile);
-      if ($task->task_type != 'import') {
+      if ($task->task_type != 'import' && $task->task_type != 'delete' && $task->task_type != 'verify') {
         $task->options['profile'] = $profile->short_name;
       }
     }
