@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Define database schemas for the dns module.
+ * Define database schemas for the dns module.
  */
 
 /**

@@ -1,11 +1,8 @@
 <?php
-/**
- *   $Id$
- */
 
 /**
  * @file
- *   Example service implementation for the hosting front end.
+ * Example service implementation for the hosting front end.
  *
  * @addtogroup hostingserviceapi
  * @{

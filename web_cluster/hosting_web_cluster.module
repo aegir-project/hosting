@@ -1,6 +1,7 @@
 <?php
 /**
- * @file Hook implementations for the Hosting web cluster module.
+ * @file
+ * Hook implementations for the Hosting web cluster module.
  */
 
 /**

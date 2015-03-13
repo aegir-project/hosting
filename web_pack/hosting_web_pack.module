@@ -1,6 +1,7 @@
 <?php
 /**
- * @file Hook implementations for the Hosting web pack module.
+ * @file
+ * Hook implementations for the Hosting web pack module.
  */
 
 /**

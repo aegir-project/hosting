@@ -1,7 +1,8 @@
 <?php
 
 /**
- * @file Drush hooks for the hosting_task module.
+ * @file
+ * Drush hooks for the hosting_task module.
  */
 
 /**

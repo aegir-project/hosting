@@ -1,6 +1,7 @@
 <?php
 /**
- * @file NodeAPI functions for the Hosting SSL module.
+ * @file
+ * NodeAPI functions for the Hosting SSL module.
  */
 
 /**

@@ -1,6 +1,7 @@
 <?php
 /**
- * @file Define the base Hosting service class.
+ * @file
+ * Define the base Hosting service class.
  */
 
 class hostingService {

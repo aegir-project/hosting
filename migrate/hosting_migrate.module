@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Migrate sites between platforms, performing upgrades when necessary.
+ * Migrate sites between platforms, performing upgrades when necessary.
  */
 
 include_once 'hosting_migrate.batch.inc';

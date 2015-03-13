@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Drush include for the package management module.
+ * Drush include for the package management module.
  */
 
 function drush_hosting_package_pre_hosting_task() {

@@ -3,7 +3,7 @@
 
 /**
  * @file
- *   The hosting feature definition for the task garbage collection.
+ * The hosting feature definition for the task garbage collection.
  */
 
 /**

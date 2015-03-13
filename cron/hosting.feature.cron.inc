@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Expose the cron feature to hostmaster.
+ * Expose the cron feature to hostmaster.
  */
 
 /**

@@ -1,6 +1,7 @@
 <?php
 /**
- * @file Hook implementations for the Hosting SSL module.
+ * @file
+ * Hook implementations for the Hosting SSL module.
  */
 
 /**

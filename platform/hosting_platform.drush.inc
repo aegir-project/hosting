@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Implement drush hooks for the Platforms module.
+ * Implement drush hooks for the Platforms module.
  */
 
 /**

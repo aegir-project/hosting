@@ -2,7 +2,7 @@
 
 /**
  * @file
- *   The hosting feature definition for the hosting queue daemon.
+ * The hosting feature definition for the hosting queue daemon.
  */
 
 /**

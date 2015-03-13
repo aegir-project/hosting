@@ -1,6 +1,7 @@
 <?php
 /**
- * @file Quota-relaled hooks for the Hosting site module.
+ * @file
+ * Quota-relaled hooks for the Hosting site module.
  */
 
 /**

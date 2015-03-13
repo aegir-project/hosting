@@ -1,6 +1,7 @@
 <?php
 /**
- * @file Site backup functions.
+ * @file
+ * Site backup functions.
  */
 
 /**

@@ -1,6 +1,7 @@
 <?php
 /**
- * @file Implement quota's for the resource used by client.
+ * @file
+ * Implement quota's for the resource used by client.
  */
 
 /**

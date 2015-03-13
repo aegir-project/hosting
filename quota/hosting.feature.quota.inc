@@ -2,7 +2,7 @@
 
 /**
  * @file
- *   Expose the quota feature to hostmaster.
+ * Expose the quota feature to hostmaster.
  */
 
 /**

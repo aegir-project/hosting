@@ -1,6 +1,7 @@
 <?php
 /**
- * @file Register a Hosting feature for the Sign-up module.osting feature for
+ * @file
+ * Register a Hosting feature for the Sign-up module.osting feature for
  * the Sign-up module.
  */
 
@@ -22,4 +23,3 @@ function hosting_signup_hosting_feature() {
   );
   return $features;
 }
-

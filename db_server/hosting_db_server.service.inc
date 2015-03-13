@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Provide the hosting serivce classes for database integration.
+ * Provide the hosting serivce classes for database integration.
  */
 
 /**

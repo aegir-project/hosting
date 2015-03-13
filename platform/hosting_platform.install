@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Define database schema and update functions for the Platforms module.
+ * Define database schema and update functions for the Platforms module.
  */
 
 /**

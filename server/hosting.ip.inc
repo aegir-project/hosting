@@ -1,6 +1,7 @@
 <?php
 /**
- * @file General IP address CRUD routines.
+ * @file
+ * General IP address CRUD routines.
  */
 
 /**

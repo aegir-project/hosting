@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Implement drush hooks for the hosting migrate module.
+ * Implement drush hooks for the hosting migrate module.
  */
 
 function drush_hosting_migrate_pre_hosting_task($task) {

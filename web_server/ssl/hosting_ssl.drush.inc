@@ -1,6 +1,7 @@
 <?php
 /**
- * @file Drush hooks for the Hosting SSH module. module.
+ * @file
+ * Drush hooks for the Hosting SSH module. module.
  */
 
 /**

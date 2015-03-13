@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Allow sites to have domain aliases that they can be accessed with.
+ * Allow sites to have domain aliases that they can be accessed with.
  */
 
 /**

@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Expose the client feature to hostmaster.
+ * Expose the client feature to hostmaster.
  */
 
 /**

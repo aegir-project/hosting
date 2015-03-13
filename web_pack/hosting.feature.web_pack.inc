@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Expose the web pack feature to hostmaster.
+ * Expose the web pack feature to hostmaster.
  */
 
 /**

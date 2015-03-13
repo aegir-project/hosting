@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Allow the hosting system to cron all the installed sites on a schedule.
+ * Allow the hosting system to cron all the installed sites on a schedule.
  */
 
 /**

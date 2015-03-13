@@ -1,6 +1,7 @@
 <?php
 /**
- * @file Register a hosting service for NGINX.
+ * @file
+ * Register a hosting service for NGINX.
  */
 
 /**

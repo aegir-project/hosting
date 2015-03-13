@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Expose the dns feature to hostmaster.
+ * Expose the dns feature to hostmaster.
  */
 
 /**

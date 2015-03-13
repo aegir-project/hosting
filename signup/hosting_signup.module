@@ -1,6 +1,7 @@
 <?php
 /**
- * @file Provides a signup form that can be run on remote sites
+ * @file
+ * Provides a signup form that can be run on remote sites
  */
 
 /**

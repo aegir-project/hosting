@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Drush include for the hosting_alias module.
+ * Drush include for the hosting_alias module.
  */
 
 function drush_hosting_alias_pre_hosting_task() {

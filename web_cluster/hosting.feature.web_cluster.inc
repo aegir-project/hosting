@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Expose the web cluster feature to hostmaster.
+ * Expose the web cluster feature to hostmaster.
  */
 
 /**

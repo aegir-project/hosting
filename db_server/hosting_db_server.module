@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Allow Hostmaster to configure database servers.
+ * Allow Hostmaster to configure database servers.
  */
 
 /**
@@ -35,7 +35,8 @@ function hosting_get_db_server($hostname) {
   else {
     $ip = gethostbyname($hostname);
   }
-  $result = db_query("SELECT nid FROM {node} WHERE title in ('%s', '%s') and type = :type", array(':type' => 'server', '' => $ip, '' => $hostname))->fetchField();
+  $result = db_query("SELECT nid FROM {node} WHERE title in ('%s', '%s') and type = :type",
+    array(':type' => 'server', '' => $ip, '' => $hostname))->fetchField();
   if ($result) {
     return node_load($result);
   }
@@ -65,4 +66,3 @@ function hosting_db_server_views_api() {
     'path' => drupal_get_path('module', 'hosting_db_server'),
   );
 }
-

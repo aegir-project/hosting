@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   API for mapping packages to various Hosting node types
+ * API for mapping packages to various Hosting node types
  */
 
 /**

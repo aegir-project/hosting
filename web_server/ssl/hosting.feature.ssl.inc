@@ -1,6 +1,7 @@
 <?php
 /**
- * @file Register this module as a Hosting feature.
+ * @file
+ * Register this module as a Hosting feature.
  */
 
 /**

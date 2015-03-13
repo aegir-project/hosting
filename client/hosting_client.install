@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Define database schema, install and update functions for the hosting_client module.
+ * Define database schema, install and update functions for the hosting_client module.
  */
 
 /**

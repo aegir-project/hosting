@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Define a views filter handler to filter by database type.
+ * Define a views filter handler to filter by database type.
  */
 
 /**

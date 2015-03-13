@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Implemented batch migration of sites.
+ * Implemented batch migration of sites.
  */
 
 /**

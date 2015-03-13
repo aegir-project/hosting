@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Provide the hosting serivce classes for DNS integration.
+ * Provide the hosting serivce classes for DNS integration.
  */
 
 /**

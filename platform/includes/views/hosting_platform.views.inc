@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Hosting platform views integration.
+ * Hosting platform views integration.
  */
 
 /**

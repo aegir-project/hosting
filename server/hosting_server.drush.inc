@@ -1,6 +1,7 @@
 <?php
 /**
- * @file Drush hooks for the Hosting server module.
+ * @file
+ * :Drush hooks for the Hosting server module.
  */
 
 /**

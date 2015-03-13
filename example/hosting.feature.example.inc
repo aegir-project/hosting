@@ -2,7 +2,7 @@
 
 /**
  * @file
- *   Expose the example feature to hostmaster.
+ * Expose the example feature to hostmaster.
  */
 
 /**

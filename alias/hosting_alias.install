@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Define database schema and update function for the site aliases module.
+ * Define database schema and update function for the site aliases module.
  */
 
 /**

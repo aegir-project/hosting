@@ -1,6 +1,7 @@
 <?php
 /**
- * @file Contains hook implementations for Hosting site module.
+ * @file
+ * Contains hook implementations for Hosting site module.
  */
 
 /**
