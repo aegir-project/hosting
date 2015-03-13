@@ -270,7 +270,7 @@ function hosting_client_node_access_records($node) {
       if (isset($node->clients)) {
         foreach ($node->clients as $cid => $client) {
           if ($cid != HOSTING_ADMIN_CLIENT) {
-            $grants[] = array_merge($base_grant, array('gid' => $cid, 'grant_update' => FALSE));
+            $grants[] = array_merge($base_grant, array('gid' => $cid, 'grant_update' => 0));
           }
         }
       }
