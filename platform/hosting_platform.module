@@ -214,8 +214,8 @@ function _hosting_get_platforms() {
                        ':hstatus' => HOSTING_PLATFORM_DELETED,
                      )
                    );
-  while ($server = $result->fetch()) {
-    $return[$server->nid] = $server->title;
+  while ($platform = $result->fetch()) {
+    $return[$platform->nid] = $platform->title;
   }
   return $return;
 }
@@ -239,8 +239,8 @@ function _hosting_get_enabled_platforms() {
                        ':h.status' => HOSTING_PLATFORM_LOCKED,
                      )
                    );
-  while ($server = $result->fetch()) {
-    $return[$server->nid] = $server->title;
+  while ($platform = $result->fetch()) {
+    $return[$platform->nid] = $platform->title;
   }
   return $return;
 }
@@ -264,8 +264,8 @@ function _hosting_get_locked_platforms() {
                        ':hstatus' => HOSTING_PLATFORM_LOCKED,
                      )
                    );
-  while ($server = $result->fetch()) {
-    $return[$server->nid] = $server->title;
+  while ($platform = $result->fetch()) {
+    $return[$platform->nid] = $platform->title;
   }
   return $return;
 }
