@@ -1029,6 +1029,8 @@ function hosting_client_configure($form, &$form_state) {
 
 /**
  * Get 25 clients in a paged query.
+ *
+ * DEPRECATED, moved to the hosting_client_list view.
  */
 function _hosting_get_clients() {
   $return = array();
@@ -1043,47 +1045,6 @@ function _hosting_get_clients() {
     $return[$client->nid] = $client->title;
   }
   return $return;
-}
-
-/**
- * Make a themed list of clients.
- *
- * Will take whatever _hosting_get_clients() will give as clients.
- *
- * @see _hosting_get_clients()
- */
-function hosting_client_list() {
-  $summary = array();
-  $clients = _hosting_get_clients();
-  return theme('item_list', array('items' => array_map('_hosting_node_link', array_keys($clients))));
-}
-
-/**
- * Implements hook_block_info().
- */
-function hosting_client_block_info() {
-  $blocks['hosting_clients'] = array(
-    'info' => t('Hosting clients'),
-    'status' => 1,
-    'region' => 'sidebar_second',
-    'weight' => 10,
-  );
-  return $blocks;
-}
-
-/**
- * Implements hook_block_view().
- */
-function hosting_client_block_view($delta) {
-  switch ($delta) {
-    case 'hosting_clients':
-      $blocks['title'] = t('Clients');
-      $blocks['content'] = user_access('view client') ? hosting_client_list() : '';
-      if (user_access('create client')) {
-        $blocks['content'] .= l(t('Add new client'), 'node/add/client', array('attributes' => array('class' => array('add-new-client'))));
-      }
-      break;
-  }
 }
 
 /**

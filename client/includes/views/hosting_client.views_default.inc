@@ -65,15 +65,6 @@ function hosting_client_views_default_views() {
   $handler->display->display_options['fields']['title']['field'] = 'title';
   $handler->display->display_options['fields']['title']['label'] = 'Client name';
   $handler->display->display_options['fields']['title']['element_label_colon'] = FALSE;
-  /* Field: Hosting Client: Internal name */
-  $handler->display->display_options['fields']['uname']['id'] = 'uname';
-  $handler->display->display_options['fields']['uname']['table'] = 'hosting_client';
-  $handler->display->display_options['fields']['uname']['field'] = 'uname';
-  /* Field: Content: Post date */
-  $handler->display->display_options['fields']['created']['id'] = 'created';
-  $handler->display->display_options['fields']['created']['table'] = 'node';
-  $handler->display->display_options['fields']['created']['field'] = 'created';
-  $handler->display->display_options['fields']['created']['label'] = 'Client added date';
   /* Filter criterion: Content: Type */
   $handler->display->display_options['filters']['type']['id'] = 'type';
   $handler->display->display_options['filters']['type']['table'] = 'node';
@@ -81,11 +72,6 @@ function hosting_client_views_default_views() {
   $handler->display->display_options['filters']['type']['value'] = array(
     'client' => 'client',
   );
-  /* Filter criterion: Content: Published */
-  $handler->display->display_options['filters']['status']['id'] = 'status';
-  $handler->display->display_options['filters']['status']['table'] = 'node';
-  $handler->display->display_options['filters']['status']['field'] = 'status';
-  $handler->display->display_options['filters']['status']['value'] = '1';
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page_clients');
@@ -97,6 +83,17 @@ function hosting_client_views_default_views() {
   $handler->display->display_options['menu']['name'] = 'main-menu';
   $handler->display->display_options['menu']['context'] = 0;
   $handler->display->display_options['menu']['context_only_inline'] = 0;
+
+  /* Display: Block */
+  $handler = $view->new_display('block', 'Block', 'block_1');
+  $handler->display->display_options['defaults']['footer'] = FALSE;
+  /* Footer: Global: Text area */
+  $handler->display->display_options['footer']['area']['id'] = 'area';
+  $handler->display->display_options['footer']['area']['table'] = 'views';
+  $handler->display->display_options['footer']['area']['field'] = 'area';
+  $handler->display->display_options['footer']['area']['content'] = '<a href="/node/add/client" class="add-new-client">Add new client</a>';
+  $handler->display->display_options['footer']['area']['format'] = '1';
+  $handler->display->display_options['block_description'] = 'Clients block';
 
   $views[$view->name] = $view;
 
