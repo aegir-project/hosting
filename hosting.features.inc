@@ -254,7 +254,7 @@ function hosting_get_features($refresh = FALSE) {
 
   if (empty($cache->data) || $refresh) {
     // Include any optional hosting.feature.*.inc files.
-    $files = drupal_system_listing("/hosting\.feature\.[a-zA-Z_]*\.inc$/", "modules");
+    $files = drupal_system_listing("/hosting\.feature\.[a-zA-Z0-9_]*\.inc$/", "modules");
     if (count($files)) {
       foreach ($files as $name => $info) {
         include_once DRUPAL_ROOT . '/' . $info->uri;
