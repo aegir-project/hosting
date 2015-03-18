@@ -7,7 +7,7 @@
 /**
  * Display the ip address on the node. IP utility function for hook_view.
  */
-function hosting_ip_view(&$node) {
+function _hosting_ip_view(&$node) {
   $ip_list = isset($node->ip_addresses) ? $node->ip_addresses : array();
 
   if (sizeof($ip_list)) {

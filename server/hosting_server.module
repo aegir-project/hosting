@@ -638,7 +638,7 @@ function hosting_server_view(&$node, $teaser = FALSE, $page = FALSE) {
     '#weight' => -50,
   );
 
-  hosting_ip_view($node);
+  _hosting_ip_view($node);
   if (isset($node->content->info->ip_addresses['#weight'])) {
     $node->content->info->ip_addresses['#weight'] = -30;
   }
