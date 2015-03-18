@@ -560,7 +560,7 @@ function hosting_server_delete($node) {
   db_delete('hosting_server')
     ->condition('nid', $node->nid)
     ->execute();
-  hosting_ip_delete($node);
+  _hosting_ip_delete($node);
   hosting_context_delete($node->nid);
   hosting_task_delete_related_tasks($node->nid);
   hosting_server_invoke_services($node, 'delete_revision');

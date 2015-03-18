@@ -101,7 +101,7 @@ function _hosting_ip_load($node) {
 /**
  * IP Utility function for hook_delete.
  */
-function hosting_ip_delete($node) {
+function _hosting_ip_delete($node) {
   db_delete('hosting_ip_addresses')
     ->condition('nid', $node->nid)
     ->execute();
