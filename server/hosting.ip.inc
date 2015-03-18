@@ -60,7 +60,7 @@ function _hosting_ip_save($node, $update = FALSE) {
 /**
  * Validate that IP list is valid. IP utility function for hook_validate.
  */
-function hosting_ip_validate($node) {
+function _hosting_ip_validate($node) {
   $ips = isset($node->ip_addresses) ? $node->ip_addresses : array();
   foreach ($ips as $id => $ip) {
     $ip = trim($ip);
