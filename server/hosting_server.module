@@ -507,7 +507,7 @@ function hosting_server_update($node) {
     ->condition('nid', $node->nid)
     ->execute();
 
-  hosting_ip_save($node, TRUE);
+  _hosting_ip_save($node, TRUE);
 
   if (!isset($node->no_verify) || !$node->no_verify) {
     hosting_add_task($node->nid, 'verify');
@@ -532,7 +532,7 @@ function hosting_server_insert($node) {
     ))
     ->execute();
 
-  hosting_ip_save($node, FALSE);
+  _hosting_ip_save($node, FALSE);
 
   hosting_server_invoke_services($node, 'save', $node);
   hosting_server_invoke_services($node, 'insert', $node);
