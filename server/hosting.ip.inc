@@ -88,7 +88,7 @@ function _hosting_ip_validate($node) {
 /**
  * IP Utility function for hook_load.
  */
-function hosting_ip_load($node) {
+function _hosting_ip_load($node) {
   $ip_list = array();
   $result = db_query("SELECT id,ip_address FROM {hosting_ip_addresses} WHERE nid = :nid ORDER BY id", array(':nid' => $node->nid));
   while ($obj = $result->fetch()) {

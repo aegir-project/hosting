@@ -579,7 +579,7 @@ function hosting_server_load($nodes) {
     hosting_server_init_services($node);
     hosting_server_invoke_services($node, 'load');
     $additions->services = $node->services;
-    $additions->ip_addresses = hosting_ip_load($node);
+    $additions->ip_addresses = _hosting_ip_load($node);
 
     foreach ($additions as $property => &$value) {
       $node->$property = $value;
