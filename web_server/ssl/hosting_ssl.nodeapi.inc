@@ -10,8 +10,7 @@
 define('HOSTING_SSL_CUSTOM_KEY', 'null');
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Form API code to extend the site form with SSL fields.
  */
 function hosting_ssl_site_form(&$form, &$form_state, $form_id) {
   $node = $form['#node'];
@@ -44,7 +43,7 @@ function hosting_ssl_site_form(&$form, &$form_state, $form_id) {
     '#type' => 'radios',
     '#title' => t('Encryption key'),
     '#description' => t("Choose an existing SSL certificate. If you do not wish to use any of your existing certificates, you may choose to generate a new one."),
-    '#options' => hosting_ssl_get_keys(null, TRUE),
+    '#options' => hosting_ssl_get_keys(NULL, TRUE),
     '#required' => TRUE,
     '#default_value' => isset($node->ssl_key) ? $node->ssl_key : HOSTING_SSL_CUSTOM_KEY,
     '#access' => user_access('create ssl certificate'),
@@ -54,7 +53,7 @@ function hosting_ssl_site_form(&$form, &$form_state, $form_id) {
   _hosting_site_field($form, $node, 'ssl_key_new', array(
     '#type' => 'textfield',
     '#title' => t('New encryption key'),
-    '#description' => t("This field should only contain lower case alpha-numeric and '_', '-' or '.' characters. If the SSL certificate is not found, Aegir will automatically generate a self-signed certificate for you."),
+    '#description' => t("A name for the certificate, often relating to the domain name. This field should only contain lower case alpha-numeric and '_', '-' or '.' characters. If the SSL certificate is not found, Aegir will automatically generate a self-signed certificate for you."),
     '#default_value' => '',
     '#access' => user_access('create ssl certificate'),
     '#weight' => -7,
@@ -62,12 +61,11 @@ function hosting_ssl_site_form(&$form, &$form_state, $form_id) {
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Implemensts hook_hosting_site_options_alter
  */
 function hosting_ssl_hosting_site_options_alter(&$return, $node) {
   // Disable the ssl key fields by default.
-  if (!sizeof(hosting_ssl_get_servers())) {
+  if (!count(hosting_ssl_get_servers())) {
     $return['ssl_enabled'] = FALSE;
   }
 
@@ -78,12 +76,11 @@ function hosting_ssl_hosting_site_options_alter(&$return, $node) {
   if (isset($node->ssl_enabled)) {
 
     $keys = hosting_ssl_get_keys($node->client, TRUE);
-
-    // return the list of valid keys, including the special 'new key' option.
+    // Return the list of valid keys, including the special 'new key' option.
     $return['ssl_key'] = array_keys($keys);
 
-    // properly default this value so things dont fall apart later.
-    if (sizeof($return['ssl_key']) == 1) {
+    // Properly default this value so things dont fall apart later.
+    if (count($return['ssl_key']) == 1) {
       $node->ssl_key = HOSTING_SSL_CUSTOM_KEY;
     }
 
@@ -104,11 +101,10 @@ function hosting_ssl_hosting_site_options_alter(&$return, $node) {
 
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Implements hook_nodeapi_TYPE_OP().
  */
 function hosting_ssl_nodeapi_site_view(&$node, $teaser = FALSE) {
- $node->content['info']['ssl_enabled'] = array(
+  $node->content['info']['ssl_enabled'] = array(
     '#type' => 'item',
     '#title' => t('Encryption'),
     '#markup' => hosting_ssl_status_options((isset($node->ssl_enabled)) ? $node->ssl_enabled : HOSTING_SSL_DISABLED),
@@ -140,8 +136,7 @@ function hosting_ssl_get_key($cid) {
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Get an Array of all IP's associated with an SSL certificate.
  */
 function hosting_ssl_get_ip($cid) {
   $result = db_query("SELECT h.name AS server_name, ips.ip_address
@@ -195,8 +190,7 @@ function hosting_ssl_filter_key($key) {
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Implements hook_nodeapi_TYPE_OP().
  */
 function hosting_ssl_nodeapi_site_validate($node, &$form) {
   if ($node->ssl_enabled) {
@@ -228,12 +222,17 @@ function hosting_ssl_nodeapi_site_validate($node, &$form) {
         form_set_error('ssl_key', t("You have chosen an invalid SSL key"));
       }
     }
+    // TODO, check that the server to host this site has ssl enabled.
+    // if (!empty($node->platform)) {
+      // $platform = node_load($node->platform);
+      // $server = node_load($platform->web_server);
+      // $server->services['http']->type == 'apache_ssl' or nginx_ssl???
+    // }
   }
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Implements hook_nodeapi_TYPE_OP().
  */
 function hosting_ssl_nodeapi_site_presave(&$node) {
   if (!isset($node->ssl_key)) {
@@ -246,13 +245,12 @@ function hosting_ssl_nodeapi_site_presave(&$node) {
   if (($node->ssl_key == HOSTING_SSL_CUSTOM_KEY) && isset($node->ssl_key_new)) {
     $node->ssl_key = hosting_ssl_filter_key($node->ssl_key_new);
   }
-  // this creates the SSL key for the site, if required
+  // This creates the SSL key for the site, if required.
   $node->ssl_key = hosting_ssl_save_key($node);
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Implements hook_nodeapi_TYPE_OP().
  */
 function hosting_ssl_nodeapi_site_insert($node) {
   $id = db_insert('hosting_ssl_site')
@@ -266,8 +264,7 @@ function hosting_ssl_nodeapi_site_insert($node) {
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Implements hook_nodeapi_TYPE_OP().
  */
 function hosting_ssl_nodeapi_site_update($node) {
   // check if an existing record is there
@@ -294,11 +291,11 @@ function hosting_ssl_nodeapi_site_update($node) {
  * Implements hook_node_load().
  */
 function hosting_ssl_node_load($nodes, $types) {
-  foreach($nodes as $k => $node) {
+  foreach ($nodes as $k => $node) {
     $result = db_query("SELECT ssl_enabled, ssl_key FROM {hosting_ssl_site} WHERE vid = :vid",
       array(':vid' => $node->vid)
       )->fetchObject();
-    if($result) {
+    if ($result) {
       $nodes[$k]->ssl_enabled = $result->ssl_enabled;
       $nodes[$k]->ssl_key = $result->ssl_key;
     }
@@ -306,8 +303,7 @@ function hosting_ssl_node_load($nodes, $types) {
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Implements hook_nodeapi_TYPE_OP().
  */
 function hosting_ssl_nodeapi_site_delete($node) {
   hosting_ssl_clean_keys($node);
@@ -317,8 +313,7 @@ function hosting_ssl_nodeapi_site_delete($node) {
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Implements hook_nodeapi_TYPE_OP().
  */
 function hosting_ssl_nodeapi_site_delete_revision($node) {
   db_delete('hosting_ssl_site')
@@ -363,10 +358,8 @@ function hosting_ssl_save_key($node) {
         $obj->cid = FALSE;
         $node->ssl_enabled = HOSTING_SSL_DISABLED;
       }
-      $node->ssl_key = $obj->cid;
+      $node->ssl_key = 0;
     }
-
-    return $obj->cid;
   }
 
   return $node->ssl_key;
@@ -402,7 +395,7 @@ function hosting_ssl_get_keys($client = NULL, $ask_custom = FALSE) {
   $result = db_query($query, $args);
 
   while ($obj = $result->fetchObject()) {
-    if (sizeof($obj->ssl_key)) {
+    if (count($obj->ssl_key)) {
       $keys[$obj->cid] = $obj->ssl_key;
     }
   }
@@ -416,7 +409,7 @@ function hosting_ssl_get_keys($client = NULL, $ask_custom = FALSE) {
  * This is designed to be ran on a site's delete task or the site node's deletion.
  */
 function hosting_ssl_clean_keys($node) {
-  // check if there are still sites using this site's certificate
+  // Check if there are still sites using this site's certificate.
   if (!db_query("SELECT * FROM {hosting_ssl_site} siteA
                    INNER JOIN {hosting_ssl_site} siteB ON siteA.ssl_key = siteB.ssl_key
                    INNER JOIN {hosting_site} s ON s.nid = siteA.nid
@@ -427,7 +420,7 @@ function hosting_ssl_clean_keys($node) {
                  array(
                    ':siteA_ssl_enabled' => 1,
                    ':s_status' => HOSTING_SITE_DELETED,
-                   ':siteB_nid' => $node->nid
+                   ':siteB_nid' => $node->nid,
                  ))->fetchField()) {
     // We need to fetch the ssl_key field from the DB because the object comes
     // from the node edit, so it's gone.

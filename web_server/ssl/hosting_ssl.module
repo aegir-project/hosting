@@ -22,8 +22,7 @@ define('HOSTING_SSL_REQUIRED', 2);
 include_once 'hosting_ssl.nodeapi.inc';
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Implements hook_hosting_service().
  */
 function hosting_ssl_hosting_service() {
   return array(
@@ -91,8 +90,7 @@ function hosting_ssl_get_profiles() {
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Implements hook_form_alter().
  */
 function hosting_ssl_form_alter(&$form, &$form_state, $form_id) {
   if ($form_id == 'site_node_form') {
@@ -101,7 +99,7 @@ function hosting_ssl_form_alter(&$form, &$form_state, $form_id) {
 }
 
 /**
- * Per-server, per-ip certificate listing
+ * Per-server, per-ip certificate listing.
  */
 function hosting_ssl_menu() {
   $items = array();
@@ -137,7 +135,7 @@ function hosting_ssl_cert_node_load($arg) {
 }
 
 /**
- * List SSL certificates associated with the given server
+ * List SSL certificates associated with the given server.
  */
 function hosting_ssl_server_cert_list($node) {
   drupal_set_title(t('Certificates installed on server @server', array('@server' => $node->title)), PASS_THROUGH);
@@ -155,19 +153,6 @@ function hosting_ssl_server_cert_list($node) {
       'field' => 'client',
     ),
   );
-/*
-  $args = array($node->nid);
-  $sql = 'SELECT ips.ip_address, cert.ssl_key AS domain, cert.status, client.title AS client
-            FROM {hosting_ip_addresses} ips
-            INNER JOIN {hosting_ssl_cert_ips} cert_ip ON cert_ip.ip_address = ips.id
-            INNER JOIN {hosting_ssl_cert} cert ON cert.cid = cert_ip.cid
-            INNER JOIN {node} client ON client.nid = cert.client
-            WHERE ips.nid = %d';
-  $sql .= tablesort_sql($header);
-  $result = pager_query(db_rewrite_sql($sql, 'cert'), 25, 2, null, $args);
-*/
-// TODO: Validate and finish conversion to DBTNG. Specifically, what do we do
-// with $primary_table passed to db_rewrite_sql()?
   $query = db_select('hosting_ip_addresses', 'ips');
   $query = $query->extend('PagerDefault');
   $query = $query->extend('TableSort');
@@ -187,13 +172,17 @@ function hosting_ssl_server_cert_list($node) {
 
   $rows = array();
   foreach ($result as $cert) {
-    // XXX: not in use?
-    //$row_class = ($cert->status == 1) ? 'hosting-success' : 'hosting-info';
     $row = array();
     $row[] = $cert->domain;
     $row[] = $cert->ip_address;
     $row[] = filter_xss($cert->client);
     $rows[] = $row;
   }
-  return theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('class' => array('hostign-table')))) . theme('pager', array('tags' => NULL, 'element' => 2));
+  return theme('table',
+    array(
+      'header' => $header,
+      'rows' => $rows,
+      'attributes' => array('class' => array('hostign-table')),
+    ))
+    . theme('pager', array('tags' => NULL, 'element' => 2));
 }

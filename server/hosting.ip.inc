@@ -166,14 +166,21 @@ function hosting_ip_allocate($cert, $site) {
  *
  * XXX: this should be in the 'server' class (which doesn't exist yet)
  * or at least in the services class
+ *
+ * @param int $server
+ *   The server node ID.
+ *
+ * @return int
+ *   Id of the next available IP.
  */
 function hosting_server_ip_allocate($server) {
   // guess the next available IP
   return db_query("SELECT hosting_ip_addresses.id
                    FROM {hosting_ip_addresses}
-                   LEFT JOIN {hosting_ssl_cert_ips}
-                   ON hosting_ip_addresses.id = hosting_ssl_cert_ips.ip_address
+                     LEFT JOIN {hosting_ssl_cert_ips}
+                       ON (hosting_ip_addresses.id = hosting_ssl_cert_ips.ip_address)
                    WHERE hosting_ssl_cert_ips.ip_address IS NULL
-                   AND nid = :nid LIMIT 1;
-                  ", array(':nid' => $server))->fetchField();
+                     AND nid = :nid LIMIT 1;",
+                   array(':nid' => $server)
+                 )->fetchField();
 }
