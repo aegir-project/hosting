@@ -48,6 +48,11 @@ function hosting_ssl_site_form(&$form, &$form_state, $form_id) {
     '#default_value' => isset($node->ssl_key) ? $node->ssl_key : HOSTING_SSL_CUSTOM_KEY,
     '#access' => user_access('create ssl certificate'),
     '#weight' => -8,
+    '#states' => array(
+      'visible' => array(
+        ':input[name="ssl_enabled"]' => array('!value' => 0),
+      ),
+    ),
   ), 'hosting_ssl_output_key', $ssl_available, !$new_site);
 
   _hosting_site_field($form, $node, 'ssl_key_new', array(
@@ -57,6 +62,12 @@ function hosting_ssl_site_form(&$form, &$form_state, $form_id) {
     '#default_value' => '',
     '#access' => user_access('create ssl certificate'),
     '#weight' => -7,
+    '#states' => array(
+      'visible' => array(
+        ':input[name="ssl_enabled"]' => array('!value' => 0),
+        ':input[name="ssl_key"]' => array('value' => HOSTING_SSL_CUSTOM_KEY),
+      ),
+    ),
   ), 'filter_xss', $ssl_available, FALSE);
 }
 
