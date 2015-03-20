@@ -187,7 +187,7 @@ function hosting_client_form(&$node, &$form_state) {
     '#title' => check_plain($type->title_label),
     '#required' => TRUE,
     '#size' => 40,
-    '#default_value' => $node->title,
+    '#default_value' => isset($node->title) ? $node->title : '',
     '#maxlength' => 100,
     '#description' => t('The name of this client, generally the organization name or the contact name for individuals.'),
   );
@@ -265,7 +265,7 @@ function hosting_client_form(&$node, &$form_state) {
     global $user;
     $form['new_user'] = array(
       '#type' => 'value',
-      '#value' => $user->name,
+      '#value' => isset($user->name) ? $user->name : '',
     );
   }
   return $form;

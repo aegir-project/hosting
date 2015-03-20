@@ -57,7 +57,7 @@ function hosting_signup_form($form, &$form_state) {
     drupal_set_message(t("Please login first. We have no way of guessing your email and this site is configured not to register new users. You will not receive the login link for your new site. This is probably a bad configuration."));
   }
   $node = new stdClass();
-  $form['site'] = hosting_site_form($node);
+  $form['site'] = hosting_site_form($node, $form_state);
   unset($form['site']['client']);
   $state = array();
   foreach (module_implements('form_alter') as $module) {
@@ -66,7 +66,7 @@ function hosting_signup_form($form, &$form_state) {
   }
   unset($form['site']['info']['client']);
 
-  $form['client'] = hosting_client_form($node);
+  $form['client'] = hosting_client_form($node, $form_state);
 
   foreach (module_implements('form_alter') as $module) {
     $function = $module . '_form_alter';
