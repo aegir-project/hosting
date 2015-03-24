@@ -434,7 +434,7 @@ function hosting_platform_insert($node) {
       'vid' => $node->vid,
       'nid' => $node->nid,
       'publish_path' => $node->publish_path,
-      'makefile' => isset($node->frommakefile['makefile']) ? $node->frommakefile['makefile'] : '',
+      'makefile' => isset($node->makefile) ? $node->makefile : (isset($node->frommakefile['makefile']) ? $node->frommakefile['makefile'] : ''),
       'verified' => isset($node->verified) ? $node->verified : 0,
       'web_server' => $node->web_server,
       'status' => isset($node->platform_status) ? $node->platform_status : 0,
@@ -464,7 +464,7 @@ function hosting_platform_update($node) {
     db_update('hosting_platform')
       ->fields(array(
         'publish_path' => $node->publish_path,
-        'makefile' => isset($node->frommakefile['makefile']) ? $node->frommakefile['makefile'] : $node->makefile,
+        'makefile' => isset($node->makefile) ? $node->makefile : (isset($node->frommakefile['makefile']) ? $node->frommakefile['makefile'] : ''),
         'web_server' => $node->web_server,
         'verified' => $node->verified,
         'status' => $node->platform_status,
