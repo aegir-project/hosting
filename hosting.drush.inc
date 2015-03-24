@@ -131,7 +131,7 @@ function hosting_drush_import($alias) {
     $node->status = 1;
   }
 
-  // Iterate through all the objects which may want to save this node.
+  // Iterate through all the Drush commands which may want to save this node.
   $modules = drush_command_implements('drush_context_import');
   foreach ($modules as $module) {
     $func = "{$module}_drush_context_import";

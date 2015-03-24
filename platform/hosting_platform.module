@@ -297,7 +297,7 @@ function hosting_platform_form(&$node) {
     '#maxlength' => 255,
   );
 
-  // allow edition if the node is in creation, or if wasn't verified correctly
+  // Allow edition if the node is in creation, or if wasn't verified correctly
   // *and* we're not using a makefile. The reason while we don't allow editing
   // the path if the makefile was specified is that there's the possibility
   // that the platform path was actually created when the node was saved the
@@ -334,13 +334,13 @@ function hosting_platform_form(&$node) {
     );
   }
   else {
-    // display it
+    // Display it.
     $form['info']['publish_path'] = array(
       '#type' => 'item',
       '#title' => t('Publish path'),
       '#markup' => $node->publish_path,
     );
-    // send it on form submission
+    // Send it on form submission.
     $form['publish_path'] = array(
       '#type' => 'hidden',
       '#value' => $node->publish_path,
@@ -408,25 +408,14 @@ function hosting_platform_form(&$node) {
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * After build callback for the hosting_platform_form.
  */
 function hosting_platform_form_platform_after_build($form) {
-  // @todo: what are the ifs for when we react the same either way?
-  drupal_add_js(drupal_get_path('module', 'hosting_platform') . '/hosting_platform.js');
-  if (isset($form['frommakefile']['makefile']['#attributes']['class'])) {
-    $form['frommakefile']['makefile']['#attributes']['class'][] = ' hosting-platform-working-copy-source';
-  }
-  else {
-    $form['frommakefile']['makefile']['#attributes']['class'][] = ' hosting-platform-working-copy-source';
-  }
 
-  if (isset($form['frommakefile']['make_working_copy']['#attributes']['class'])) {
-    $form['frommakefile']['make_working_copy']['#attributes']['class'][] = ' hosting-platform-working-copy-target';
-  }
-  else {
-    $form['frommakefile']['make_working_copy']['#attributes']['class'][] = ' hosting-platform-working-copy-target';
-  }
+  drupal_add_js(drupal_get_path('module', 'hosting_platform') . '/hosting_platform.js');
+
+  $form['frommakefile']['makefile']['#attributes']['class'][] = ' hosting-platform-working-copy-source';
+  $form['frommakefile']['make_working_copy']['#attributes']['class'][] = ' hosting-platform-working-copy-target';
 
   return $form;
 }
@@ -437,7 +426,8 @@ function hosting_platform_form_platform_after_build($form) {
 function hosting_platform_form_alter(&$form, &$form_state, $form_id) {
   switch ($form_id) {
     case 'platform_node_form':
-      // Remove delete button from platform edit form, unless the platform's already been deleted via the Delete task
+      // Remove delete button from platform edit form,
+      // unless the platform's already been deleted via the Delete task.
       $node = $form['#node'];
       if (isset($node->platform_status) && $node->platform_status !== HOSTING_PLATFORM_DELETED) {
         $form['actions']['delete']['#type'] = 'hidden';
@@ -553,17 +543,41 @@ function hosting_platform_form_validate(&$form, &$form_state) {
  * Implements hook_validate().
  */
 function hosting_platform_validate($node, &$form) {
-  // Make sure the platform name is unique, to avoid context clashes.
-  if ($node->op != t('Delete') && $result = db_query("SELECT n.title AS name FROM {hosting_platform} AS h INNER JOIN {node} AS n ON n.nid = h.nid WHERE n.title = !n.title AND n.nid <> !n.nid AND h.status >= !h.status", array('!n.title' => $node->title, '!n.nid' => $node->nid, '!h.status' => HOSTING_PLATFORM_QUEUED))->fetch()) {
-    form_set_error('title', t('Platform name %name is already defined. Platform names must be unique across all servers.', array('%name' => $result->name)));
-  }
-  // Make sure the path is unique. Remote servers can't have the same path to a platform that is in use by another server.
-  $exists = hosting_platform_path_exists($node->publish_path);
-  if ($node->op != t('Delete') && $exists) {
-    form_set_error('publish_path', t('Path is already in use by platform %name. Platform paths must be unique across all servers.', array('%name' => $exists->name)));
-  }
-  if (is_null($node->web_server)) {
-    form_set_error('web_server', t('Platform needs to be associated with a webserver. Make sure you have a verified webserver on this Aegir install!'));
+  if ($node->op != t('Delete')) {
+
+    // Make sure the platform name is unique, to avoid context clashes.
+    $result = db_query("SELECT n.title AS name
+      FROM {hosting_platform} AS h
+        INNER JOIN {node} AS n ON n.nid = h.nid
+      WHERE n.title = !n.title
+        AND n.nid <> !n.nid
+        AND h.status >= !h.status",
+      array(
+        '!n.title' => $node->title,
+        '!n.nid' => $node->nid,
+        '!h.status' => HOSTING_PLATFORM_QUEUED,
+      )
+    )->fetch();
+
+    if ($result) {
+      form_set_error('title',
+        t('Platform name %name is already defined. Platform names must be unique across all servers.',
+        array('%name' => $result->name))
+      );
+    }
+
+    // Make sure the path is unique. Remote servers can't have the same path to a platform that is in use by another server.
+    $exists = hosting_platform_path_exists($node->publish_path);
+    if ($exists) {
+      form_set_error('publish_path',
+        t('Path is already in use by platform %name. Platform paths must be unique across all servers.',
+        array('%name' => $result->name))
+      );
+    }
+
+    if (is_null($node->web_server)) {
+      form_set_error('web_server', t('Platform needs to be associated with a webserver. Make sure you have a verified webserver on this Aegir install!'));
+    }
   }
 }
 
@@ -572,7 +586,19 @@ function hosting_platform_validate($node, &$form) {
  * platform.
  */
 function hosting_platform_path_exists($path) {
-  return db_query("SELECT n.title AS name FROM {hosting_platform} AS h INNER JOIN {node} AS n ON n.nid = h.nid WHERE publish_path = !publish_path AND h.status >= !h.status", array('!publish_path' => hosting_path_normalize($path), '!h.status' => HOSTING_PLATFORM_QUEUED))->fetch();
+  $result = db_query("SELECT n.title AS name
+    FROM {hosting_platform} AS h
+      INNER JOIN {node} AS n ON n.nid = h.nid
+    WHERE publish_path = !publish_path
+      AND n.nid <> !n.nid
+      AND h.status >= !h.status",
+    array(
+      '!publish_path' => hosting_path_normalize($node->publish_path),
+      '!n.nid' => $node->nid,
+      '!h.status' => HOSTING_PLATFORM_QUEUED,
+    )
+  )->fetch();
+  return $result;
 }
 
 /**
@@ -633,6 +659,7 @@ function hosting_platform_load($nodes) {
  *   Node's numeric nid
  *
  * @return bool|object
+ *   A platforn node object or FALSE.
  */
 function hosting_platform_wildcard_load($arg) {
   if (!is_numeric($arg)) {
