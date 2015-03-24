@@ -102,6 +102,7 @@ function drush_hosting_queued() {
       drush_log(dt('Found task to execute. Pausing before execution.'));
       sleep(1);
 
+      watchdog('hosting_queued', 'Running task @nid.', array('@nid' => $task->nid));
       // Execute the task in the backend
       drush_invoke_process('@self', 'hosting-task', array($task->nid), array('strict' => FALSE), array('interactive' => TRUE));
       drush_log(dt('Finished executing task.'));
