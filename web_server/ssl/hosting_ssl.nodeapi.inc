@@ -62,7 +62,7 @@ function hosting_ssl_site_form(&$form, &$form_state, $form_id) {
   _hosting_site_field($form['hosting_ssl_wrapper'], $node, 'ssl_key_new', array(
     '#type' => 'textfield',
     '#title' => t('New encryption key'),
-    '#description' => t("A name for the certificate, often relating to the domain name. This field should only contain lower case alpha-numeric and '_', '-' or '.' characters. If the SSL certificate is not found, Aegir will automatically generate a self-signed certificate for you."),
+    '#description' => t("A name for the certificate, often relating to the domain name. This field should only contain lower case alpha-numeric and '_', '-' or '.' characters. If the SSL certificate is not found in config/ssl.d, Aegir will automatically generate a self-signed certificate for you. You can replace the generated with a properly signed version later."),
     '#default_value' => '',
     '#access' => user_access('create ssl certificate'),
     '#states' => array(
