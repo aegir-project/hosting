@@ -66,7 +66,7 @@ function hosting_site_get_backup($bid) {
  */
 function hosting_site_backup_list($site) {
   $result = db_query("SELECT bid, description, size, timestamp FROM {hosting_site_backups} WHERE site = :site ORDER BY timestamp DESC", array(':site' => $site));
-  $backup = array();
+  $backups = array();
   foreach ($result as $object) {
     #needs to be cleaned up. but i am NOT generating a theme func for this right now.
     $backups[$object->bid] = '<strong>' . format_date($object->timestamp) . '</strong> - ' . format_size($object->size) . ' - ' . filter_xss($object->description);
@@ -78,10 +78,10 @@ function hosting_site_backup_list($site) {
  * Implements hosting_task_TASK_TYPE_form_validate().
  */
 function hosting_task_backup_delete_form_validate($form, &$form_state) {
-  if ($form['parameters']['no_backups']) {
+  if (isset($form['parameters']['no_backups'])) {
     form_set_error('no_backups', t('There are no valid backups available.'));
   }
-  if (!$form['parameters']['#post']['parameters']) {
+  if (!isset($form['parameters']['#post']['parameters'])) {
     form_set_error('no_backups', t('No backups were selected for deletion.'));
   }
 }
