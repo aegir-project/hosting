@@ -81,7 +81,9 @@ function hosting_task_backup_delete_form_validate($form, &$form_state) {
   if (isset($form['parameters']['no_backups'])) {
     form_set_error('no_backups', t('There are no valid backups available.'));
   }
-  if (!isset($form['parameters']['#post']['parameters'])) {
+  // Filter out unchecked backups.
+  $form_state['values']['parameters'] = array_filter($form_state['values']['parameters']);
+  if (!count($form_state['values']['parameters'])) {
     form_set_error('no_backups', t('No backups were selected for deletion.'));
   }
 }
