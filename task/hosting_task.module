@@ -609,9 +609,10 @@ function hosting_task_restore_form($node) {
 
 /**
  * Implements hook_form_alter().
+ * TODO: Move restore functions to hosting_site, where backup functions are.
  */
 function hosting_task_restore_form_validate($form, &$form_state) {
-  if ($form['parameters']['no_backups']) {
+  if (isset($form['parameters']['no_backups'])) {
     form_set_error('no_backups', t('There are no valid backups available.'));
   }
 }
