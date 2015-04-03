@@ -1154,6 +1154,30 @@ function hosting_context_name($nid) {
   return '@' . $node->hosting_name;
 }
 
+
+/**
+ * Lookup the node ID for a hosting context name.
+ *
+ * @param object|string $alias
+ *   The name of the provision context to import.
+ *
+ * @return int
+ *   The node ID associated with the alias.
+ */
+function hosting_context_nid($alias) {
+  $name = (is_object($alias)) ? $alias->name : $alias;
+  $name = ltrim($name, '@');
+
+  $result = db_query("SELECT nid FROM {hosting_context} WHERE name = :name", array(':name' => $name));
+
+  if ($obj = $result->fetch()) {
+    return $obj->nid;
+  }
+  else {
+    return hosting_drush_import($alias);
+  }
+}
+
 /**
  * Define the node types that have associated provision contexts.
  */

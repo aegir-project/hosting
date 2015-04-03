@@ -31,7 +31,7 @@ function hosting_platform_drush_context_import($context, &$node) {
     if (!isset($node->title)) {
       $node->title = str_replace('platform_', '', trim($context->name, '@'));
     }
-    $node->web_server = hosting_drush_import($context->web_server);
+    $node->web_server = hosting_context_nid($context->web_server);
     $node->publish_path = $context->root;
     $node->makefile = $context->makefile;
     if (isset($context->make_working_copy) && !empty($context->make_working_copy)) {

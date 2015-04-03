@@ -102,6 +102,9 @@ function drush_hosting_import($alias) {
  *
  * @param object|string $alias
  *   The name of the provision context to import.
+ *
+ * @return int
+ *   The node ID associated with the alias.
  */
 function hosting_drush_import($alias) {
   $name = (is_object($alias)) ? $alias->name : $alias;

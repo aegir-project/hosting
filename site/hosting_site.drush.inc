@@ -36,8 +36,8 @@ function hosting_site_drush_context_import($context, &$node) {
     }
     $node->site_language = $context->language;
     $node->cron_key = $context->cron_key;
-    $node->db_server = hosting_drush_import($context->db_server->name);
-    $node->platform = hosting_drush_import($context->platform->name);
+    $node->db_server = hosting_context_nid($context->db_server->name);
+    $node->platform = hosting_context_nid($context->platform->name);
 
     // TODO: abstract this to remove duplication with import post hooks.
     $profile = hosting_package_instance_load(array(
