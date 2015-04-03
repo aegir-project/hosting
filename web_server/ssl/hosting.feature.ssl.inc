@@ -19,6 +19,7 @@ function hosting_ssl_hosting_feature() {
         'create ssl certificate',
       ),
     ),
+    'enable' => 'hosting_ssl_feature_enable_callback',
 
   );
   return $features;

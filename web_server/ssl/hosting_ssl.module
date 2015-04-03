@@ -186,3 +186,13 @@ function hosting_ssl_server_cert_list($node) {
     ))
     . theme('pager', array('tags' => NULL, 'element' => 2));
 }
+
+/**
+ * Callback function to execute on enabling this module's feature.
+ *
+ * @see: hosting_example_hosting_feature().
+ */
+function hosting_ssl_feature_enable_callback() {
+  drupal_set_message(t("Please make sure you have enabled SSL support in your webserver, e.g. by enabling mod_ssl in Apache."));
+  drupal_set_message(t("To start using SSL please edit the desired server node within Aegir to set in from e.g. 'apache' to 'apache_ssl'."));
+}
