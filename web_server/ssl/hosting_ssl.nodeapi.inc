@@ -27,8 +27,14 @@ function hosting_ssl_site_form(&$form, &$form_state, $form_id) {
       $ssl_available = TRUE;
     }
   }
+  
+  _hosting_site_field($form, $node, 'hosting_ssl_wrapper', array(
+    '#type' => 'fieldset',
+    '#title' => t('SSL Settings'),
+    '#default_value' => NULL,
+  ), 'filter_xss', $ssl_available);
 
-  _hosting_site_field($form, $node, 'ssl_enabled', array(
+  _hosting_site_field($form['hosting_ssl_wrapper'], $node, 'ssl_enabled', array(
     '#type' => 'radios',
     '#title' => t('Encryption'),
     '#options' => hosting_ssl_status_options(),
@@ -36,10 +42,9 @@ function hosting_ssl_site_form(&$form, &$form_state, $form_id) {
     '#required' => TRUE,
     '#default_value' => (isset($node->ssl_enabled)) ? $node->ssl_enabled : HOSTING_SSL_DISABLED,
     '#access' => user_access('create ssl certificate'),
-    '#weight' => -9,
   ), 'hosting_ssl_status_options', $ssl_available);
 
-  _hosting_site_field($form, $node, 'ssl_key', array(
+  _hosting_site_field($form['hosting_ssl_wrapper'], $node, 'ssl_key', array(
     '#type' => 'radios',
     '#title' => t('Encryption key'),
     '#description' => t("Choose an existing SSL certificate. If you do not wish to use any of your existing certificates, you may choose to generate a new one."),
@@ -47,7 +52,6 @@ function hosting_ssl_site_form(&$form, &$form_state, $form_id) {
     '#required' => TRUE,
     '#default_value' => isset($node->ssl_key) ? $node->ssl_key : HOSTING_SSL_CUSTOM_KEY,
     '#access' => user_access('create ssl certificate'),
-    '#weight' => -8,
     '#states' => array(
       'visible' => array(
         ':input[name="ssl_enabled"]' => array('!value' => 0),
@@ -55,13 +59,12 @@ function hosting_ssl_site_form(&$form, &$form_state, $form_id) {
     ),
   ), 'hosting_ssl_output_key', $ssl_available, !$new_site);
 
-  _hosting_site_field($form, $node, 'ssl_key_new', array(
+  _hosting_site_field($form['hosting_ssl_wrapper'], $node, 'ssl_key_new', array(
     '#type' => 'textfield',
     '#title' => t('New encryption key'),
     '#description' => t("A name for the certificate, often relating to the domain name. This field should only contain lower case alpha-numeric and '_', '-' or '.' characters. If the SSL certificate is not found, Aegir will automatically generate a self-signed certificate for you."),
     '#default_value' => '',
     '#access' => user_access('create ssl certificate'),
-    '#weight' => -7,
     '#states' => array(
       'visible' => array(
         ':input[name="ssl_enabled"]' => array('!value' => 0),
