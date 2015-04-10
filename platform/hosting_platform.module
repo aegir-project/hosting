@@ -303,14 +303,34 @@ function hosting_platform_form(&$node) {
   // that the platform path was actually created when the node was saved the
   // first time and we have cruft lying around to cleanup.
   if (!isset($node->nid) || (!$node->verified && !isset($node->makefile))) {
+    $base_path = variable_get('hosting_platform_base_path', '/var/aegir/platforms/');
+    $default_path = '';
+    if (isset($node->publish_path)) {
+      // Strip the $base_path, since we prepend it in a validation handler.
+      // This enforces platform publishing under the defined base path, even if
+      // an error allows the path to be edited again.
+      if (substr($node->publish_path, 0, strlen($base_path)) == $base_path) {
+        $default_path = substr($node->publish_path, strlen($base_path));
+      }
+    }
     $form['publish_path'] = array(
-      '#type' => 'textfield',
+      '#type' => 'machine_name',
+      '#machine_name' =>  array(
+        'exists' => 'hosting_platform_path_exists',
+        'source' => array('title'),
+        'label' => t('Publish path'),
+        'standalone' => TRUE,
+        'replace_pattern' => '[^a-z0-9_\.\-]+',
+        'field_prefix' => variable_get('hosting_platform_base_path', '/var/aegir/platforms/'),
+      ),
       '#title' => t('Publish path'),
+      '#weight' => -5,
       '#required' => TRUE,
       '#description' => t('The absolute path on the filesystem where the sites will be hosted. This needs to be created manually and initialized before your platform works properly. It also needs to be a unique path not already in use by a platform on any server.<br />For example, run the following shell commands:<pre>%commands</pre>Your publish path is the absolute path to the directory that gets created.<br />Alternatively, you can specify a makefile below, and the platform will be created automatically if the path specified here does not exist.<br />You are still required to enter the absolute path above, as it will be treated as the target directory by the makefile.', array('%commands' => "cd /var/aegir/platforms\ndrush dl drupal\n")),
       '#size' => 40,
-      '#default_value' => isset($node->publish_path) ? $node->publish_path : NULL,
+      '#default_value' => $default_path,
       '#maxlength' => 255,
+      '#field_prefix' => $base_path,
     );
   }
   else {
@@ -382,6 +402,8 @@ function hosting_platform_form(&$node) {
     );
   }
 
+  $form['#submit'][] = 'hosting_platform_form_validate';
+
   return $form;
 }
 
@@ -413,12 +435,22 @@ function hosting_platform_form_platform_after_build($form) {
  * Hide the delete button on platform nodes.
  */
 function hosting_platform_form_alter(&$form, &$form_state, $form_id) {
-  // Remove delete button from platform edit form, unless the platform's already been deleted via the Delete task
-  if ($form_id == 'platform_node_form') {
-    $node = $form['#node'];
-    if (isset($node->platform_status) && $node->platform_status !== HOSTING_PLATFORM_DELETED) {
-      $form['actions']['delete']['#type'] = 'hidden';
-    }
+  switch ($form_id) {
+    case 'platform_node_form':
+      // Remove delete button from platform edit form, unless the platform's already been deleted via the Delete task
+      $node = $form['#node'];
+      if (isset($node->platform_status) && $node->platform_status !== HOSTING_PLATFORM_DELETED) {
+        $form['actions']['delete']['#type'] = 'hidden';
+      }
+      break;
+    case 'hosting_settings':
+      $form['hosting_platform_base_path'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Platform base path'),
+        '#description' => t('The base path for your platforms, i.e. /var/aegir/platforms/'),
+        '#default_value' => variable_get('hosting_platform_base_path', '/var/aegir/platforms/'),
+      );
+      break;
   }
 }
 
@@ -507,6 +539,17 @@ function hosting_platform_delete($node) {
 }
 
 /**
+ * Form validation for platforms.
+ */
+function hosting_platform_form_validate(&$form, &$form_state) {
+  // Prepend our platform base path, if this is a new platform.
+  $node = $form['#node'];
+  if (!isset($node->nid)) {
+    $form_state['values']['publish_path'] = variable_get('hosting_platform_base_path', '/var/aegir/platforms/') . $form_state['values']['publish_path'];
+  }
+}
+
+/**
  * Implements hook_validate().
  */
 function hosting_platform_validate($node, &$form) {
@@ -515,12 +558,21 @@ function hosting_platform_validate($node, &$form) {
     form_set_error('title', t('Platform name %name is already defined. Platform names must be unique across all servers.', array('%name' => $result->name)));
   }
   // Make sure the path is unique. Remote servers can't have the same path to a platform that is in use by another server.
-  if ($node->op != t('Delete') && $result = db_query("SELECT n.title AS name FROM {hosting_platform} AS h INNER JOIN {node} AS n ON n.nid = h.nid WHERE publish_path = !publish_path AND n.nid <> !n.nid AND h.status >= !h.status", array('!publish_path' => hosting_path_normalize($node->publish_path), '!n.nid' => $node->nid, '!h.status' => HOSTING_PLATFORM_QUEUED))->fetch()) {
-    form_set_error('publish_path', t('Path is already in use by platform %name. Platform paths must be unique across all servers.', array('%name' => $result->name)));
+  $exists = hosting_platform_path_exists($node->publish_path);
+  if ($node->op != t('Delete') && $exists) {
+    form_set_error('publish_path', t('Path is already in use by platform %name. Platform paths must be unique across all servers.', array('%name' => $exists->name)));
   }
   if (is_null($node->web_server)) {
     form_set_error('web_server', t('Platform needs to be associated with a webserver. Make sure you have a verified webserver on this Aegir install!'));
   }
+}
+
+/**
+ * Determine whether a given path has already been used with an existing
+ * platform.
+ */
+function hosting_platform_path_exists($path) {
+  return db_query("SELECT n.title AS name FROM {hosting_platform} AS h INNER JOIN {node} AS n ON n.nid = h.nid WHERE publish_path = !publish_path AND h.status >= !h.status", array('!publish_path' => hosting_path_normalize($path), '!h.status' => HOSTING_PLATFORM_QUEUED))->fetch();
 }
 
 /**
