@@ -218,15 +218,12 @@ function hosting_site_post_hosting_backup_task($task, $data) {
  * Implements hook_post_hosting_import_task().
  */
 function hosting_site_post_hosting_import_task($task, $data) {
-  hosting_import_site($task->ref->nid, $data['context'], $task->ref->platform);
-
-  $task->ref->db_name = $data['self']['db_name'];
-  node_save($task->ref);
+  $output = provision_backend_invoke(d()->name, 'hosting-import', array($task->ref->hosting_name));
+  drush_set_context('HOSTING_DRUSH_OUTPUT', $output);
 
   $packages = $data['context']['packages'];
   hosting_package_sync($packages);
   hosting_package_instance_sync($task->ref->nid, $task->ref->type, $packages);
-
 }
 
 /**
