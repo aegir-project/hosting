@@ -218,8 +218,7 @@ function hosting_site_post_hosting_backup_task($task, $data) {
  * Implements hook_post_hosting_import_task().
  */
 function hosting_site_post_hosting_import_task($task, $data) {
-  $output = provision_backend_invoke(d()->name, 'hosting-import', array($task->ref->hosting_name));
-  drush_set_context('HOSTING_DRUSH_OUTPUT', $output);
+  $site_nid = hosting_drush_import($task->ref->hosting_name);
 
   $packages = $data['context']['packages'];
   hosting_package_sync($packages);
