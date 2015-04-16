@@ -115,7 +115,7 @@ function drush_hosting_task() {
       call_user_func($function, $task);
     }
 
-    $output = array_merge($output, drush_invoke_process('@none', 'provision-save', array('@' . $task->ref->hosting_name), $task->context_options, array('method' => $mode)));
+    drush_invoke_process('@none', 'provision-save', array('@' . $task->ref->hosting_name), $task->context_options, array('method' => $mode, 'integrate' => TRUE));
   }
 
   if (($task->ref->type == 'site' && $task->ref->site_status == HOSTING_SITE_DELETED)
@@ -130,14 +130,15 @@ function drush_hosting_task() {
   }
 
   // Run the actual command. Adding alias here to work around Drush API.
-  $output = array_merge($output, provision_backend_invoke($alias, 'provision-' . $task->task_type, $task->args, $task->options, $mode));
+  $output = provision_backend_invoke($alias, 'provision-' . $task->task_type, $task->args, $task->options, $mode);
+  // pass the drush output back to the HOOK_post_hosting_TASK_task() and
+  // HOOK_hosting_TASK_task_rollback() hooks, as the $data argument.
+  drush_set_context('HOSTING_DRUSH_OUTPUT', $output);
 
   // On succesful delete, remove the named context.
   if ($task->task_type === 'delete' && !drush_get_error()) {
-    $output = array_merge($output, drush_invoke_process('@none', 'provision-save', array('@' . $task->ref->hosting_name), array('delete' => TRUE), array('method' => $mode)));
+    drush_invoke_process('@none', 'provision-save', array('@' . $task->ref->hosting_name), array('delete' => TRUE), array('method' => $mode, 'integrate' => TRUE));
   }
-
-  drush_set_context('HOSTING_DRUSH_OUTPUT', $output);
 
   // New revision is created at the beginning of function.
   $task->revision = FALSE;
