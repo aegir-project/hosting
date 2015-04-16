@@ -220,6 +220,11 @@ function hosting_site_post_hosting_backup_task($task, $data) {
 function hosting_site_post_hosting_import_task($task, $data) {
   $site_nid = hosting_drush_import($task->ref->hosting_name);
 
+  // Update the site node with the database name.
+  $node = node_load($site_nid);
+  $node->db_name = $data['self']['db_name'];
+  node_save($node);
+
   $packages = $data['context']['packages'];
   hosting_package_sync($packages);
   hosting_package_instance_sync($task->ref->nid, $task->ref->type, $packages);
