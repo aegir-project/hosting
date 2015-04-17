@@ -57,6 +57,14 @@ function hosting_site_get_backup($bid) {
 }
 
 /**
+ * Return an array with site backup IDs as keys, and file paths as values.
+ */
+function hosting_site_get_backups($nid) {
+  return db_query("SELECT bid, filename FROM {hosting_site_backups} WHERE site = :nid", array(':nid' => $nid))->fetchAllKeyed();
+}
+
+
+/**
  * Retrieve a list of backup generated for a site.
  *
  * @param site
@@ -115,4 +123,34 @@ function hosting_task_backup_delete_form($node) {
   return $form;
 }
 
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function hosting_site_form_hosting_task_confirm_form_alter(&$form, &$form_state, $form_id){
+  $node = $form_state['build_info']['args'][0];
+  if($node->type == 'site' && $form['task']['#value'] == 'delete') {
+    if (!empty(hosting_site_get_backups($node->nid))) {
+      $form['delete_backups'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Delete site backups'),
+        '#description' => t('WARNING: Checking this box will delete all backups for the site.'),
+      );
+      // Push the submit handler to the beginning, so that backups are deleted
+      // prior to the site itself. This results in keeping the pre-delete
+      // backup.
+      array_unshift($form['#submit'], 'hosting_site_delete_site_task_submit');
+    }
+  }
+}
 
+/**
+ * Submit handler for site delete form for deleting backups.
+ */
+function hosting_site_delete_site_task_submit($form, $form_state){
+  $delete = $form_state['values']['delete_backups'];
+  if ($delete) {
+    $nid = $form_state['values']['nid'];
+    $backups = hosting_site_get_backups($nid);
+    hosting_add_task($nid, 'backup-delete', $backups);
+  }
+}
