@@ -126,10 +126,11 @@ function hosting_task_backup_delete_form($node) {
 /**
  * Implements hook_form_FORM_ID_alter().
  */
-function hosting_site_form_hosting_task_confirm_form_alter(&$form, &$form_state, $form_id){
+function hosting_site_form_hosting_task_confirm_form_alter(&$form, &$form_state) {
   $node = $form_state['build_info']['args'][0];
   if($node->type == 'site' && $form['task']['#value'] == 'delete') {
-    if (!empty(hosting_site_get_backups($node->nid))) {
+    if (!empty(hosting_site_get_backups($node->nid)) &&
+        variable_get('hosting_delete_backups', 'never') == 'prompt') {
       $form['delete_backups'] = array(
         '#type' => 'checkbox',
         '#title' => t('Delete site backups'),
@@ -138,8 +139,13 @@ function hosting_site_form_hosting_task_confirm_form_alter(&$form, &$form_state,
       // Push the submit handler to the beginning, so that backups are deleted
       // prior to the site itself. This results in keeping the pre-delete
       // backup.
-      array_unshift($form['#submit'], 'hosting_site_delete_site_task_submit');
     }
+    elseif (variable_get('hosting_delete_backups', 'never') == 'always') {
+      $form['delete_backups'] = array(
+        '#markup' => 'Note that all backups for this site will be deleted, except for the final pre-delete backup.',
+      );
+    }
+    array_unshift($form['#submit'], 'hosting_site_delete_site_task_submit');
   }
 }
 
@@ -147,10 +153,27 @@ function hosting_site_form_hosting_task_confirm_form_alter(&$form, &$form_state,
  * Submit handler for site delete form for deleting backups.
  */
 function hosting_site_delete_site_task_submit($form, $form_state){
-  $delete = $form_state['values']['delete_backups'];
-  if ($delete) {
+  $delete = isset($form_state['values']['delete_backups']) ? $form_state['values']['delete_backups'] : FALSE ;
+  if ($delete || variable_get('hosting_delete_backups', 'never') == 'always') {
     $nid = $form_state['values']['nid'];
     $backups = hosting_site_get_backups($nid);
     hosting_add_task($nid, 'backup-delete', $backups);
   }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function hosting_site_form_hosting_settings_alter(&$form, &$form_state) {
+  $form['hosting_delete_backups'] = array(
+    '#title' => t('Automatically delete backups'),
+    '#description' => t("When a site is deleted, should the site's backups also be deleted? Note that the final, pre-delete backup will remain."),
+    '#type' => 'radios',
+    '#options' => array(
+      'always' => t('Always'),
+      'prompt' => t('Prompt'),
+      'never' => t('Never'),
+    ),
+    '#default_value' => variable_get('hosting_delete_backups', 'never'),
+  );
 }
