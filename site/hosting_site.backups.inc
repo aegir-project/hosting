@@ -129,8 +129,8 @@ function hosting_task_backup_delete_form($node) {
 function hosting_site_form_hosting_task_confirm_form_alter(&$form, &$form_state) {
   $node = $form_state['build_info']['args'][0];
   if($node->type == 'site' && $form['task']['#value'] == 'delete') {
-    if (!empty(hosting_site_get_backups($node->nid)) &&
-        variable_get('hosting_delete_backups', 'never') == 'prompt') {
+    $backups = hosting_site_get_backups($node->nid);
+    if (!empty($backups) && variable_get('hosting_delete_backups', 'never') == 'prompt') {
       $form['delete_backups'] = array(
         '#type' => 'checkbox',
         '#title' => t('Delete site backups'),
