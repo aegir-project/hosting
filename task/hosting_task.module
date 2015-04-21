@@ -171,15 +171,12 @@ function hosting_task_ajax_queue() {
  * @see http://drupal.org/node/1354
  */
 function hosting_task_cancel($node) {
-  if ($node->type == 'task') {
-    if ($node->task_status == HOSTING_TASK_QUEUED) {
-      $ref = node_load($node->rid);
-
-      hosting_add_task($node->rid, $node->task_type, array(), HOSTING_TASK_ERROR);
-      // Log the cancellation.
-      hosting_task_log($node->vid, 'error', t("Task was cancelled."));
-      drupal_goto('node/' . $node->rid);
-    }
+  if ($node->type == 'task' && $node->task_status == HOSTING_TASK_QUEUED) {
+    $node->task_status = HOSTING_TASK_WARNING;
+    node_save($node);
+    // Log the cancellation.
+    hosting_task_log($node->vid, 'warning', t("Task was cancelled."));
+    drupal_goto('node/' . $node->rid);
   }
 
   drupal_access_denied();
@@ -499,8 +496,6 @@ function hosting_task_retry($task_id) {
 function hosting_add_task($nid, $type, $args = NULL, $status = HOSTING_TASK_QUEUED) {
   global $user;
 
-  $task = hosting_get_most_recent_task($nid, $type);
-
   // Guard against destructive tasks run on the hostmaster site
   $hostmaster_nid = hosting_get_hostmaster_nid();
   if ($nid == $hostmaster_nid && in_array($type, array('delete', 'disable'))) {
@@ -510,10 +505,9 @@ function hosting_add_task($nid, $type, $args = NULL, $status = HOSTING_TASK_QUEU
   }
 
   $node = db_query("SELECT nid, uid, title FROM {node} WHERE nid = :nid", array(':nid' => $nid))->fetchObject();
-  if (!$task) {
-    $task = new stdClass();
-    $task->language = LANGUAGE_NONE;
-  }
+
+  $task = new stdClass();
+  $task->language = LANGUAGE_NONE;
   $task->type = 'task';
   # TODO: make this pretty
   $task->title = t("!type !title", array('!type' => $type, '!title' => $node->title));
@@ -1149,19 +1143,6 @@ function _hosting_task_log_class($type) {
   }
 
   return 'hosting-' . $type;
-}
-
-/**
- * Retrieve the latest task related to the specified platform, of a specific type
- *
- * This is used for documenting issues with verification.
- */
-function hosting_get_most_recent_task($rid, $type) {
-  $nid = db_query("SELECT t.nid FROM {hosting_task} t INNER JOIN {node} n ON n.vid = t.vid WHERE task_type = !task_type and t.rid = !t.rid ORDER BY t.vid DESC limit 1", array('!task_type' => $type, '!t.rid' => $rid))->fetchField();
-  if ($nid) {
-    return node_load($nid);
-  }
-  return FALSE;
 }
 
 /**
