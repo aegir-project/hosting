@@ -346,7 +346,7 @@ function hosting_ssl_save_key($node) {
 
   $client = hosting_get_client($node->client);
 
-  if (!empty($node->ssl_key_new)) {
+  if ($node->ssl_key == HOSTING_SSL_CUSTOM_KEY && !empty($node->ssl_key_new)) {
     $ssl_key = $node->ssl_key_new;
     $result = db_query("SELECT * FROM {hosting_ssl_cert} WHERE ssl_key = :ssl_key", array(':ssl_key' => $ssl_key));
     if ($obj = $result->fetch()) {
@@ -367,7 +367,7 @@ function hosting_ssl_save_key($node) {
       if (!hosting_ip_allocate($obj, $node)) {
         form_set_error('ssl_key_new', t("Unable to allocate IP address for certificate, assuming SNI (Server Name Indication) will work (incompatible with Safari and IE on Windows XP, Android 2.2, etc)."));
       }
-      $node->ssl_key = 0;
+      $node->ssl_key = $obj->cid;
     }
   }
 
