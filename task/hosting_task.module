@@ -1039,20 +1039,27 @@ function hosting_task_view($node, $teaser = FALSE, $page = FALSE) {
 
   if (user_access('access task logs')) {
     if (in_array($node->task_status, array(HOSTING_TASK_ERROR, HOSTING_TASK_WARNING))) {
-      $attributes = array(
-        'class' => array(
-          'hosting-button-enabled',
+      $url_options = array(
+        'attributes' => array(
+          'class' => array(
+            'hosting-button-enabled',
+          ),
+          'target' => '_self',
         ),
-        'target' => '_self',
+        'fragment' => 'warning',
       );
+      if (overlay_get_mode() == 'child') {
+        $url_options['query'] = array('render' => 'overlay');
+      }
       $node->content['jump-link-warning'] = array(
-        '#markup' => '<div>' . l('Jump to first warning', request_path(), array('fragment' => 'warning', 'attributes' => $attributes)) . '</div>',
+        '#markup' => '<div>' . l('Jump to first warning', request_path(), $url_options) . '</div>',
         '#weight' => 8,
       );
     }
     if ($node->task_status == HOSTING_TASK_ERROR) {
+      $url_options['fragment'] = 'error';
       $node->content['jump-link-error'] = array(
-        '#markup' => '<div>' . l('Jump to first error', request_path(), array('fragment' => 'error', 'attributes' => $attributes)) . '</div>',
+        '#markup' => '<div>' . l('Jump to first error', request_path(), $url_options) . '</div>',
         '#weight' => 9,
       );
     }
