@@ -266,7 +266,13 @@ function hosting_site_form($node, &$form_state) {
     $selected_profile = hosting_package_instance_load(array('p.nid' => hosting_get_default_profile()))->nid;
   }
 
+  $q = drupal_get_query_parameters();
+  $default_platform = isset($q['platform']) ? $q['platform'] : NULL;
   $platforms = hosting_get_profile_platforms($selected_profile);
+  if (!array_key_exists($default_platform, $platforms)) {
+    // Default to the first platform, if none was passed in the path.
+    $default_platform = current(array_keys($platforms));
+  }
   _hosting_site_field($form, $node, 'platform', array(
     '#type' => 'radios',
     '#title' => t('Platform'),
@@ -275,7 +281,7 @@ function hosting_site_form($node, &$form_state) {
                           Not seeing a certain platform? Platforms shown are those that support the profile above.
                           If a different profile is selected, this list may change automatically.'),
     '#options' => $platforms,
-    '#default_value' => isset($node->platform) ? $node->platform : NULL,
+    '#default_value' => isset($node->platform) ? $node->platform : $default_platform,
     '#ajax' => array(
       'callback' => 'hosting_site_language_callback',
       'wrapper' => 'hosting-site-field-site-language' ,
