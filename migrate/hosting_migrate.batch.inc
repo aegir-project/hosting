@@ -122,10 +122,7 @@ function _hosting_migrate_site_list_class($status) {
   if ($status['missing']) {
     return 'warning';
   }
-  if ($status['upgrade']) {
-    return 'success';
-  }
-  return 'queued';
+  return 'success';
 }
 
 /**
