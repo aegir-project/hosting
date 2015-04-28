@@ -14,17 +14,13 @@ function hosting_migrate_platform($form, $form_state, $node) {
 
   // Step 1 - choose target platform
   if ($step == 1) {
-    $result = db_query("SELECT count(nid) as site_count FROM {hosting_site} WHERE status = :status AND verified > :verified AND platform = :platform",
-              array(':status' => HOSTING_SITE_ENABLED, ':verified' => 0, ':platform' => $node->nid));
+    $result = db_query("SELECT count(nid) as site_count FROM {hosting_site} WHERE status = :status AND verified > :verified AND platform = :platform", array(':status' => HOSTING_SITE_ENABLED, ':verified' => 0, ':platform' => $node->nid))->fetch();
 
-    if ($obj = $result->fetch()) {
-      if ($obj->site_count == 0) {
-        $form['error'] = array(
-          '#type' => 'markup',
-          '#value' => t('This platform does not have any sites that can be migrated.'),
-        );
-        return $form;
-      }
+    if ($result->site_count == 0) {
+      $form['no_sites'] = array(
+        '#markup' => t('This platform does not have any sites that can be migrated.'),
+      );
+      return $form;
     }
 
     $platforms = _hosting_get_platforms();
@@ -49,8 +45,7 @@ function hosting_migrate_platform($form, $form_state, $node) {
     }
     else {
       $form['no_platforms'] = array(
-        '#type' => 'item',
-        '#description' => t('There are no alternate platforms to migrate to.'),
+        '#markup' => t('There are no alternate platforms to migrate to.'),
       );
     }
   }
