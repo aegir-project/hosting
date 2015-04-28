@@ -59,14 +59,14 @@ function hosting_migrate_platform($form, $form_state, $node) {
     $header = array(t('Site'), t('Upgrades'), t('Warnings'), t('Errors'), t('Actions'));
     $options['attributes']['class'] = 'hosting-package-comparison-link';
     foreach (array('passed', 'failed') as $type) {
-      if (sizeof($form_state['storage'][$type])) {
+      if (isset($form_state['storage'][$type]) && sizeof($form_state['storage'][$type])) {
 
         $rows = array();
 
         foreach ($form_state['storage'][$type] as $site_id => $url) {
           $form['output'][$type]['title'] = array(
             '#type' => 'markup',
-            '#value' => '<h2>' . $title[$type] . '</h2>',
+            '#markup' => '<h2>' . $title[$type] . '</h2>',
           );
           $status = $form_state['storage']['status'][$site_id];
           $row = array(array(
@@ -87,7 +87,7 @@ function hosting_migrate_platform($form, $form_state, $node) {
         }
         $form['output'][$type]['table'] = array(
           '#type' => 'markup',
-          '#value' => theme('table', array('header' =>   $header, 'rows' => $rows, 'attributes' => array('class' => array('hosting-table')))),
+          '#markup' => theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('class' => array('hosting-table')))),
         );
 
       }
@@ -201,6 +201,7 @@ function hosting_migrate_platform_submit($form, &$form_state) {
 
       break;
   }
+  $form_state['rebuild'] = TRUE;
   $form_state['storage']['step'] = $step + 1;
 }
 
