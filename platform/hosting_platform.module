@@ -320,7 +320,7 @@ function hosting_platform_form(&$node) {
         'source' => array('title'),
         'label' => t('Publish path'),
         'standalone' => TRUE,
-        'replace_pattern' => '[^a-z0-9_\.\-]+',
+        'replace_pattern' => '[^a-z0-9_\.\-\/]+',
         'field_prefix' => variable_get('hosting_platform_base_path', '/var/aegir/platforms/'),
       ),
       '#title' => t('Publish path'),
