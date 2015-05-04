@@ -129,7 +129,7 @@ function drush_hosting_task() {
 
   // Run the actual command. Adding alias here to work around Drush API.
   $output = provision_backend_invoke($alias, 'provision-' . $task->task_type, $task->args, $task->options, $mode);
-  // pass the drush output back to the HOOK_post_hosting_TASK_task() and
+  // Pass the drush output back to the HOOK_post_hosting_TASK_task() and
   // HOOK_hosting_TASK_task_rollback() hooks, as the $data argument.
   drush_set_context('HOSTING_DRUSH_OUTPUT', $output);
 
