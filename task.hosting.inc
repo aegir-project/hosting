@@ -68,7 +68,7 @@ function drush_hosting_task_validate($id, $type = NULL) {
     node_save($task);
     drush_set_context('HOSTING_TASK', $task);
     drush_set_context('DRUSH_LOG_CALLBACK', '_hosting_task_log');
-    drush_log(dt("Task starts processing"), 'queue');
+    drush_log(dt("Task starts processing") . ': ' . $task->title, 'queue');
 
     // Load Task Info.
     $tasks_info = hosting_available_tasks($task->ref->type);
