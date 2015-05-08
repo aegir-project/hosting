@@ -123,14 +123,14 @@ function drush_hosting_queued() {
       // Should we terminate.
       if (REQUEST_TIME > $end_time) {
         drush_log('Releasing lock on task queue.');
-        lock_release('hosting_tasks_running');
+        lock_release('hosting_queue_tasks_running');
         // Restart the daemon to recycle leaked memory
         hosting_queued_restart();
       }
     }
 
     drush_log('Releasing lock on task queue.');
-    lock_release('hosting_tasks_running');
+    lock_release('hosting_queue_tasks_running');
 
     // wait here only if we didn't process tasks
     // this is to avoid an infinite loop if there are no tasks in the queue
@@ -150,10 +150,10 @@ function drush_hosting_queued() {
  */
 function _hosting_queued_acquire_lock() {
   $lock_wait = drush_get_option('lock-wait', HOSTING_QUEUE_DEFAULT_LOCK_WAIT);
-  if (lock_wait('hosting_tasks_running', $lock_wait)) {
+  if (lock_wait('hosting_queue_tasks_running', $lock_wait)) {
     return _hosting_queued_acquire_lock();
   }
-  if (lock_acquire('hosting_tasks_running', HOSTING_QUEUE_LOCK_TIMEOUT)) {
+  if (lock_acquire('hosting_queue_tasks_running', HOSTING_QUEUE_LOCK_TIMEOUT)) {
     return drush_log(dt('Acquired lock on task queue.'));
   }
   else {
