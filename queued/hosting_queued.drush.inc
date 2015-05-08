@@ -63,6 +63,9 @@ function drush_hosting_queued() {
 
   watchdog('hosting_queued', 'Started Hosting queue daemon, waiting for new tasks');
 
+  // We'll pause here until we can get a lock on the task queue.
+  _hosting_queued_acquire_lock();
+
   while (TRUE) {
     try {
       // Should we terminate.
@@ -89,9 +92,6 @@ function drush_hosting_queued() {
       drush_log('Restarting queue daemon.', 'warning');
       hosting_queued_restart();
     }
-
-    // We'll pause here until we can get a lock on the task queue.
-    _hosting_queued_acquire_lock();
 
     // Get some tasks to run
     $tasks = @_hosting_get_new_tasks();
@@ -129,9 +129,6 @@ function drush_hosting_queued() {
       }
     }
 
-    drush_log('Releasing lock on task queue.');
-    lock_release('hosting_queue_tasks_running');
-
     // wait here only if we didn't process tasks
     // this is to avoid an infinite loop if there are no tasks in the queue
     if (!$tasks) {
@@ -139,6 +136,8 @@ function drush_hosting_queued() {
     }
     if (drush_get_option('onetime')) {
       drush_log(dt("exiting after processing all tasks, as requested by --onetime"));
+      drush_log('Releasing lock on task queue.');
+      lock_release('hosting_queue_tasks_running');
       break;
     }
     unset($tasks);
