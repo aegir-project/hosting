@@ -5,6 +5,9 @@
  * Drush include for the Hosting module.
  */
 
+define('HOSTING_QUEUE_DEFAULT_LOCK_WAIT', 30);
+define('HOSTING_QUEUE_LOCK_TIMEOUT', 3600.0);
+
 /**
  * Implements hook_drush_command().
  */
@@ -12,6 +15,9 @@ function hosting_drush_command() {
   $items['hosting-dispatch'] = array(
     'description' => dt('Centralized command for dispatching the various queue processors (hosting, cron, backup etc.)'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_FULL,
+    'options' => array(
+      'lock-wait' => dt('Time to wait to acquire a lock on dispatched queues. Defaults to @wait seconds.', array('@wait' => HOSTING_QUEUE_DEFAULT_LOCK_WAIT)),
+    ),
   );
 
   $items['hosting-setup'] = array(
@@ -33,6 +39,9 @@ function hosting_drush_command() {
         'callback' => 'hosting_run_queue',
         'description' => $info['description'] . " " . $dispatch,
         'queue' => $queue,
+        'options' => array(
+          'lock-wait' => dt('Time to wait to acquire a lock on the @queue queue. Defaults to @wait seconds.', array('@queue' => $queue, '@wait' => HOSTING_QUEUE_DEFAULT_LOCK_WAIT)),
+        ),
       );
     }
   }

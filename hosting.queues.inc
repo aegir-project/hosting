@@ -80,7 +80,6 @@ function hosting_get_queues($refresh = FALSE) {
         'items' => variable_get('hosting_queue_' . $key . '_items', $queue['items']),
         'enabled' => variable_get('hosting_queue_' . $key . '_enabled', $queue['enabled']),
         'last_run' => variable_get('hosting_queue_' . $key . '_last_run', FALSE),
-        'running' => variable_get('hosting_queue_' . $key . '_running', FALSE),
         'interval' => variable_get('hosting_queue_' . $key . '_interval', FALSE),
       );
       $queue = array_merge($queue, $configured);
@@ -103,7 +102,6 @@ function hosting_get_queues($refresh = FALSE) {
       }
 
       $queue['last'] = variable_get('hosting_queue_' . $key . '_last_run', 0);
-      $queue['running'] = variable_get('hosting_queue_' . $key . '_running', 0);
       $queues[$key] = $queue;
     }
     $cache = $queues;
@@ -122,9 +120,23 @@ function hosting_run_queue() {
   $cmd = drush_get_command();
   $queue = $cmd['queue'];
   $count = drush_get_option(array('i', 'items'), 5); // process a default of 5 items at a time.
+  $semaphore = "hosting_queue_{$queue}_running";
 
   variable_set('hosting_queue_' . $queue . '_last_run', $t = REQUEST_TIME);
-  variable_set('hosting_queue_' . $queue . '_running', $t);
+
+  drush_log(dt('Acquiring lock on @queue queue.', array('@queue' => $queue)));
+  $lock_wait = drush_get_option('lock-wait', HOSTING_QUEUE_DEFAULT_LOCK_WAIT);
+  if (!lock_wait($semaphore, $lock_wait) || drush_get_option('force', FALSE)) {
+    if (lock_acquire($semaphore, HOSTING_QUEUE_LOCK_TIMEOUT)) {
+      drush_log(dt('Acquired lock on @queue queue.', array('@queue' => $queue)));
+    }
+  }
+  elseif (drush_get_option('force', FALSE)) {
+    drush_log(dt('Bypassing lock on @queue queue.', array('@queue' => $queue)), 'warning');
+  }
+  else {
+    drush_die(dt('Cannot acquire lock on @queue queue.', array('@queue' => $queue)));
+  }
 
   $func = "hosting_" . $queue . "_queue";
 
@@ -132,7 +144,8 @@ function hosting_run_queue() {
     $func($count);
   }
 
-  variable_del('hosting_queue_' . $queue . '_running');
+  drush_log(dt('Releasing @queue lock.', array('@queue' => $queue)));
+  lock_release($semaphore);
 }
 
 /**
