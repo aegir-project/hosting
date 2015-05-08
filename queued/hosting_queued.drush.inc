@@ -170,6 +170,8 @@ function hosting_queued_stop($signal) {
   watchdog('hosting_queued', 'Received signal @signal, waiting for children to die.', array('@signal' => $signal));
   $status = NULL;
   pcntl_wait($status);
+  drush_log('Releasing lock on task queue.');
+  lock_release('hosting_queue_tasks_running');
   watchdog('hosting_queued', 'Stopped daemon');
   exit($status);
 }
@@ -194,6 +196,8 @@ function hosting_queued_restart($signal = NULL) {
     unset($_ENV['argv']);
 
     watchdog('hosting_queued', 'Restarting queue daemon with @drush @args.', array('@drush' => $drush, '@args' => implode(" ", $args)));
+    drush_log('Releasing lock on task queue.');
+    lock_release('hosting_queue_tasks_running');
     // close all open database file descriptors
     hosting_queued_db_close_all();
     pcntl_exec($drush, $args, $_ENV);
@@ -203,6 +207,9 @@ function hosting_queued_restart($signal = NULL) {
   else {
     watchdog('hosting_queued', 'PCNTL not installed, unable to auto-restart.', array(), WATCHDOG_WARNING);
   }
+
+  drush_log('Releasing lock on task queue.');
+  lock_release('hosting_queue_tasks_running');
 
   // Explicit exit in case we're handling a signal
   exit(1);
