@@ -63,9 +63,6 @@ function drush_hosting_queued() {
 
   watchdog('hosting_queued', 'Started Hosting queue daemon, waiting for new tasks');
 
-  // We'll pause here until we can get a lock on the task queue.
-  _hosting_queued_acquire_lock();
-
   while (TRUE) {
     try {
       // Should we terminate.
@@ -94,38 +91,41 @@ function drush_hosting_queued() {
     }
 
     // Get some tasks to run
-    $tasks = @_hosting_get_new_tasks();
+    if ($tasks = @_hosting_get_new_tasks()) {
+      if (lock_acquire('hosting_queue_tasks_running', HOSTING_QUEUE_LOCK_TIMEOUT)) {
+        drush_log('Acquired lock on task queue.');
+        foreach ($tasks as $task) {
+          // We sleep for a second just in case others want to run the task first.
+          // This guards against other processes that want to add a hosting task
+          // with arguments and run it immediately, they should be able to do this
+          // without us getting in there first.
+          // This is a workaround for http://drupal.org/node/1003536
+          drush_log(dt('Found task to execute. Pausing before execution.'));
+          sleep(1);
 
-    foreach ($tasks as $task) {
-      // We sleep for a second just in case others want to run the task first.
-      // This guards against other processes that want to add a hosting task
-      // with arguments and run it immediately, they should be able to do this
-      // without us getting in there first.
-      // This is a workaround for http://drupal.org/node/1003536
-      drush_log(dt('Found task to execute. Pausing before execution.'));
-      sleep(1);
+          watchdog('hosting_queued', 'Running task @nid.', array('@nid' => $task->nid));
+          // Execute the task in the backend
+          drush_invoke_process('@self', 'hosting-task', array($task->nid), array('strict' => FALSE), array('interactive' => TRUE));
+          drush_log(dt('Finished executing task.'));
 
-      watchdog('hosting_queued', 'Running task @nid.', array('@nid' => $task->nid));
-      // Execute the task in the backend
-      drush_invoke_process('@self', 'hosting-task', array($task->nid), array('strict' => FALSE), array('interactive' => TRUE));
-      drush_log(dt('Finished executing task.'));
+          // Delay for a configurable amount of time.
+          $delay = variable_get('hosting_queued_post_task_delay', 0);
+          if (!empty($delay)) {
+            drush_log(dt('Going to sleep for @count seconds after completing task.', array('@count' => $delay)));
+            sleep($delay);
+          }
 
-      // Delay for a configurable amount of time.
-      $delay = variable_get('hosting_queued_post_task_delay', 0);
-      if (!empty($delay)) {
-        drush_log(dt('Going to sleep for @count seconds after completing task.', array('@count' => $delay)));
-        sleep($delay);
-      }
+          // We're done with this task, this unset might help reduce memory usage.
+          unset($task);
 
-      // We're done with this task, this unset might help reduce memory usage.
-      unset($task);
-
-      // Should we terminate.
-      if (REQUEST_TIME > $end_time) {
+          // Should we terminate.
+          if (REQUEST_TIME > $end_time) {
+            // Restart the daemon to recycle leaked memory
+            hosting_queued_restart();
+          }
+        }
         drush_log('Releasing lock on task queue.');
         lock_release('hosting_queue_tasks_running');
-        // Restart the daemon to recycle leaked memory
-        hosting_queued_restart();
       }
     }
 
@@ -134,29 +134,12 @@ function drush_hosting_queued() {
     if (!$tasks) {
       sleep(1);
     }
+
     if (drush_get_option('onetime')) {
       drush_log(dt("exiting after processing all tasks, as requested by --onetime"));
-      drush_log('Releasing lock on task queue.');
-      lock_release('hosting_queue_tasks_running');
       break;
     }
     unset($tasks);
-  }
-}
-
-/**
- * Acquire a lock on the task queue.
- */
-function _hosting_queued_acquire_lock() {
-  $lock_wait = drush_get_option('lock-wait', HOSTING_QUEUE_DEFAULT_LOCK_WAIT);
-  if (lock_wait('hosting_queue_tasks_running', $lock_wait)) {
-    return _hosting_queued_acquire_lock();
-  }
-  if (lock_acquire('hosting_queue_tasks_running', HOSTING_QUEUE_LOCK_TIMEOUT)) {
-    return drush_log(dt('Acquired lock on task queue.'));
-  }
-  else {
-    drush_die(dt('Cannot acquire lock on task queue.'));
   }
 }
 
