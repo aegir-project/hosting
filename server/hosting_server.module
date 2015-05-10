@@ -448,19 +448,36 @@ function hosting_nodeapi_server_presave(&$node) {
  * Implements hook_validate().
  */
 function hosting_server_validate(&$node, &$form) {
+  if ($node->op != t('Delete')) {
+    // Make sure the server name is unique, to avoid context clashes.
+    $result = db_query("SELECT n.title AS name
+                          FROM {hosting_server} AS h
+                    INNER JOIN {node} AS n ON n.nid = h.nid
+                         WHERE n.title = :title
+                           AND n.nid <> :nid
+                           AND h.status >= :status",
+      array(
+        ':title' => $node->title,
+        ':nid' => empty($node->nid) ? '' : $node->nid,
+        ':status' => HOSTING_SERVER_LOCKED,
+      )
+    )->fetchField();
+    if ($result) {
+      form_set_error('title',
+        t('The hostname `%name` is already in use. Server names must be unique.',
+        array('%name' => $result))
+      );
+    }
 
-  _hosting_ip_validate($node);
-  if (!_hosting_valid_fqdn($node->title)) {
-    form_set_error('title', t('Invalid hostname. Use a proper hostname or an IP address.'));
+    _hosting_ip_validate($node);
+    if (!_hosting_valid_fqdn($node->title)) {
+      form_set_error('title', t('Invalid hostname. Use a proper hostname or an IP address.'));
+    }
+
+    hosting_server_services_from_post($node);
+
+    hosting_server_invoke_services($node, 'validate', $node, $form);
   }
-
-  if (!$node->nid && db_query("SELECT COUNT(nid) FROM {node} WHERE type = :type AND title = :title", array(':type' => 'server', ':title' => $node->title))->fetchField()) {
-    form_set_error('title', t("The hostname you have specified is already in use."));
-  }
-
-  hosting_server_services_from_post($node);
-
-  hosting_server_invoke_services($node, 'validate', $node, $form);
 }
 
 
