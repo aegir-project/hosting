@@ -87,7 +87,8 @@ function hosting_ssl_hosting_site_options_alter(&$return, $node) {
   $return['ssl_key_new'] = FALSE;
 
   // Test if ssl has been enabled.
-  if (isset($node->ssl_enabled)) {
+  //if (isset($node->ssl_enabled)) {
+  if (isset($node->ssl_enabled) && $node->ssl_enabled) {
 
     $keys = hosting_ssl_get_keys($node->client, TRUE);
     // Return the list of valid keys, including the special 'new key' option.
