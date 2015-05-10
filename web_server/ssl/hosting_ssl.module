@@ -182,7 +182,7 @@ function hosting_ssl_server_cert_list($node) {
     array(
       'header' => $header,
       'rows' => $rows,
-      'attributes' => array('class' => array('hostign-table')),
+      'attributes' => array('class' => array('hosting-table')),
     ))
     . theme('pager', array('tags' => NULL, 'element' => 2));
 }
