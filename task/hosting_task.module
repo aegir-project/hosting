@@ -543,6 +543,13 @@ function hosting_task_confirm_form($form, $form_state, $node, $task) {
 
   if (!isset($tasks[$task]['dialog']) || !$tasks[$task]['dialog']) {
     hosting_add_task($node->nid, $task);
+    if ($task == 'delete') {
+      // We're deleting a Hosting object, and thus its corresponding node. If
+      // we stay on the current page, we'll end up with a 404, so redirect to
+      // the home page.
+      drupal_set_message(t(':title has been queued for deletion.', array(':title'=>$node->title)));
+      drupal_goto();
+    }
     drupal_goto('node/' . $node->nid);
   }
 
