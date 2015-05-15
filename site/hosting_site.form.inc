@@ -13,8 +13,8 @@ function _hosting_site_field(&$form, $node, $item, $element, $filter_display = '
   $type = $element['#type'];
 
   if (!isset($node->nid) || $editable) {
-    // create it
-    if (($element['#type'] == 'radios') && !sizeof($element['#options'])) {
+    // Create it.
+    if (($element['#type'] == 'radios') && !count($element['#options'])) {
       $form[$item] = array(
         '#type' => 'hidden',
         '#value' => key($element['#options']),
@@ -25,7 +25,7 @@ function _hosting_site_field(&$form, $node, $item, $element, $filter_display = '
     }
 
     if ($show_desc) {
-      // the text to display when there are no valid options to select
+      // The text to display when there are no valid options to select.
       $form[$item . '_description'] = array(
         '#prefix' => "<div class='hosting-site-field-description' id='hosting-site-field-{$css_id}-description'>",
         '#suffix' => '</div>',
@@ -43,7 +43,7 @@ function _hosting_site_field(&$form, $node, $item, $element, $filter_display = '
     $type = 'display';
 
     if ($show_desc) {
-      // display it
+      // Display it.
       $form['info'][$item] = array(
         '#type' => 'item',
         '#title' => $element['#title'],
@@ -72,12 +72,11 @@ function _hosting_site_field(&$form, $node, $item, $element, $filter_display = '
 /**
  * Pass in a site node and return an array of valid options for it's fields.
  *
- * Modules can define the hook_hosting_site_options_alter function to modify which
- * fields are available for selection.
- *
+ * Modules can define the hook_hosting_site_options_alter function to modify
+ * which fields are available for selection.
  */
 function hosting_site_available_options($node, $platform = NULL) {
-  // cast to object if it's an array.
+  // Cast to object if it's an array.
   $node = (is_array($node)) ? (object) $node : clone $node;
 
   $return = array();
@@ -93,10 +92,10 @@ function hosting_site_available_options($node, $platform = NULL) {
     $return['client'] = NULL;
   }
 
-  // Load up the user we'll use to check platform and profile access
+  // Load up the user we'll use to check platform and profile access.
   $user = user_load($GLOBALS['user']->uid);
 
-  // Install profiles
+  // Install profiles.
   $profiles = hosting_get_profiles();
   $platform_profiles = array();
   foreach ($profiles as $id => $name) {
@@ -116,7 +115,7 @@ function hosting_site_available_options($node, $platform = NULL) {
                         array(
                           ':package_id' => $id,
                           ':package_type' => 'profile',
-                          ':status' => HOSTING_PLATFORM_ENABLED
+                          ':status' => HOSTING_PLATFORM_ENABLED,
                         )
                       );
     if (is_null($platform)) {
@@ -134,7 +133,7 @@ function hosting_site_available_options($node, $platform = NULL) {
       elseif (array_key_exists($row->nid, $allowed_plats)) {
         $access_check = TRUE;
       }
-      // open access if no platform access has been set
+      // Open access if no platform access has been set.
       // @todo move this into _hosting_get_allowed_platforms
       // @todo confirm this logic
       elseif (!$unrestricted = db_query("SELECT cid
@@ -159,7 +158,7 @@ function hosting_site_available_options($node, $platform = NULL) {
     $node->profile = hosting_get_default_profile($return['profile'][0]);
   }
 
-  // filter the available platforms based on which clients the user has access to.
+  // Filter the available platforms based on which clients the user has access to.
   if (!is_null($platform)) {
     $node->profile = $return['profile'][0];
     $return['platform'] = array($platform);
@@ -167,12 +166,12 @@ function hosting_site_available_options($node, $platform = NULL) {
   else {
     $options = array();
     $platforms = hosting_get_profile_platforms($node->profile, isset($node->check_profile_migrations) ? $node->check_profile_migrations : FALSE);
-    if (sizeof($platforms)) {
+    if (count($platforms)) {
       foreach ($platforms as $nid => $title) {
         $platform = node_load($nid);
 
         if ($platform->platform_status != HOSTING_PLATFORM_LOCKED || user_access('create sites on locked platforms')) {
-          if (!isset($platform->clients) || sizeof(array_intersect(array_keys($user->client_id), $platform->clients)) || $user->uid == 1) {
+          if (!isset($platform->clients) || count(array_intersect(array_keys($user->client_id), $platform->clients)) || $user->uid == 1) {
             $options[] = $nid;
           }
         }
@@ -192,7 +191,6 @@ function hosting_site_available_options($node, $platform = NULL) {
 
   return $return;
 }
-
 
 
 /**
@@ -220,7 +218,7 @@ function hosting_site_form($node, &$form_state) {
   $editable = ((!isset($node->client) || !isset($node->nid)) || user_access('administer sites')) && hosting_feature('client');
   $add_client_text = '';
   if (user_access('administer clients') || user_access('create client')) {
-    $add_client_text = t(' Click !here to add a new client.', array('!here' => l('here', 'node/add/client', array('attributes' => array('target' => '_blank')))));
+    $add_client_text = t(' Click !here to add a new client.', array('!here' => l(t('here'), 'node/add/client', array('attributes' => array('target' => '_blank')))));
   }
   _hosting_site_field($form, $node, 'client', array(
     '#type' => 'textfield',
@@ -262,7 +260,7 @@ function hosting_site_form($node, &$form_state) {
   if (isset($form_state['values']['profile'])) {
     $selected_profile = $form_state['values']['profile'];
   }
-  else{
+  else {
     $selected_profile = hosting_package_instance_load(array('p.nid' => hosting_get_default_profile()))->nid;
   }
 
@@ -295,7 +293,7 @@ function hosting_site_form($node, &$form_state) {
   if (isset($form_state['values']['platform'])) {
     $selected_platform = $form_state['values']['platform'];
   }
-  else{
+  else {
     $selected_platform = NULL;
   }
   $languages = hosting_get_profile_languages($selected_profile, $selected_platform);
@@ -328,11 +326,11 @@ function hosting_site_form($node, &$form_state) {
   return $form;
 }
 
-function hosting_site_platform_callback($form, &$form_state){
+function hosting_site_platform_callback($form, &$form_state) {
   return $form['platform'];
 }
 
-function hosting_site_language_callback($form, &$form_state){
+function hosting_site_language_callback($form, &$form_state) {
   return $form['site_language'];
 }
 
@@ -344,7 +342,9 @@ function hosting_site_validate($node, &$form) {
 
   $valid_options = hosting_site_available_options($node);
 
-  $url = strtolower(trim($node->title)); // domain names are case-insensitive
+  // Domain names are case-insensitive, set to lower case.
+  $url = strtolower(trim($node->title));
+
   if (!_hosting_valid_fqdn($url)) {
     form_set_error('title', t("You have not specified a valid url for this site."));
   }
@@ -372,7 +372,7 @@ function hosting_site_validate($node, &$form) {
   }
 
   // If the quota module is loaded and this is a new node, check
-  // the site quota
+  // the site quota.
   if (!$node->nid && function_exists('hosting_site_quota_exceeded')) {
     $quota_error = hosting_site_quota_exceeded($node);
     if ($quota_error) {
@@ -388,7 +388,8 @@ function hosting_site_validate($node, &$form) {
     form_set_error('platform', t('Please choose a valid platform'));
   }
 
-  // Check that we are selecting a valid language for this profile, but only when a new site is created.
+  // Check that we are selecting a valid language for this profile,
+  // but only when a new site is created.
   if (!in_array($node->site_language, $valid_options['site_language']) && !$node->nid) {
     form_set_error('site_language', t('Please fill in a valid language'));
   }
@@ -401,7 +402,8 @@ function hosting_site_validate($node, &$form) {
  * Hide the delete button on site nodes
  */
 function hosting_site_form_alter(&$form, &$form_state, $form_id) {
-  // Remove delete button from site edit form, unless the site's already been deleted via the Delete task
+  // Remove delete button from site edit form, unless the site's already been
+  // deleted via the Delete task.
   if ($form_id == 'site_node_form') {
     $node = $form['#node'];
     if (isset($node->site_status) && $node->site_status !== HOSTING_SITE_DELETED) {
