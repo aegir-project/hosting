@@ -139,7 +139,7 @@ function hosting_site_available_options($node, $platform = NULL) {
       elseif (!$unrestricted = db_query("SELECT cid
                                          FROM {hosting_platform_client_access}
                                          WHERE pid = :pid LIMIT 1",
-                                         array(':pid' => $row['nid'])
+                                         array(':pid' => $row->nid)
                                        )->fetchField()) {
         $access_check = TRUE;
       }
