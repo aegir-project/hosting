@@ -105,5 +105,35 @@ function hosting_task_TASK_TYPE_form_validate($form, &$form_state) {
 
 
 /**
+ * Reacts to tasks ending, with any status.
+ *
+ * @param $task
+ *   The task that has just completed.
+ * @param $status
+ *   The status of that task.  Can be HOSTING_TASK_SUCCESS, etc.
+ */
+function hook_hosting_task_update_status($task, $status) {
+
+  // A task's "RID" is a node ID for the object the task is run on. (Site, Platform, Server, etc)
+  $node = node_load($task->rid);
+
+  // On error, output a new message.
+  if ($status == HOSTING_TASK_ERROR) {
+    drush_log(dt("!title: !task task ended in an Error", array(
+      '!task' => $task->task_type,
+      '!title' => $node->title,
+    )), 'error');
+  }
+  else {
+    drush_log(" Task completed successfully: " . $task->task_type, 'ok');
+    drush_log(dt("!title: !task task ended with !status", array(
+      '!task' => $task->task_type,
+      '!title' => $node->title,
+      '!status' => _hosting_parse_error_code($status),
+    )), 'ok');
+  }
+}
+
+/**
  * @} End of "addtogroup hooks".
  */
