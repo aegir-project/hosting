@@ -1055,7 +1055,7 @@ function hosting_task_view($node, $teaser = FALSE, $page = FALSE) {
         ),
         'fragment' => 'warning',
       );
-      if (overlay_get_mode() == 'child') {
+      if (module_exists('overlay') && overlay_get_mode() == 'child') {
         $url_options['query'] = array('render' => 'overlay');
       }
       $node->content['jump-link-warning'] = array(
