@@ -260,9 +260,46 @@ function hosting_client_node_access_records($node) {
       break;
 
     case 'task':
+      // The rest of the node types are configuration, so only admin should see them.
+      $base_grant['gid'] = HOSTING_ADMIN_CLIENT;
+      break;
+
     case 'server':
       // The rest of the node types are configuration, so only admin should see them.
       $base_grant['gid'] = HOSTING_ADMIN_CLIENT;
+
+      // Lookup platforms on this server.
+      $platforms = _hosting_get_platforms($node->nid);
+
+      $gids = array();
+      foreach ($platforms as $nid => $title) {
+        $node = node_load($nid);
+
+        if (!empty($node->clients)) {
+          foreach ($node->clients as $cid => $client) {
+            if ($cid != HOSTING_ADMIN_CLIENT) {
+              $gids[] = $cid;
+            }
+          }
+        }
+      }
+
+      // Lookup databaaes hosted on this server.
+      $databases = hosting_get_sites_on_db_server($node->nid);
+      foreach ($databases as $nid => $dbname) {
+        $node = node_load($nid);
+        if (!empty($node->client)) {
+          if ($node->client != HOSTING_ADMIN_CLIENT) {
+            $gids[] = $node->client;
+          }
+        }
+      }
+      $gids = array_unique($gids);
+
+      // Grant access to all clients who have access to a platform.
+      foreach ($gids as $cid) {
+        $grants[] = array_merge($base_grant, array('gid' => $cid, 'grant_update' => 0));
+      }
       break;
 
     case 'platform':

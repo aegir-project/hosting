@@ -44,6 +44,23 @@ function hosting_get_db_server($hostname) {
   return FALSE;
 }
 
+
+/**
+ * Get the databases hosted on a server.
+ *
+ * @param int $db_server_id
+ *   The node ID of the db server.
+ */
+function hosting_get_sites_on_db_server($db_server_id) {
+  $return = array();
+  $result = db_query("SELECT nid, db_name FROM {hosting_site} WHERE db_server = :id", array(':id' => $db_server_id));
+  while ($site = $result->fetch()) {
+    $return[$site->nid] = $site->db_name;
+  }
+
+  return $return;
+}
+
 /**
  * Implements hook_nodeapi_TYPE_OP().
  */

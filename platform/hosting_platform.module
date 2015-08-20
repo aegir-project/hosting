@@ -197,8 +197,12 @@ function hosting_platform_delete_action($node) {
 
 /**
  * Helper function to get platforms that haven't been deleted.
+ *
+ * @param int $web_server
+ *   Node ID of the server hosting this platform.
+ *   Default 0 indicates any web_server.
  */
-function _hosting_get_platforms() {
+function _hosting_get_platforms($web_server = 0) {
   $return = array();
   $result = db_query("SELECT n.nid, n.title
                       FROM {node} n
@@ -207,11 +211,13 @@ function _hosting_get_platforms() {
                       WHERE n.type = :type
                       AND n.status = :nstatus
                       AND h.status <> :hstatus
+                      AND (h.web_server = :web_server OR :web_server = 0)
                       ORDER BY n.title
                      ", array(
                        ':type' => 'platform',
                        ':nstatus' => 1, //@todo: remove magic number?
                        ':hstatus' => HOSTING_PLATFORM_DELETED,
+                       ':web_server' => $web_server,
                      )
                    );
   while ($platform = $result->fetch()) {
