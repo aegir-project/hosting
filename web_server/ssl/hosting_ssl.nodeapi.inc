@@ -50,7 +50,7 @@ function hosting_ssl_site_form(&$form, &$form_state, $form_id) {
     '#description' => t("Choose an existing SSL certificate. If you do not wish to use any of your existing certificates, you may choose to generate a new one."),
     '#options' => hosting_ssl_get_keys(NULL, TRUE),
     '#required' => TRUE,
-    '#default_value' => isset($node->ssl_key) ? $node->ssl_key : HOSTING_SSL_CUSTOM_KEY,
+    '#default_value' => (isset($node->ssl_key) && $node->ssl_key > 0) ? $node->ssl_key : HOSTING_SSL_CUSTOM_KEY,
     '#access' => user_access('create ssl certificate'),
     '#states' => array(
       'visible' => array(
@@ -284,7 +284,7 @@ function hosting_ssl_nodeapi_site_update($node) {
     hosting_ssl_nodeapi_site_insert($node);
   }
   else {
-    if ($node->site_status == HOSTING_SITE_DELETED || !$node->ssl_enabled) {
+    if ($node->site_status == HOSTING_SITE_DELETED || (!$node->ssl_enabled && $node->ssl_key != 0))  {
       hosting_ssl_clean_keys($node);
     }
 
