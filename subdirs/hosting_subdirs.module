@@ -73,9 +73,11 @@ function hosting_subdirs_validate_alias($site, $alias, $key) {
  * Allow aliases with subdirectories.
  */
 function hosting_subdirs_site_form_validate($form, &$form_state) {
-  $aliases = $form_state['values']['aliases'] = array_filter($form_state['values']['aliases']);
-  foreach ($aliases as $key => $alias) {
-    hosting_subdirs_validate_alias($form_state['node'], $alias, $key);
+  if (isset($form_state['values']['aliases'])) {
+    $aliases = $form_state['values']['aliases'] = array_filter($form_state['values']['aliases']);
+    foreach ($aliases as $key => $alias) {
+      hosting_subdirs_validate_alias($form_state['node'], $alias, $key);
+    }
   }
 }
 
