@@ -103,11 +103,11 @@ function hosting_signup_form_validate($form, &$form_state) {
   $client = (object) $form_state['values'];
   $client->type = 'client';
   $client->title = $client->client_name;
-  node_validate($client);
+  node_validate($client, $form, $form_state);
 
   $site = (object) $form_state['values'];
   $site->type = 'site';
-  node_validate($site);
+  node_validate($site, $form, $form_state);
 }
 
 

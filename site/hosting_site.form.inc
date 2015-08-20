@@ -373,7 +373,7 @@ function hosting_site_validate($node, &$form) {
 
   // If the quota module is loaded and this is a new node, check
   // the site quota.
-  if (!$node->nid && function_exists('hosting_site_quota_exceeded')) {
+  if (!empty($node->nid) && function_exists('hosting_site_quota_exceeded')) {
     $quota_error = hosting_site_quota_exceeded($node);
     if ($quota_error) {
       form_set_error('title', $quota_error);
