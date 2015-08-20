@@ -126,7 +126,7 @@ function hosting_ssl_nodeapi_site_view(&$node, $teaser = FALSE) {
     '#weight' => 6,
   );
 
-  if (isset($node->ssl_enabled)) {
+  if (isset($node->ssl_enabled) && $node->ssl_enabled == TRUE) {
     $node->content['info']['ssl_key'] = array(
       '#type' => 'item',
       '#title' => t('Encryption key'),
