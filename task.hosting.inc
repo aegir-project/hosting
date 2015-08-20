@@ -140,7 +140,7 @@ function drush_hosting_task() {
 
   // New revision is created at the beginning of function.
   $task->revision = FALSE;
-  $task->delta = REQUEST_TIME - $task->executed;
+  $task->delta = microtime(TRUE) - $task->executed;
   node_save($task);
 }
 
