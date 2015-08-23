@@ -97,6 +97,14 @@ function hosting_features_form($form, &$form_state) {
     '#description' => t('Features marked experimental have not been completed to a satisfactory level to be considered production ready, so use at your own risk.'),
   );
 
+  $advanced = array(
+    '#type' => 'fieldset',
+    '#title' => t('Advanced'),
+    '#collapsed' => TRUE,
+    '#collapsible' => TRUE,
+    '#description' => t('Advanced features require a deep knowledge of Aegir and Drupal to be considered safe, so use at your own risk.'),
+  );
+
   $features = hosting_get_features(TRUE);
   foreach ($features as $feature => $info) {
     $description = $info['description'];
@@ -177,6 +185,12 @@ function hosting_features_form($form, &$form_state) {
         }
         $optional[$info['package']]['hosting_feature_' . $feature] = $element;
       }
+      elseif ($info['group'] == 'advanced') {
+        if (!isset($advanced[$info['package']])) {
+          $advanced[$info['package']] = $package;
+        }
+        $advanced[$info['package']]['hosting_feature_' . $feature] = $element;
+      }
       else {
         if (!isset($experimental[$info['package']])) {
           $experimental[$info['package']] = $package;
@@ -192,6 +206,9 @@ function hosting_features_form($form, &$form_state) {
       elseif (isset($info['group']) && $info['group'] == 'optional') {
         $optional['hosting_feature_' . $feature] = $element;
       }
+      elseif (isset($info['group']) && $info['group'] == 'advanced') {
+        $advanced['hosting_feature_' . $feature] = $element;
+      }
       else {
         $experimental['hosting_feature_' . $feature] = $element;
       }
@@ -200,6 +217,7 @@ function hosting_features_form($form, &$form_state) {
   }
   $form['required'] = $required;
   $form['optional'] = $optional;
+  $form['advanced'] = $advanced;
   $form['experimental'] = $experimental;
   $form['#submit'][] = 'hosting_features_form_submit';
   return system_settings_form($form);
