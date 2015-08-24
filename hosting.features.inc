@@ -389,6 +389,11 @@ function hosting_feature_role_perms_table($form, &$form_table, $role_perms) {
 
 /**
  * Enable one or more Hosting features.
+ *
+ * @param bool $rebuild
+ *   Rebuild caches afterwards, default TRUE.
+ * @param bool $enable
+ *   Also enable the Drupal module, default TRUE.
  */
 function hosting_features_enable($features, $rebuild = TRUE, $enable = TRUE) {
   if (count($features)) {
@@ -425,6 +430,11 @@ function hosting_features_enable($features, $rebuild = TRUE, $enable = TRUE) {
 
 /**
  * Disable one or more Hosting features.
+ *
+ * @param bool $rebuild
+ *   Rebuild caches afterwards, default TRUE.
+ * @param bool $disable_module
+ *   Also disable the Drupal module, default TRUE.
  */
 function hosting_features_disable($disable, $rebuild = TRUE, $disable_module = TRUE) {
   if (count($disable)) {
