@@ -66,10 +66,9 @@ function hosting_package_schema() {
         'default' => 0,
       ),
       'filename' => array(
-        'type' => 'varchar',
-        'length' => 255,
+        'type' => 'text',
+        'length' => 'normal',
         'not null' => TRUE,
-        'default' => '',
       ),
       'schema_version' => array(
         'type' => 'int',
@@ -534,4 +533,17 @@ return hosting_package_block_visibility();
 
   return $ret;
 
+}
+
+/**
+ * Change filename field to longtext.
+ */
+function hosting_package_update_7301() {
+  $spec = array(
+    'type' => 'text',
+    'size' => 'normal',
+    'not null' => TRUE,
+  );
+
+  db_change_field('hosting_package_instance', 'filename', 'filename', $spec);
 }
