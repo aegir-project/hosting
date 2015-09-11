@@ -67,7 +67,7 @@ function hosting_package_schema() {
       ),
       'filename' => array(
         'type' => 'text',
-        'length' => 'normal',
+        'size' => 'normal',
         'not null' => TRUE,
       ),
       'schema_version' => array(
