@@ -8,8 +8,8 @@
 /**
  * Implements hook_drush_init().
  *
- * This function registers a shutdown function to update the task status after drush
- * completes it's run.
+ * This function registers a shutdown function to update the task status after
+ * drush completes it's run.
  *
  * The call to register_shutdown_function() is needed to ensure we get a status
  * update no matter what happens with drush.
@@ -28,17 +28,20 @@ function hosting_task_drush_update_status() {
     $task_code = hosting_task_update_status($task);
     $message = _hosting_parse_error_code($task_code);
 
-    // Translate status int to drush log type
-    switch($task_code){
+    // Translate status int to drush log type.
+    switch ($task_code) {
       case HOSTING_TASK_SUCCESS:
         $drush_message_type = 'success';
         break;
+
       case HOSTING_TASK_WARNING:
         $drush_message_type = 'warning';
         break;
+
       case HOSTING_TASK_ERROR:
         $drush_message_type = 'error';
         break;
+
       default:
         $drush_message_type = 'info';
         break;
