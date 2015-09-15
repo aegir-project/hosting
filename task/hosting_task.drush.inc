@@ -40,7 +40,7 @@ function hosting_task_drush_update_status() {
         $drush_message_type = 'error';
         break;
       default:
-        $drush_message_type = 'success';
+        $drush_message_type = 'info';
         break;
     }
     drush_log(dt('Updated task status to "!log"', array('!log' => $message)), $drush_message_type);
