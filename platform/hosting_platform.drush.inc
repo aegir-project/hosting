@@ -41,7 +41,7 @@ function hosting_platform_drush_context_import($context, &$node) {
 }
 
 /**
- * Implements hook_post_verify().
+ * Implements hook_post_hosting_TASK_TYPE_task().
  *
  * Sets the platform verified timestamp, to discren when it was verified.
  * Imports all the profiles and modules into package and package release nodes.
