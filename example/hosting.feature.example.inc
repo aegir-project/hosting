@@ -26,7 +26,7 @@ function hosting_example_hosting_feature() {
     'disable' => 'hosting_example_feature_disable_callback',
     // associate with a specific node type.
     //  'node' => 'nodetype',
-    // which group to display in ( null , experimental , required )
+    // which group to display in ( null , experimental , required, advanced )
     'group' => 'experimental'
     );
   return $features;
