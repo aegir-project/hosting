@@ -189,8 +189,12 @@ function _hosting_dispatch_cmd() {
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Generate a crontab entry.
+ *
+ * @return string
+ *   The lines to be added.
+ *
+ * @see hosting_queues_cron_removal()
  */
 function hosting_queues_cron_cmd() {
   $command = _hosting_dispatch_cmd();
@@ -200,6 +204,34 @@ PATH=$_SERVER[PATH]
 */1 * * * * $command
 END;
   return $return;
+}
+
+/**
+ * Remove Aegir lines from a crontab.
+ *
+ * @param array $crontab
+ *   Multi line array of the current crontab entry.
+ *
+ * @return array
+ *   The left over non-Aegir lines.
+ *
+ * @see hosting_queues_cron_cmd()
+ */
+function hosting_queues_cron_removal($crontab) {
+
+  foreach ($crontab as $k => $cron) {
+    if (preg_match('|SHELL=/bin/sh|', $cron)) {
+      unset($crontab[$k]);
+    }
+    if (preg_match("|PATH=$_SERVER[PATH]|", $cron)) {
+      unset($crontab[$k]);
+    }
+    if (preg_match('|hosting-dispatch|', $cron)) {
+      unset($crontab[$k]);
+    }
+  }
+
+  return $crontab;
 }
 
 /**

@@ -671,6 +671,7 @@ function drush_hosting_setup() {
  */
 function _hosting_setup_cron() {
   $existing = FALSE;
+  $cron = array();
   exec('crontab -l 2> /dev/null', $cron);
   variable_set('hosting_cron_backup', $cron);
   if (count($cron)) {
@@ -679,8 +680,11 @@ function _hosting_setup_cron() {
   else {
     drush_log(dt("No existing crontab was found"), 'message');
   }
+  $cron = hosting_queues_cron_removal($cron);
+  $cron = implode("\n", $cron);
 
-  $cron = hosting_queues_cron_cmd();
+  // Append the fresh Aegir specific lines.
+  $cron .= "\n" . hosting_queues_cron_cmd();
 
   $fp = popen('crontab -', 'w');
   $success = TRUE;
