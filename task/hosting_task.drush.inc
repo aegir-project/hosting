@@ -25,27 +25,7 @@ function hosting_task_drush_init() {
 function hosting_task_drush_update_status() {
   $task = drush_get_context('HOSTING_TASK');
   if (!empty($task)) {
-    $task_code = hosting_task_update_status($task);
-    $message = _hosting_parse_error_code($task_code);
-
-    // Translate status int to drush log type.
-    switch ($task_code) {
-      case HOSTING_TASK_SUCCESS:
-        $drush_message_type = 'success';
-        break;
-
-      case HOSTING_TASK_WARNING:
-        $drush_message_type = 'warning';
-        break;
-
-      case HOSTING_TASK_ERROR:
-        $drush_message_type = 'error';
-        break;
-
-      default:
-        $drush_message_type = 'info';
-        break;
-    }
-    drush_log(dt('Updated task status to "!log"', array('!log' => $message)), $drush_message_type);
+    $message = _hosting_parse_error_code(hosting_task_update_status($task));
+    drush_log(dt('Updated task status to "!log"', array('!log' => $message)), 'info');
   }
 }
