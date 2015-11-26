@@ -430,7 +430,11 @@ function hosting_ssl_clean_keys($node) {
                  ))->fetchField()) {
     // We need to fetch the ssl_key field from the DB because the object comes
     // from the node edit, so it's gone.
-    $ssl_key = db_query('SELECT ssl_key FROM {hosting_ssl_site} WHERE nid = ?', array($node->nid))->fetchField();
+    $ssl_key = db_query('SELECT ssl_key FROM {hosting_ssl_site} WHERE nid = :nid',
+      array(
+        ':nid' => $node->nid,
+      )
+    )->fetchField();
     drupal_set_message(t("cleaning up unused certificate %cert associated with site %site", array('%cert' => $ssl_key, '%site' => $node->nid)));
     db_delete('hosting_ssl_cert')
       ->condition('cid', $ssl_key)
