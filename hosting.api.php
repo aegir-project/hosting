@@ -363,5 +363,53 @@ function hook_hosting_task_update_status($task, $status) {
 }
 
 /**
+ * Return a list of Aegir entities to guard against destructive tasks.
+ *
+ * @see: hook_hosting_task_dangerous_tasks().
+ * @see: hook_hosting_task_guarded_nodes_alter();
+ */
+function hook_hosting_task_guarded_nodes() {
+  // Guard against destructive tasks run on the hostmaster site or platform.
+  $hostmaster_site_nid = hosting_get_hostmaster_site_nid();
+  $hostmaster_platform_nid = hosting_get_hostmaster_platform_nid();
+  $guarded_nids = array(
+    $hostmaster_site_nid,
+    $hostmaster_platform_nid,
+  );
+  return $guarded_nids;
+}
+
+/**
+ * Alter the list of guarded nodes.
+ *
+ * @param $nids
+ *   A list of NIDs as returned by hook_hosting_task_guarded_nodes().
+ */
+function hook_hosting_task_guarded_nodes_alter(&$nids) {}
+
+/**
+ * Return a list of dangerous tasks.
+ *
+ * These tasks will be blocked on guarded noded.
+ * @see: hook_hosting_task_guarded_nodes().
+ * @see: hook_hosting_task_dangerous_tasks_alter().
+ */
+function hook_hosting_task_dangerous_tasks() {
+  $dangerous_tasks = array(
+    'disable',
+    'delete',
+  );
+  return $dangerous_tasks;
+}
+
+/**
+ * Alter the list of dangerous tasks.
+ *
+ * @param $nids
+ *   A list of tasks as returned by hook_hosting_task_dangerous_tasks().
+ */
+function hook_hosting_task_dangerous_tasks_alter(&$tasks) {}
+
+/**
  * @} End of "addtogroup hostinghooks".
  */

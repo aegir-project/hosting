@@ -90,9 +90,18 @@ function hosting_path_normalize($path) {
 }
 
 /**
- * Helper function to get the node ID of the Aegir front-end site.
+ * Shim to preserve API stability. Deprecated. Use hosting_get_hostmaster_site_nid().
+ *
+ * @deprecated
  */
 function hosting_get_hostmaster_nid() {
+  return hosting_get_hostmaster_site_nid();
+}
+
+/**
+ * Helper function to get the node ID of the Aegir front-end site.
+ */
+function hosting_get_hostmaster_site_nid() {
   return db_query('SELECT site.nid
                      FROM hosting_site site
                      JOIN hosting_package_instance pkgi
@@ -100,4 +109,12 @@ function hosting_get_hostmaster_nid() {
                      JOIN hosting_package pkg
                        ON pkg.nid = pkgi.package_id
                     WHERE pkg.short_name = \'hostmaster\'')->fetchField();
+}
+
+/**
+ * Helper function to get the node ID of the Aegir platform.
+ */
+function hosting_get_hostmaster_platform_nid() {
+  $hostmaster_site = node_load(hosting_get_hostmaster_site_nid());
+  return $hostmaster_site->platform;
 }

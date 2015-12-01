@@ -496,11 +496,8 @@ function hosting_task_retry($task_id) {
 function hosting_add_task($nid, $type, $args = NULL, $status = HOSTING_TASK_QUEUED) {
   global $user;
 
-  // Guard against destructive tasks run on the hostmaster site
-  $hostmaster_nid = hosting_get_hostmaster_nid();
-  if ($nid == $hostmaster_nid && in_array($type, array('delete', 'disable'))) {
-    drupal_set_message(t('You cannot !task the Hostmaster site.', array('!task' => $type)), 'warning');
-    watchdog('hostmaster', t('Attempt to !task the Hostmaster site blocked.', array('!task' => $type)), array(), WATCHDOG_WARNING);
+  // Guard against destructive tasks run on guarded nodes.
+  if (!hosting_task_dangerous_task_is_allowed($type, $nid)) {
     return FALSE;
   }
 
@@ -750,7 +747,6 @@ function hosting_available_tasks($type = NULL, $reset = FALSE) {
     return $cache;
   }
 }
-
 
 /**
  * Implements hook_action_info().
@@ -1718,4 +1714,76 @@ function hosting_task_parse_log($vid) {
     }
   }
   return $update;
+}
+
+/**
+ * Invoke hooks to build a list of NIDs to guard.
+ */
+function hosting_task_get_guarded_nodes() {
+  $guarded_nids = &drupal_static(__FUNCTION__);
+  if (!isset($guarded_nids)) {
+    $guarded_nids = module_invoke_all('hosting_task_guarded_nodes');
+    drupal_alter('hosting_task_guarded_nodes', $guarded_nids);
+  }
+  return $guarded_nids;
+}
+
+/**
+ * Implements hook_hosting_task_guarded_nodes().
+ */
+function hosting_task_hosting_task_guarded_nodes() {
+  // Guard against destructive tasks run on the hostmaster site or platform.
+  $hostmaster_site_nid = hosting_get_hostmaster_site_nid();
+  $hostmaster_platform_nid = hosting_get_hostmaster_platform_nid();
+  $guarded_nids = array(
+    $hostmaster_site_nid,
+    $hostmaster_platform_nid,
+  );
+  return $guarded_nids;
+}
+
+/**
+ * Invoke hooks to build a list of dangerous tasks.
+ */
+function hosting_task_get_dangerous_tasks() {
+  $dangerous_tasks = &drupal_static(__FUNCTION__);
+  if (!isset($dangerous_tasks)) {
+    $dangerous_tasks = module_invoke_all('hosting_task_dangerous_tasks');
+    drupal_alter('hosting_task_dangerous_tasks', $dangerous_tasks);
+  }
+  return $dangerous_tasks;
+}
+
+/**
+ * Implements hook_hosting_task_dangerous_tasks();
+ */
+function hosting_task_hosting_task_dangerous_tasks() {
+  $dangerous_tasks = array(
+    'disable',
+    'delete',
+  );
+  return $dangerous_tasks;
+}
+
+/**
+ * Guard against destructive tasks running on guarded Aegir entities.
+ */
+function hosting_task_dangerous_task_is_allowed($task_type, $nid) {
+  $allowed = TRUE;
+  $guarded_nids = hosting_task_get_guarded_nodes();
+  if (in_array($nid, $guarded_nids)) {
+    $dangerous_tasks = hosting_task_get_dangerous_tasks();
+    if (in_array($task_type, $dangerous_tasks)) {
+      $node = node_load($nid);
+      $map = array(
+        ':task' => $task_type,
+        ':title' => $node->title,
+        ':type' => $node->type,
+      );
+      drupal_set_message(t('You cannot run dangerous :task task on guarded :type :title.', $map), 'warning');
+      watchdog('hostmaster', t('Detected attempt to run dangerous :task task on guarded :type :title.', $map), array(), WATCHDOG_WARNING);
+      $allowed = FALSE;
+    }
+  }
+  return $allowed;
 }

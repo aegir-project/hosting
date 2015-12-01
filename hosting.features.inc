@@ -531,7 +531,7 @@ function hosting_feature_rebuild_caches($features = array()) {
       drush_get_option('no-verify', FALSE)) {
     return;
   }
-  if ($nid = hosting_get_hostmaster_nid()) {
+  if ($nid = hosting_get_hostmaster_site_nid()) {
     hosting_add_task($nid, 'verify');
   }
 }
