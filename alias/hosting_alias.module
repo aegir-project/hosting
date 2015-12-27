@@ -94,7 +94,7 @@ function hosting_alias_form_data(&$form, &$form_state) {
     $form['aliases_automatic'] = array(
       '#type' => 'item',
       '#title' => t('Automatic domain aliases'),
-      '#value' => implode(', ', $links),
+      '#markup' => implode(', ', $links),
       '#weight' => 10,
     );
   }
@@ -384,7 +384,7 @@ function hosting_alias_node_load($nodes, $types) {
       $nodes[$nid]->redirection = db_query("SELECT redirection FROM {hosting_site_alias} WHERE vid = :vid", array(':vid' => $node->vid))->fetchField();
       // Only retrieves custom aliases, as they are all that can be modified.
       $nodes[$nid]->aliases = hosting_alias_get_aliases($node, HOSTING_ALIAS_CUSTOM);
-
+      $nodes[$nid]->aliases_automatic = hosting_alias_get_aliases($node, HOSTING_ALIAS_AUTOMATIC);
     }
   }
 }
@@ -394,10 +394,9 @@ function hosting_alias_node_load($nodes, $types) {
  */
 function hosting_alias_node_view($node, $view_mode, $langcode) {
   if ($node->type == 'site') {
-    $aliases = hosting_alias_get_aliases($node);
 
-    if (sizeof($aliases)) {
-      foreach ($aliases as $link) {
+    if (sizeof($node->aliases)) {
+      foreach ($node->aliases as $link) {
         $links[] = l($link, "http://$link");
       }
       $node->content['info']['aliases'] = array(
@@ -411,7 +410,21 @@ function hosting_alias_node_view($node, $view_mode, $langcode) {
         '#type' => 'item',
         '#title' => t('Redirection'),
         '#markup' => $redirection['redirection'] ? t('Yes') : t('No'),
-        '#weight' => 10,
+        '#weight' => 12,
+      );
+    }
+
+    // List the automatic aliasses.
+    if (sizeof($node->aliases_automatic)) {
+      $links = array();
+      foreach ($node->aliases_automatic as $link) {
+        $links[] = l($link, "http://$link");
+      }
+      $node->content['info']['aliases_automatic'] = array(
+        '#type' => 'item',
+        '#title' => t('Auto aliases'),
+        '#markup' => implode(', ', $links),
+        '#weight' => 11,
       );
     }
   }
