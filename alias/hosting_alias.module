@@ -79,15 +79,16 @@ function hosting_alias_site_form_validate($form, &$form_state) {
 /**
  * Alter the node form for a site to add the aliases and redirection items.
  *
- * @param $form
+ * @param array $form
  *   The form to alter, should come from hook_form_alter().
- * @param $form_state
+ * @param array $form_state
+ *   A keyed array containing the current state of the form.
  */
 function hosting_alias_form_data(&$form, &$form_state) {
 
   // List the automatic aliasses first.
   $automatic_aliases = hosting_alias_get_aliases($form['#node'], HOSTING_ALIAS_AUTOMATIC);
-  if (sizeof($automatic_aliases)) {
+  if (count($automatic_aliases)) {
     foreach ($automatic_aliases as $link) {
       $links[] = l($link, "http://$link");
     }
@@ -120,11 +121,12 @@ function hosting_alias_form_data(&$form, &$form_state) {
   }
   elseif (isset($form['#node']->aliases)) {
     $aliases = array_filter($form['#node']->aliases);
-  } else {
+  }
+  else {
     $aliases = array();
   }
 
-  // Add alias textfields
+  // Add alias textfields.
   for ($delta = 0; $delta <= count($aliases); $delta++) {
     $form['aliases_wrapper']['aliases'][$delta] = array(
       '#type' => 'textfield',
@@ -132,7 +134,7 @@ function hosting_alias_form_data(&$form, &$form_state) {
     );
   }
 
-  // "Add Alias" button
+  // "Add Alias" button.
   $form['aliases_wrapper']['add_alias'] = array(
     '#type' => 'submit',
     '#value' => t('Add an alias'),
@@ -147,7 +149,7 @@ function hosting_alias_form_data(&$form, &$form_state) {
     ),
   );
 
-  // Redirection Domain
+  // Redirection Domain.
   $options = array();
   $options[0] = t('No redirection');
   if (isset($form['#node']->title)) {
@@ -173,14 +175,14 @@ function hosting_alias_form_data(&$form, &$form_state) {
 }
 
 /**
- * Callback to handle "Add Alias" button
+ * Callback to handle "Add Alias" button.
  */
 function hosting_alias_add_alias_submit($form, &$form_state) {
   $form_state['rebuild'] = TRUE;
 }
 
 /**
- * Ajax callback for returning multiple alias fields
+ * Ajax callback for returning multiple alias fields.
  */
 function hosting_alias_add_alias_callback($form, $form_state) {
   return $form['aliases_wrapper'];
@@ -190,12 +192,14 @@ function hosting_alias_add_alias_callback($form, $form_state) {
 /**
  * Retrieve a list of aliases for a site.
  *
- * @param $node
+ * @param Object $node
  *   The site to get the aliases for.
- * @param $type
- *   Restrict the type of aliases returned, defaults to returning all aliases. Should be one of:
+ * @param int $type
+ *   Restrict the type of aliases returned, defaults to returning all aliases.
+ *   Should be one of:
  *   - HOSTING_ALIAS_CUSTOM
  *   - HOSTING_ALIAS_AUTOMATIC
+ *
  * @return array
  *   An array of aliases for the given site.
  */
@@ -219,7 +223,7 @@ function hosting_alias_get_aliases($node, $type = NULL) {
   foreach ($result as $obj) {
     $alias[] = $obj->alias;
   }
-  if (sizeof($alias)) {
+  if (count($alias)) {
     return $alias;
   }
   return array();
@@ -228,12 +232,12 @@ function hosting_alias_get_aliases($node, $type = NULL) {
 /**
  * Save stored aliases for a new site.
  *
- * @param $node
+ * @param Object $node
  *   The node of the site containing the aliases to save.
  */
 function hosting_alias_insert($node) {
   $automatic = hosting_alias_automatic_aliases(strtolower(trim($node->title)));
-  if (!empty($node->aliases) || sizeof($automatic)) {
+  if (!empty($node->aliases) || count($automatic)) {
     $aliases = (is_array($node->aliases)) ? $node->aliases : explode("\n", str_replace(",", "\n", $node->aliases));
     if (is_array($aliases)) {
       foreach ($aliases as $alias) {
@@ -250,7 +254,7 @@ function hosting_alias_insert($node) {
         }
       }
     }
-    if (sizeof($automatic)) {
+    if (count($automatic)) {
       foreach ($automatic as $alias) {
         if (($alias = trim($alias)) && _hosting_valid_fqdn_wildcard($alias)) {
           $id = db_insert('hosting_site_alias')
@@ -271,11 +275,11 @@ function hosting_alias_insert($node) {
 /**
  * Update stored aliases for an existing site.
  *
- * @param $node
+ * @param Object $node
  *   The node of the site containing the aliases to save.
  */
 function hosting_alias_update($node) {
-  // We need to wipe clean existing aliases if we are not making a new revision
+  // We need to wipe clean existing aliases if we are not making a new revision.
   if (empty($node->revision)) {
     hosting_alias_delete_revision($node);
   }
@@ -286,7 +290,7 @@ function hosting_alias_update($node) {
 /**
  * Remove the stored aliases for and existing site.
  *
- * @param $node
+ * @param Object $node
  *   The site node.
  */
 function hosting_alias_delete($node) {
@@ -298,7 +302,7 @@ function hosting_alias_delete($node) {
 /**
  * Remove the stored aliases for and existing site for a specific version.
  *
- * @param $node
+ * @param Object $node
  *   The site node.
  */
 function hosting_alias_delete_revision($node) {
@@ -352,6 +356,7 @@ function hosting_alias_node_revision_delete($node) {
  * @param string $alias
  *   An alias to have point to the site.
  * @param string $key
+ *   The array index of this alias, to set any error on the proper sub-field.
  */
 function hosting_alias_validate_alias($site, $alias, $key) {
   if ($alias = trim($alias)) {
@@ -380,7 +385,7 @@ function hosting_alias_node_load($nodes, $types) {
       // XXX: this returns only the first redirection status. it
       // works since they are all set to the same in hook_insert(),
       // but we should return an associative alias => redirection
-      // array instead
+      // array instead.
       $nodes[$nid]->redirection = db_query("SELECT redirection FROM {hosting_site_alias} WHERE vid = :vid", array(':vid' => $node->vid))->fetchField();
       // Only retrieves custom aliases, as they are all that can be modified.
       $nodes[$nid]->aliases = hosting_alias_get_aliases($node, HOSTING_ALIAS_CUSTOM);
@@ -395,7 +400,7 @@ function hosting_alias_node_load($nodes, $types) {
 function hosting_alias_node_view($node, $view_mode, $langcode) {
   if ($node->type == 'site') {
 
-    if (sizeof($node->aliases)) {
+    if (count($node->aliases)) {
       foreach ($node->aliases as $link) {
         $links[] = l($link, "http://$link");
       }
@@ -415,7 +420,7 @@ function hosting_alias_node_view($node, $view_mode, $langcode) {
     }
 
     // List the automatic aliasses.
-    if (sizeof($node->aliases_automatic)) {
+    if (count($node->aliases_automatic)) {
       $links = array();
       foreach ($node->aliases_automatic as $link) {
         $links[] = l($link, "http://$link");
@@ -482,8 +487,8 @@ function hosting_alias_settings($form, &$form_state) {
 /**
  * Validation handler for hosting_alias_settings form.
  */
-function hosting_alias_settings_validate($form, $form_state){
-  if(!valid_url($form_state['values']['hosting_alias_subdomain'])){
+function hosting_alias_settings_validate($form, $form_state) {
+  if (!valid_url($form_state['values']['hosting_alias_subdomain'])) {
     form_set_error('hosting_alias_subdomain', t('The provided domain is invalid.'));
   }
 }
