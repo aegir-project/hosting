@@ -19,9 +19,9 @@ function drush_hosting_pause_validate($url) {
 /**
  * Drush command to pause the Aegir frontend queues.
  *
- * This is really just deleting the crontab.
+ * This is really just deleting our code from the crontab.
  */
 function drush_hosting_pause($url) {
   // Wipe out cron entry.
-  exec('crontab -r');
+  _hosting_setup_cron($add = FALSE);
 }
