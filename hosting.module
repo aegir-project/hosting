@@ -692,11 +692,12 @@ function _hosting_setup_cron($add = TRUE) {
     drush_log(dt("Adding hosting-dispatch cron entry to run every minute"), 'ok');
   }
 
+  // Write a new crontab.
   $fp = popen('crontab -', 'w');
   $success = TRUE;
   if ($fp) {
     if (fwrite($fp, $cron) && fwrite($fp, "\n")) {
-      drush_log(dt("Installed hosting-dispatch cron entry to run every minute"), 'success');
+      $success = TRUE;
     }
     else {
       $success = FALSE;
@@ -709,7 +710,11 @@ function _hosting_setup_cron($add = TRUE) {
   else {
     $success = FALSE;
   }
-  if (!$success) {
+
+  if ($success) {
+    drush_log(dt("Installed a new crontab entry."), 'success');
+  }
+  else {
     drush_set_error('PROVISION_CRON_FAILED', dt('Failed to install cron job'));
   }
 }

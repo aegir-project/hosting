@@ -201,7 +201,7 @@ function hosting_queues_cron_cmd() {
   $return = <<<END
 SHELL=/bin/sh
 PATH=$_SERVER[PATH]
-*/1 * * * * $command
+* * * * * $command
 END;
   return $return;
 }
