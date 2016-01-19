@@ -552,19 +552,20 @@ function hosting_platform_validate($node, &$form) {
   if ($node->op != t('Delete')) {
 
     // Make sure the platform name is unique, to avoid context clashes.
-    $result = db_query("SELECT n.title AS name
-      FROM {hosting_platform} AS h
-        INNER JOIN {node} AS n ON n.nid = h.nid
-      WHERE n.title = !n.title
-        AND n.nid <> !n.nid
-        AND h.status >= !h.status",
-      array(
-        '!n.title' => $node->title,
-        '!n.nid' => $node->nid,
-        '!h.status' => HOSTING_PLATFORM_QUEUED,
-      )
-    )->fetch();
-
+    $sql = "SELECT n.title as name
+              FROM {hosting_platform} h
+        INNER JOIN {node} n ON n.nid = h.nid
+             WHERE n.title = :title
+               AND h.status >= :status";
+    $args = array(
+      ':title' => $node->title,
+      ':status' => HOSTING_PLATFORM_QUEUED,
+    );
+    if (!is_null($node->nid)) {
+      $sql .= " AND n.nid <> :nid";
+      $args[':nid'] = $node->nid;
+    }
+    $result = db_query($sql, $args)->fetch();
     if ($result) {
       form_set_error('title',
         t('Platform name %name is already defined. Platform names must be unique across all servers.',
