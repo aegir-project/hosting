@@ -610,7 +610,7 @@ function hosting_supporting_aegir_block() {
 
       <p>If you feel that Aegir has added significant value to your business or endeavour, please consider donating!</p>
       <p><strong>How much is Aegir worth to you?</strong></p>
-      <a href=\"http://community.aegirproject.org/donate\" target=_blank>Donate Now ... </a>
+      <a href=\"http://www.aegirproject.org/donate\" target=_blank>Donate Now ... </a>
 
       <footer style=\"font-size: smaller;\">This block is only displayed to you, the superuser.</footer>
       ";
