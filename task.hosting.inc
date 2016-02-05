@@ -14,11 +14,16 @@ function _hosting_task_log($entry) {
     hosting_task_log($task->vid, $entry['type'], $entry['message'], $entry['error'], $entry['timestamp']);
   }
   else {
-    return _drush_print_log($entry);
+    _hosting_task_log_print($entry);
   }
   if (drush_get_option('debug', FALSE)) {
-    return _drush_print_log($entry);
+    _hosting_task_log_print($entry);
   }
+}
+
+function _hosting_task_log_print($entry) {
+  $logger = new Drush\Log\Logger;
+  return $logger->log($entry['type'], $entry['message'], $entry);
 }
 
 /**
