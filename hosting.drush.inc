@@ -17,6 +17,7 @@ function hosting_drush_command() {
     'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_FULL,
     'options' => array(
       'lock-wait' => dt('Time to wait to acquire a lock on dispatched queues. Defaults to @wait seconds.', array('@wait' => HOSTING_QUEUE_DEFAULT_LOCK_WAIT)),
+      'force' => dt('Continue even if the task queue is still locked.'),
     ),
   );
 
@@ -41,6 +42,7 @@ function hosting_drush_command() {
         'queue' => $queue,
         'options' => array(
           'lock-wait' => dt('Time to wait to acquire a lock on the @queue queue. Defaults to @wait seconds.', array('@queue' => $queue, '@wait' => HOSTING_QUEUE_DEFAULT_LOCK_WAIT)),
+          'force' => dt('Continue even if the task queue is still locked.'),
         ),
       );
     }
