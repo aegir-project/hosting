@@ -765,6 +765,7 @@ function hosting_task_action_info() {
           'type' => 'node',
           'label' => t($label),
           'configurable' => FALSE,
+          'behavior' => array('none'),
         );
       }
     }
