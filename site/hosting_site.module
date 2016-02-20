@@ -685,3 +685,12 @@ function hosting_site_block_view_alter(&$data, $block) {
     }
   }
 }
+
+/**
+ * Implements hook_action_info_alter().
+ */
+function hosting_site_action_info_alter(&$actions) {
+  if (variable_get('hosting_require_disable_before_delete', TRUE)) {
+    unset($actions['hosting_site_delete_action']);
+  }
+}
