@@ -1,6 +1,6 @@
 name = site_data
 description = Example implementation of saving data into a site context.
-package = Hosting
+package = Hosting Examples
 dependencies[] = hosting_site
 
 core = 7.x

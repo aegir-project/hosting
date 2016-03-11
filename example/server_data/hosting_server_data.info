@@ -1,6 +1,6 @@
 name = server_data
 description = Example implementation of saving data into a server context.
-package = Hosting
+package = Hosting Examples
 dependencies[] = hosting_server
 
 core = 7.x
