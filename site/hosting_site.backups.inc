@@ -117,7 +117,7 @@ function hosting_task_backup_delete_form($node) {
     $form['no_backups'] = array(
       '#type' => 'item',
       '#title' => t('Backups'),
-      '#value' => t('There are no valid backups available.')
+      '#markup' => t('There are no valid backups available.')
     );
   }
   return $form;
