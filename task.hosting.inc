@@ -21,13 +21,16 @@ function _hosting_task_log($entry) {
   }
 }
 
+/**
+ * Switch between Drush 8's OO logging and the older private function.
+ */
 function _hosting_task_log_print($entry) {
   if (function_exists('_drush_print_log')) {
     // Remove after dropping Drush 6 comaptibility.
     return _drush_print_log($entry);
   }
   else {
-    $logger = new Drush\Log\Logger;
+    $logger = new Drush\Log\Logger();
     return $logger->log($entry['type'], $entry['message'], $entry);
   }
 }
