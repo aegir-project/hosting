@@ -560,10 +560,14 @@ function hosting_task_confirm_form($form, $form_state, $node, $task) {
     '#value' => $task,
   );
   $form['parameters'] = array('#tree' => TRUE);
+
+  // Invoke hosting_task_TASK_TYPE_form.
   $func = 'hosting_task_' . str_replace('-', '_', $task) . '_form';
   if (function_exists($func)) {
     $form['parameters'] += $func($node);
   }
+
+  // Invoke hosting_task_TASK_TYPE_form_validate.
   $func = $func . '_validate';
   if (function_exists($func)) {
     $form['#validate'][] = $func;
