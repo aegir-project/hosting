@@ -97,8 +97,21 @@ class hostingService_db_mysql extends hostingService_db {
       '#type' => 'item',
       '#title' => t('Database user'),
       '#markup' => filter_xss($this->db_user),
+      '#weight' => 1,
     );
 
+    if (empty($this->db_passwd)) {
+      $markup = t('None');
+    }
+    else {
+      $markup = t('Saved');
+    }
+    $render['db_passwd'] = array(
+        '#type' => 'item',
+        '#title' => t('Database password'),
+        '#markup' => $markup,
+        '#weight' => 2,
+    );
   }
 
   public function context_options($task_type, $ref_type, &$task) {
