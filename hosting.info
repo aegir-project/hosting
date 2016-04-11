@@ -5,13 +5,6 @@ core = 7.x
 
 dependencies[] = views
 dependencies[] = views_bulk_operations
-dependencies[] = hosting_task
-dependencies[] = hosting_client
-dependencies[] = hosting_db_server
-dependencies[] = hosting_package
-dependencies[] = hosting_platform
-dependencies[] = hosting_site
-dependencies[] = hosting_web_server
 
 files[] = includes/views/handlers/hosting_field_handler_interval.inc
 files[] = hosting.test
