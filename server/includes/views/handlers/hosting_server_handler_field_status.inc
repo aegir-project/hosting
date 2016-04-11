@@ -5,7 +5,6 @@
  *
  * @ingroup views_field_handlers
  */
-class hosting_server_handler_field_status extends hosting_site_handler_field_status {
 class hosting_server_handler_field_status extends views_handler_field {
 
   /**
