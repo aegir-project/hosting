@@ -409,9 +409,9 @@ function hosting_server_form($node, &$form_state) {
         '#states' => array(
           'visible' => array(
             ":input[name='services[{$name}][type]']" => array('value' => $type),
-          )
+          ),
         ),
-        '#type' => 'container'
+        '#type' => 'container',
       );
       if (isset($node->services[$name]) && $node->services[$name]->type === $type) {
         $node->services[$name]->form($form['services'][$name][$type]);
