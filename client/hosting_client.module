@@ -610,7 +610,7 @@ function hosting_client_users($node) {
 /**
  * Implements hook_view().
  */
-function hosting_client_view($node, $view_mode, $langcode = NULL) {
+function hosting_client_view($node, $teaser = FALSE, $page = FALSE) {
   $type = node_type_get_type($node);
 
   $node->content['info']['#prefix'] = '<div id="hosting-client-info">';
@@ -627,7 +627,7 @@ function hosting_client_view($node, $view_mode, $langcode = NULL) {
   );
 
   $node->content['info']['#suffix'] = '</div>';
-  if ($view_mode = 'full') {
+  if ($page) {
     $users = hosting_client_users($node);
     foreach ($users as $uid => $uname) {
       if (user_access('access user profiles') || ($uid == $GLOBALS['user']->uid)) {
