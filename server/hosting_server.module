@@ -409,9 +409,9 @@ function hosting_server_form($node, &$form_state) {
         '#states' => array(
           'visible' => array(
             ":input[name='services[{$name}][type]']" => array('value' => $type),
-          )
+          ),
         ),
-        '#type' => 'container'
+        '#type' => 'container',
       );
       if (isset($node->services[$name]) && $node->services[$name]->type === $type) {
         $node->services[$name]->form($form['services'][$name][$type]);
@@ -627,7 +627,7 @@ function hosting_server_wildcard_load($arg) {
 /**
  * Implements hook_view().
  */
-function hosting_server_view(&$node, $teaser = FALSE, $page = FALSE) {
+function hosting_server_view($node, $view_mode, $langcode = NULL) {
   hosting_set_breadcrumb($node);
 
   $services = hosting_server_services();
@@ -680,7 +680,7 @@ function hosting_server_view(&$node, $teaser = FALSE, $page = FALSE) {
     }
   }
 
-  if ($page) {
+  if ($view_mode == 'full') {
     // Task list.
     if (isset($node->nid)) {
       $node->content['tasks_view'] = array(
