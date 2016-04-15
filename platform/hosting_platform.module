@@ -828,3 +828,12 @@ function _hosting_platform_list_class($status) {
   $labels = _hosting_platform_status_codes();
   return is_object($status) ? $labels[$status->platform_status]['class'] : $labels[$status]['class'];
 }
+
+/**
+ * Implements hook_hosting_task_guarded_nodes().
+ */
+function hosting_platform_hosting_task_guarded_nodes() {
+  return array(
+    hosting_get_hostmaster_platform_nid()
+  );
+}

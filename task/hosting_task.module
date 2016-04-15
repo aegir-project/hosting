@@ -1734,20 +1734,6 @@ function hosting_task_get_guarded_nodes() {
 }
 
 /**
- * Implements hook_hosting_task_guarded_nodes().
- */
-function hosting_task_hosting_task_guarded_nodes() {
-  // Guard against destructive tasks run on the hostmaster site or platform.
-  $hostmaster_site_nid = hosting_get_hostmaster_site_nid();
-  $hostmaster_platform_nid = hosting_get_hostmaster_platform_nid();
-  $guarded_nids = array(
-    $hostmaster_site_nid,
-    $hostmaster_platform_nid,
-  );
-  return $guarded_nids;
-}
-
-/**
  * Invoke hooks to build a list of dangerous tasks.
  */
 function hosting_task_get_dangerous_tasks() {

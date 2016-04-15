@@ -694,3 +694,12 @@ function hosting_site_action_info_alter(&$actions) {
     unset($actions['hosting_site_delete_action']);
   }
 }
+
+/**
+ * Implements hook_hosting_task_guarded_nodes().
+ */
+function hosting_site_hosting_task_guarded_nodes() {
+  return array(
+    hosting_get_hostmaster_site_nid()
+  );
+}
