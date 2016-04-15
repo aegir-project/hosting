@@ -4,7 +4,6 @@
  * Allow clients to be created and granted permissions over sites, tasks etc.
  */
 
-include drupal_get_path('module', 'node') . '/node.pages.inc';
 include dirname(__FILE__) . '/hosting_client.access.inc';
 
 /**
@@ -923,6 +922,10 @@ function _hosting_client_site_default($node) {
  * Wrapper around the regular site_node_form that passes a dummy site with a proper client.
  */
 function hosting_client_site_form($form, $node) {
+
+  // Must explicitly load node.pages.inc in order to load the node_form.
+  module_load_include('module', 'node', 'pages.inc');
+
   $site = new stdClass();
   $site->type = 'site';
   $site->client = $node->nid;
