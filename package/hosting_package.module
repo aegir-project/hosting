@@ -350,7 +350,7 @@ function hosting_package_load($nodes) {
 /**
  * Implements hook_view().
  */
-function hosting_package_view($node, $teaser = FALSE, $page = FALSE) {
+function hosting_package_view($node, $view_mode, $langcode = NULL) {
   hosting_set_breadcrumb($node);
   $node->content['info']['#prefix'] = '<div id="hosting-package-info">';
   $node->content['info']['package_type'] = array(

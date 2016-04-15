@@ -681,7 +681,7 @@ function hosting_platform_wildcard_load($arg) {
 /**
  * Implements hook_view().
  */
-function hosting_platform_view($node, $teaser = FALSE, $page = FALSE) {
+function hosting_platform_view($node, $view_mode, $langcode = NULL) {
 
   $node->content['info'] = array(
     '#prefix' => '<div id="hosting-platform-info" class="hosting-info-list">',
@@ -733,7 +733,7 @@ function hosting_platform_view($node, $teaser = FALSE, $page = FALSE) {
   }
 
   // Task list.
-  if ($page && $node->nid) {
+  if ($view_mode == 'full' && $node->nid) {
     $node->content['tasks_view'] = array(
       '#type' => 'item',
       '#markup' => hosting_task_table($node),

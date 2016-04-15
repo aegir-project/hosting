@@ -26,7 +26,7 @@ function hosting_site_node_info() {
 /**
  * Implements hook_view().
  */
-function hosting_site_view(&$node, $teaser = FALSE) {
+function hosting_site_view($node, $view_mode, $langcode = NULL) {
   hosting_set_breadcrumb($node);
   $node->content['info']['#prefix'] = '<div id="hosting-site-info" class="hosting-info-list">';
   if ($node->site_status == HOSTING_SITE_ENABLED) {
