@@ -1,7 +1,7 @@
 <?php
 
 /**
- * A handler for the Site status field.
+ * A base handler for status fields.
  *
  * @ingroup views_field_handlers
  */
