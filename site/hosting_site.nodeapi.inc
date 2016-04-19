@@ -118,6 +118,28 @@ function hosting_site_view($node, $view_mode, $langcode = NULL) {
 }
 
 /**
+ * Implements hook_field_extra_fields()
+ */
+function hosting_site_field_extra_fields() {
+  $return['node']['site'] = array(
+    'display' => array(
+      'info' => array(
+        'label' => t('Aegir Site Information'),
+        'description' => t('Detailed information about this site.'),
+        'weight' => 0,
+      ),
+      'tasks_view' => array(
+        'label' => t('Aegir Site Tasks'),
+        'description' => t('List of available tasks.'),
+        'weight' => 1,
+      ),
+    ),
+  );
+
+  return $return;
+}
+
+/**
  * Implements hook_nodeapi_delete_revision().
  */
 function hosting_nodeapi_site_delete_revision(&$node) {
