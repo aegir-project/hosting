@@ -681,7 +681,7 @@ function hosting_platform_wildcard_load($arg) {
 /**
  * Implements hook_view().
  */
-function hosting_platform_view($node, $teaser = FALSE, $page = FALSE) {
+function hosting_platform_view($node, $view_mode, $langcode = NULL) {
 
   $node->content['info'] = array(
     '#prefix' => '<div id="hosting-platform-info" class="hosting-info-list">',
@@ -733,7 +733,7 @@ function hosting_platform_view($node, $teaser = FALSE, $page = FALSE) {
   }
 
   // Task list.
-  if ($page && $node->nid) {
+  if ($view_mode == 'full' && $node->nid) {
     $node->content['tasks_view'] = array(
       '#type' => 'item',
       '#markup' => hosting_task_table($node),
@@ -827,4 +827,13 @@ function _hosting_platform_list_class($status) {
   static $labels;
   $labels = _hosting_platform_status_codes();
   return is_object($status) ? $labels[$status->platform_status]['class'] : $labels[$status]['class'];
+}
+
+/**
+ * Implements hook_hosting_task_guarded_nodes().
+ */
+function hosting_platform_hosting_task_guarded_nodes() {
+  return array(
+    hosting_get_hostmaster_platform_nid()
+  );
 }

@@ -8,7 +8,7 @@
  * top of.
  *
  * This site is arranged in three main sections:
- *  - @link /api/Drush The Drush 4 documentation @endlink
+ *  - @link http://api.drush.org/ The Drush documentation @endlink
  *  - @link /api/Hostmaster The frontend documentation @endlink
  *  - @link /api/Provision The backend documentation @endlink
  *
