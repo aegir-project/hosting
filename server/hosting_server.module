@@ -721,14 +721,16 @@ function hosting_server_view($node, $view_mode, $langcode = NULL) {
  */
 function hosting_get_servers($service) {
   $return = array();
-  $result = db_query("SELECT n.nid, n.title
-                      FROM {node} n
-                      INNER JOIN {hosting_service} s
-                      ON n.vid = s.vid
-                      WHERE s.available = 1
-                      AND s.service = :service",
-                      array(':service' => $service)
-                    );
+  $query = db_select('node', 'n');
+  $query->join('hosting_service', 's', 'n.vid = s.vid');
+  $query
+    ->fields('n', array('nid', 'title'))
+    ->condition('s.available', '1')
+    ->condition('s.service', $service)
+    ->addTag('node_access');
+  ;
+  $result = $query->execute();
+
   foreach ($result as $server) {
     $return[$server->nid] = $server->title;
   }
