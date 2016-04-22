@@ -5,7 +5,7 @@
  *
  * @ingroup views_field_handlers
  */
-class hosting_server_handler_field_status extends hosting_site_handler_field_status {
+class hosting_server_handler_field_status extends hosting_field_handler_status {
   function render($values) {
     $value = $values->{$this->field_alias};
     $output = _hosting_server_status($value);
