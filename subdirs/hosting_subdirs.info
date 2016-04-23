@@ -5,3 +5,5 @@ dependencies[] = hosting
 dependencies[] = hosting_alias
 
 core = 7.x
+
+files[] = hosting.feature.subdirs.inc
