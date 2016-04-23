@@ -10,7 +10,7 @@
  */
 function hosting_subdirs_form_alter(&$form, &$form_state, $form_id) {
   if($form_id == 'site_node_form') {
-    $subdirs_text = 'Note: If the site is using a subdirectory, there should be at least one special alias with a subdirectory path (e.g., example.com/foo) below. Redirection to this alias will also work, if enabled. This is useful if you do not want the site to be accessible from its subdomain (e.g., foo.example.com). You can also add more standard aliases (e.g., bar.example.com, green.example.com).';
+    $subdirs_text = 'Note: If the site is using a subdirectory, there should be at least one special alias with a subdirectory path (e.g., example.com/foo) below. <strong>Important: subdomain (foo) and subdirectory name (foo) must be identical</strong>. Redirection to this alias will also work, if enabled. This is useful if you do not want the site to be accessible from its subdomain (e.g., foo.example.com). You can also add more standard aliases (e.g., bar.example.com, green.example.com).';
     if (isset($form['aliases_wrapper']['#description'])) {
       $form['aliases_wrapper']['#description'] .= $subdirs_text;
     }
@@ -31,7 +31,7 @@ function hosting_subdirs_form_alter(&$form, &$form_state, $form_id) {
  * Implements hook_form_FORM_ID_alter().
  */
 function hosting_subdirs_form_site_node_form_alter(&$form, &$form_state) {
-  $form['title']['#description'] = 'Hint: To create a site using a subdirectory, name it using a subdomain (e.g., foo.example.com), and then enter an alias below for the desired subdirectory (e.g., example.com/foo). If you plan to also use the root domain (e.g., example.com), you must create a site with the root domain *before* adding sites in its subdirectories. Note: Once the first site in a subdirectory is created and the parent site also exists, the parent site must be re-verified (just once) to turn on the web server configuration for the first (and any future) sites in its subdirectory. All sites sharing the same parent URL can use any profile, on any platform, and can be freely migrated, cloned, etc.';
+  $form['title']['#description'] = 'Hint: To create a site using a subdirectory, name it using a subdomain (e.g., foo.example.com), and then enter an alias below for the desired subdirectory (e.g., example.com/foo). <strong>Important: subdomain (foo) and subdirectory name (foo) must be identical</strong>. If you plan to also use the root domain (e.g., example.com), you must create a site with the root domain *before* adding sites in its subdirectories. Note: Once the first site in a subdirectory is created and the parent site also exists, the parent site must be re-verified (just once) to turn on the web server configuration for the first (and any future) sites in its subdirectory. All sites sharing the same parent URL can use any profile, on any platform, and can be freely migrated, cloned, etc.';
 }
 
 /**
