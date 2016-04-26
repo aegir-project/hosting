@@ -159,7 +159,7 @@ class hostingService {
 
 
 
-  public function validate(&$node, &$form) {
+  public function validate(&$node, &$form, &$form_state) {
     if ($this->has_port) {
       if ((int) $this->port <= 0) {
         form_set_error('port', t("The port you specify must be a number."));

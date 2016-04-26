@@ -61,8 +61,8 @@ class hostingService_http_ssl extends hostingService_http_public {
     );
   }
 
-  public function validate(&$node, &$form) {
-    parent::validate($node, $form);
+  public function validate(&$node, &$form, &$form_state) {
+    parent::validate($node, $form, $form_state);
     if ((int) $this->ssl_port <= 0) {
       form_set_error('ssl_port', t("The port you specify must be a number."));
     }

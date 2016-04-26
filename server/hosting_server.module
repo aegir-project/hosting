@@ -452,7 +452,7 @@ function hosting_nodeapi_server_presave(&$node) {
 /**
  * Implements hook_validate().
  */
-function hosting_server_validate(&$node, &$form) {
+function hosting_server_validate(&$node, &$form, &$form_state) {
   if ($node->op != t('Delete')) {
     // Make sure the server name is unique, to avoid context clashes.
     $result = db_query("SELECT n.title AS name
@@ -481,7 +481,7 @@ function hosting_server_validate(&$node, &$form) {
 
     hosting_server_services_from_post($node);
 
-    hosting_server_invoke_services($node, 'validate', $node, $form);
+    hosting_server_invoke_services($node, 'validate', $node, $form, $form_state);
   }
 }
 
