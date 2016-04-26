@@ -223,6 +223,9 @@ function hosting_alias_get_aliases($node, $type = NULL) {
   foreach ($result as $obj) {
     $alias[] = $obj->alias;
   }
+
+  $alias = array_unique($alias);
+
   if (count($alias)) {
     return $alias;
   }
@@ -240,8 +243,9 @@ function hosting_alias_insert($node) {
   if (!empty($node->aliases) || count($automatic)) {
     $aliases = (is_array($node->aliases)) ? $node->aliases : explode("\n", str_replace(",", "\n", $node->aliases));
     if (is_array($aliases)) {
+      $aliases = array_unique($aliases);
       foreach ($aliases as $alias) {
-        if (($alias = trim($alias)) && !in_array($alias, $automatic)) {
+        if (($alias = strtolower(trim($alias))) && !in_array($alias, $automatic)) {
           $id = db_insert('hosting_site_alias')
             ->fields(array(
               'vid' => $node->vid,
@@ -256,7 +260,7 @@ function hosting_alias_insert($node) {
     }
     if (count($automatic)) {
       foreach ($automatic as $alias) {
-        if (($alias = trim($alias)) && _hosting_valid_fqdn_wildcard($alias)) {
+        if (($alias = strtolower(trim($alias))) && _hosting_valid_fqdn_wildcard($alias)) {
           $id = db_insert('hosting_site_alias')
             ->fields(array(
               'vid' => $node->vid,
@@ -359,7 +363,8 @@ function hosting_alias_node_revision_delete($node) {
  *   The array index of this alias, to set any error on the proper sub-field.
  */
 function hosting_alias_validate_alias($site, $alias, $key) {
-  if ($alias = trim($alias)) {
+  if ($alias = strtolower(trim($alias))) {
+    $alias = strtolower(trim($alias));
     $params = isset($site->nid) ? array('nid' => $site->nid) : array();
     if (!hosting_domain_allowed($alias, $params) || $alias == $site->title) {
       form_set_error("aliases][$key", t('The domain name @alias is already in use', array('@alias' => $alias)));

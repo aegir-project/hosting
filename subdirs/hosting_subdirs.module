@@ -44,7 +44,8 @@ function hosting_subdirs_form_site_node_form_alter(&$form, &$form_state) {
  * @param string $key
  */
 function hosting_subdirs_validate_alias($site, $alias, $key) {
-  if ($alias = trim($alias)) {
+  if ($alias = strtolower(trim($alias))) {
+    $alias = strtolower(trim($alias));
     // If we're adding a subdirectory alias, it can't begin with '/'.
     if (@strpos($alias, '/', 1)) {
       $subdir = explode('/', $alias, 2);
