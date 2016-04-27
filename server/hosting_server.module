@@ -387,12 +387,14 @@ function hosting_server_form($node, &$form_state) {
     );
   }
 
+  $form['services_tabs'] = array(
+    '#type' => 'vertical_tabs',
+  );
   foreach (hosting_server_services() as $name => $service) {
     $form['services'][$name] = array(
       '#type' => 'fieldset',
+      '#group' => 'services_tabs',
       '#title' => check_plain($service['title']),
-      '#prefix' => '<div class="hosting-service-form">',
-      '#suffix' => '</div>',
       '#weight' => isset($service['weight']) ? $service['weight'] : 0,
     );
 
