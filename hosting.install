@@ -528,3 +528,17 @@ function hosting_update_6207() {
   db_change_field($ret, 'hosting_context', 'name', 'name', $spec);
   return $ret;
 }
+
+/**
+ * Save 'aegir_hostmaster_site_nid' variable.
+ */
+function hosting_update_7000() {
+  $nid = db_query('SELECT site.nid
+                     FROM hosting_site site
+                     JOIN hosting_package_instance pkgi
+                       ON pkgi.rid = site.nid
+                     JOIN hosting_package pkg
+                       ON pkg.nid = pkgi.package_id
+                    WHERE pkg.short_name = \'hostmaster\'')->fetchField();
+  variable_set('aegir_hostmaster_site_nid', $nid);
+}

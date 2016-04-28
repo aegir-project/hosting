@@ -102,13 +102,7 @@ function hosting_get_hostmaster_nid() {
  * Helper function to get the node ID of the Aegir front-end site.
  */
 function hosting_get_hostmaster_site_nid() {
-  return db_query('SELECT site.nid
-                     FROM hosting_site site
-                     JOIN hosting_package_instance pkgi
-                       ON pkgi.rid = site.nid
-                     JOIN hosting_package pkg
-                       ON pkg.nid = pkgi.package_id
-                    WHERE pkg.short_name = \'hostmaster\'')->fetchField();
+  return variable_get('aegir_hostmaster_site_nid', NULL);
 }
 
 /**
