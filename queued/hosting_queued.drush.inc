@@ -66,7 +66,7 @@ function drush_hosting_queued() {
   while (TRUE) {
     try {
       // Should we terminate.
-      if (REQUEST_TIME > $end_time) {
+      if (time() > $end_time) {
         // Restart the daemon to recycle leaked memory
         hosting_queued_restart();
       }
