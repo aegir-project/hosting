@@ -70,25 +70,7 @@ function drush_hosting_queued() {
         // Restart the daemon to recycle leaked memory
         hosting_queued_restart();
       }
-    }
-    catch (Exception $e) {
-      // Check if there was a database error, so we can recover gracefully if needed.
-      // See: https://drupal.org/node/1992254.
-      drush_log('Caught database error.', 'warning');
-      $db = drush_convert_db_from_db_url($GLOBALS['db_url']);
-      drush_log('Waiting for database to become available.', 'warning');
-      do {
-        // Give the database time to come back.
-        sleep(1);
-        // Check connection
-        $connect = @mysqli_connect($db['host'], $db['username'], $db['password']);
-        drush_log('.', 'warning');
-      } while (!$connect);
-      // Close connection
-      mysqli_close($connect);
-      drush_log('Restarting queue daemon.', 'warning');
-      hosting_queued_restart();
-    }
+
 
     // Get some tasks to run
     if ($tasks = @_hosting_get_new_tasks()) {
@@ -129,6 +111,26 @@ function drush_hosting_queued() {
       }
     }
 
+    }
+    catch (Exception $e) {
+      // Check if there was a database error, so we can recover gracefully if needed.
+      // See: https://drupal.org/node/1992254.
+      drush_log('Caught database error.', 'warning');
+      $db = drush_convert_db_from_db_url($GLOBALS['db_url']);
+      drush_log('Waiting for database to become available.', 'warning');
+      do {
+        // Give the database time to come back.
+        sleep(1);
+        // Check connection
+        $connect = @mysqli_connect($db['host'], $db['username'], $db['password']);
+        drush_log('.', 'warning');
+      } while (!$connect);
+      // Close connection
+      mysqli_close($connect);
+      drush_log('Restarting queue daemon.', 'warning');
+      hosting_queued_restart();
+    }
+
     // Wait here only if we didn't process tasks,
     // either because none were available or lock_acquire failed.
     // This is to avoid an infinite loop if there are no tasks in the queue.
@@ -162,32 +164,46 @@ function hosting_queued_stop($signal) {
  * Restart the dispatcher to work around memory leaks
  */
 function hosting_queued_restart($signal = NULL) {
-  // If we received a singal, process it.
-  if (!is_null($signal)) {
-    watchdog('hosting_queued', 'Received signal @signal, waiting for children to die.', array('@signal' => $signal));
-    $status = NULL;
-    pcntl_wait($status);
+  try {
+    // If we received a singal, process it.
+    if (!is_null($signal)) {
+      watchdog('hosting_queued', 'Received signal @signal, waiting for children to die.', array('@signal' => $signal));
+      $status = NULL;
+      pcntl_wait($status);
+    }
+
+    // We need the PCNTL extension to be able to auto restart.
+    if (function_exists('pcntl_exec')) {
+      $args = $_ENV['argv'];
+      $drush = array_shift($args);
+
+      // Strip sub-array to avoid warning "Array to string conversion"
+      unset($_ENV['argv']);
+
+      watchdog('hosting_queued', 'Restarting queue daemon with @drush @args.', array('@drush' => $drush, '@args' => implode(" ", $args)));
+      drush_log('Releasing lock on task queue.');
+      lock_release('hosting_queue_tasks_running');
+      // close all open database file descriptors
+      hosting_queued_db_close_all();
+    }
+    else {
+      watchdog('hosting_queued', 'PCNTL not installed, unable to auto-restart.', array(), WATCHDOG_WARNING);
+    }
+  }
+  catch (Exception $e) {
+    // Caught ... dropping.
   }
 
-  // We need the PCNTL extension to be able to auto restart.
-  if (function_exists('pcntl_exec')) {
-    $args = $_ENV['argv'];
-    $drush = array_shift($args);
-
-    // Strip sub-array to avoid warning "Array to string conversion"
-    unset($_ENV['argv']);
-
-    watchdog('hosting_queued', 'Restarting queue daemon with @drush @args.', array('@drush' => $drush, '@args' => implode(" ", $args)));
-    drush_log('Releasing lock on task queue.');
-    lock_release('hosting_queue_tasks_running');
-    // close all open database file descriptors
-    hosting_queued_db_close_all();
-    pcntl_exec($drush, $args, $_ENV);
-    watchdog('hosting_queued', 'Could not restart the queue daemon, aborting.', array(), WATCHDOG_ERROR);
-    /* NOTREACHED */
+  // New try block, to still restart if e.g. the watchog log ging faild on a missing DB connection.
+  try {
+    if (function_exists('pcntl_exec')) {
+      pcntl_exec($drush, $args, $_ENV);
+      drush_dog('Could not restart the queue daemon, aborting.', 'error');
+      /* NOTREACHED */
+    }
   }
-  else {
-    watchdog('hosting_queued', 'PCNTL not installed, unable to auto-restart.', array(), WATCHDOG_WARNING);
+  catch (Exception $e) {
+    // Caught ... dropping.
   }
 
   drush_log('Releasing lock on task queue.');
