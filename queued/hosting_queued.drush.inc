@@ -129,11 +129,10 @@ function drush_hosting_queued() {
       }
     }
 
-    // wait here only if we didn't process tasks
-    // this is to avoid an infinite loop if there are no tasks in the queue
-    if (!$tasks) {
-      sleep(1);
-    }
+    // Wait here only if we didn't process tasks,
+    // either because none were available or lock_acquire failed.
+    // This is to avoid an infinite loop if there are no tasks in the queue.
+    sleep(1);
 
     if (drush_get_option('onetime')) {
       drush_log(dt("exiting after processing all tasks, as requested by --onetime"));
