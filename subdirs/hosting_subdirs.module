@@ -49,10 +49,6 @@ function hosting_subdirs_validate_alias($site, $alias, $key) {
     // If we're adding a subdirectory alias, it can't begin with '/'.
     if (@strpos($alias, '/', 1)) {
       $subdir = explode('/', $alias, 2);
-      // We only support one level of subdirectories, for now.
-      if (@strpos($subdir[1], '/')) {
-        form_set_error("aliases][$key", t('Multi-level subdirectories are not currently supported. Check the subdirectory for <em>@alias</em>.', array('@alias' => $alias)));
-      }
     }
     else {
       // No subdirectory in use, so validate normally.
