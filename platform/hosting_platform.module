@@ -201,9 +201,32 @@ function hosting_platform_delete_action($node) {
  * @param int $web_server
  *   Node ID of the server hosting this platform.
  *   Default 0 indicates any web_server.
+ * @param boolean $enabled_only
+ *   Set to TRUE to return only enabled platforms. Defaults to FALSE.
+ * @return
+ *   The list of platforms.
+ * @todo
+ *   Convert this to an EntityFieldQuery with conditions & tags (for JOINs).
+ *   Tags will be unnecessary in D8 as JOINs are natively supported. See
+ *   hosting_get_site_by_url() for an example of how to do this.
  */
-function _hosting_get_platforms($web_server = 0) {
+function _hosting_get_platforms($web_server = 0, $enabled_only = FALSE) {
   $return = array();
+
+  // Set the query parameters.
+  $parameters = array(
+    ':type' => 'platform',
+    ':nstatus' => 1, //@todo: remove magic number?
+    ':hstatus' => HOSTING_PLATFORM_DELETED,
+    ':web_server' => $web_server,
+  );
+
+  // Add another filter to return only enabled sites is requested.
+  $enabled_text = $enabled_only ? "AND h.status <> :disabled" : '';
+  if ($enabled_only) {
+    $parameters[':disabled'] = HOSTING_PLATFORM_LOCKED;
+  }
+
   $result = db_query("SELECT n.nid, n.title
                       FROM {node} n
                       LEFT JOIN {hosting_platform} h
@@ -212,13 +235,9 @@ function _hosting_get_platforms($web_server = 0) {
                       AND n.status = :nstatus
                       AND h.status <> :hstatus
                       AND (h.web_server = :web_server OR :web_server = 0)
+                      $enabled_text
                       ORDER BY n.title
-                     ", array(
-                       ':type' => 'platform',
-                       ':nstatus' => 1, //@todo: remove magic number?
-                       ':hstatus' => HOSTING_PLATFORM_DELETED,
-                       ':web_server' => $web_server,
-                     )
+                     ", $parameters
                    );
   while ($platform = $result->fetch()) {
     $return[$platform->nid] = $platform->title;
@@ -228,6 +247,9 @@ function _hosting_get_platforms($web_server = 0) {
 
 /**
  * Helper function to get platforms that haven't been deleted or locked.
+ *
+ * @deprecated
+ *   _hosting_get_platforms() now has an $enabled_only parameter.
  */
 function _hosting_get_enabled_platforms() {
   $return = array();
