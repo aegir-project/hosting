@@ -413,7 +413,12 @@ function hosting_features_enable($features, $rebuild = TRUE, $enable = TRUE) {
     foreach ($features as $module => $feature) {
       variable_set('hosting_feature_' . $feature, HOSTING_FEATURE_ENABLED);
       if ($enable) {
-        module_enable(array($module));
+        $success = module_enable(array($module));
+        if (!$success) {
+          variable_set('hosting_feature_' . $feature, HOSTING_FEATURE_DISABLED);
+          $module_data = system_rebuild_module_data();
+          drupal_set_message(t("An error occurred enabling the `:feature` feature. Ensure all of its module's (:module) dependencies are met: :dependencies.", array(':feature' => $feature, ':module' => $module, ':dependencies' => implode(', ', $module_data[$module]->info['dependencies']))), 'error');
+        }
       }
       if (isset($all_features[$feature]['enable']) && function_exists($callback = $all_features[$feature]['enable'])) {
         $callback();
@@ -421,6 +426,7 @@ function hosting_features_enable($features, $rebuild = TRUE, $enable = TRUE) {
       $role_perms = isset($all_features[$feature]['role_permissions']) ? $all_features[$feature]['role_permissions'] : array();
       hosting_add_permissions($module, $role_perms);
     }
+
     if ($rebuild) {
       hosting_feature_rebuild_caches($features);
     }
@@ -489,7 +495,7 @@ function hosting_determine_features_status($values) {
       // Add dependencies to enable.
       if (isset($info['dependencies']['features']) && count($info['dependencies']['features'])) {
         foreach ($info['dependencies']['features'] as $module_dep => $feature_dep) {
-          $enable[$module_dep] = $features[$feature_dep]['title'];
+          $enable[$module_dep] = $feature_dep;
         }
       }
     }
