@@ -417,7 +417,8 @@ function hosting_features_enable($features, $rebuild = TRUE, $enable = TRUE) {
         if (!$success) {
           variable_set('hosting_feature_' . $feature, HOSTING_FEATURE_DISABLED);
           $module_data = system_rebuild_module_data();
-          drupal_set_message(t("An error occurred enabling the `:feature` feature. Ensure all of its module's (:module) dependencies are met: :dependencies.", array(':feature' => $feature, ':module' => $module, ':dependencies' => implode(', ', $module_data[$module]->info['dependencies']))), 'error');
+          $missing = array_keys(array_diff_key($module_data[$module]->requires, $module_data));
+          drupal_set_message(t("An error occurred enabling the `:feature` feature. Missing dependencies: :missing.", array(':feature' => $feature, ':missing' => implode(', ', $missing))), 'error');
         }
       }
       if (isset($all_features[$feature]['enable']) && function_exists($callback = $all_features[$feature]['enable'])) {
