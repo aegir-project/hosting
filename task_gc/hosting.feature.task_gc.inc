@@ -19,7 +19,7 @@ function hosting_task_gc_hosting_feature() {
     // title to display in form
     'title' => t('Task garbage collection'),
     // description
-    'description' => t('Allows tasks to be removed.'),
+    'description' => t('Cleanup task records for deleted sites.'),
     // initial status ( HOSTING_FEATURE_DISABLED, HOSTING_FEATURE_ENABLED, HOSTING_FEATURE_REQUIRED )
     'status' => HOSTING_FEATURE_DISABLED,
     // module to enable/disable alongside feature
