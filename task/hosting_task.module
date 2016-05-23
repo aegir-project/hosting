@@ -1237,7 +1237,7 @@ function hosting_get_tasks($filter_by = NULL, $filter_value = NULL, $count = 5, 
     ->orderBy('n.vid', 'DESC')
     ->limit($count)
     ->addTag('node_access');
-  if ($filter_by && $filter_value) {
+  if (isset($filter_by) && isset($filter_value)) {
     $query = $query->condition($filter_by, $filter_value);
   }
   $result = $query->execute();
