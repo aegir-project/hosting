@@ -5,8 +5,6 @@
  *
  */
 
-
-
 /**
  * Implements hook_schema().
  */
@@ -39,7 +37,7 @@ function hosting_ssl_schema() {
     'fields' => array(
       'cid' => array(
         'type' => 'serial',
-        'not_null' => TRUE,
+        'not null' => TRUE,
         'unsigned' => TRUE,
       ),
       'ssl_key' => array(
@@ -63,7 +61,6 @@ function hosting_ssl_schema() {
     'primary key' => array('cid'),
     'indexes' => array('ssl_key' => array(array('ssl_key', 50))),
   );
-
 
   $schema['hosting_ssl_site'] = array(
     'fields' => array(
