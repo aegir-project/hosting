@@ -118,13 +118,15 @@ function drush_hosting_queued() {
       drush_log('Caught database error.', 'warning');
       $db = drush_convert_db_from_db_url($GLOBALS['db_url']);
       drush_log('Waiting for database to become available.', 'warning');
+      $timeout = 120;
       do {
         // Give the database time to come back.
         sleep(1);
+        $timeout--;
         // Check connection
         $connect = @mysqli_connect($db['host'], $db['username'], $db['password']);
         drush_log('.', 'warning');
-      } while (!$connect);
+      } while (!$connect && $timeout > 0);
       // Close connection
       mysqli_close($connect);
       drush_log('Restarting queue daemon.', 'warning');
