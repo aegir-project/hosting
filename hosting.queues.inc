@@ -89,7 +89,7 @@ function hosting_get_queues($refresh = FALSE) {
         if ($threads <= $queue['min_threads']) {
           $threads = $queue['min_threads'];
         }
-        elseif ($thread > $queue['max_threads']) {
+        elseif ($threads > $queue['max_threads']) {
           $threads = $queue['max_threads'];
         }
         $queue['calc_threads'] = $threads;
