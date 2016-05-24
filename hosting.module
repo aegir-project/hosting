@@ -854,7 +854,7 @@ function hosting_queues_configure($form, &$form_state) {
     );
 
     $form[$queue]["last_run"] = array(
-      '#value' => hosting_format_interval(variable_get('hosting_queue_' . $queue . '_last_run', FALSE)),
+      '#markup' => hosting_format_interval(variable_get('hosting_queue_' . $queue . '_last_run', FALSE)),
     );
     $form[$queue]['frequency']['#prefix'] = "<div class='hosting-queue-frequency'>";
     $form[$queue]['frequency']['#suffix'] = "</div>";
