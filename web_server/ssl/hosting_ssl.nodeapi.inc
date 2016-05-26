@@ -130,7 +130,7 @@ function hosting_ssl_nodeapi_site_view(&$node, $teaser = FALSE) {
     $node->content['info']['ssl_key'] = array(
       '#type' => 'item',
       '#title' => t('Encryption key'),
-      '#value' => hosting_ssl_output_key($node->ssl_key),
+      '#markup' => hosting_ssl_output_key($node->ssl_key),
       '#description' => hosting_ssl_get_key($node->ssl_key) ? t("This site is using SSL certificates located at %path.", array('%path' => sprintf("config/ssl.d/%s/", hosting_ssl_output_key($node->ssl_key)))) : t("(key deleted)"),
       '#weight' => 7,
     );
