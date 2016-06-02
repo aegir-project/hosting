@@ -1764,7 +1764,7 @@ function hosting_task_dangerous_task_is_allowed($task_type, $nid) {
         ':type' => $node->type,
       );
       drupal_set_message(t('You cannot run dangerous :task task on guarded :type :title.', $map), 'warning');
-      watchdog('hostmaster', t('Detected attempt to run dangerous :task task on guarded :type :title.', $map), array(), WATCHDOG_WARNING);
+      watchdog('hostmaster', 'Detected attempt to run dangerous :task task on guarded :type :title.', $map, WATCHDOG_WARNING);
       $allowed = FALSE;
     }
   }
