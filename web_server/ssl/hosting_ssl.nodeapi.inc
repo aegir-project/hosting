@@ -420,10 +420,15 @@ function hosting_ssl_clean_keys($node) {
                    INNER JOIN {hosting_ssl_site} siteB ON siteA.ssl_key = siteB.ssl_key
                    INNER JOIN {hosting_site} s ON s.nid = siteA.nid
                      WHERE siteA.nid <> siteB.nid
-                       AND siteA.ssl_enabled = :siteA_ssl_enabled
+                       AND (
+                         siteA.ssl_enabled = :ssl_enabled
+                         OR
+                         siteA.ssl_enabled = :ssl_required
+                       )
                        AND siteB.nid = :siteB_nid;",
                  array(
-                   ':siteA_ssl_enabled' => 1,
+                   ':ssl_enabled' => HOSTING_SSL_ENABLED,
+                   ':ssl_required' => HOSTING_SSL_REQUIRED,
                    ':siteB_nid' => $node->nid,
                  ))->fetchField()) {
     // We need to fetch the ssl_key field from the DB because the object comes
