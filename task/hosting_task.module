@@ -167,13 +167,13 @@ function hosting_task_ajax_queue() {
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Cancel a task before it's started.
  */
 function hosting_task_cancel($node) {
   if ($node->type == 'task' && $node->task_status == HOSTING_TASK_QUEUED) {
     $node->task_status = HOSTING_TASK_WARNING;
     node_save($node);
+
     // Log the cancellation.
     hosting_task_log($node->vid, 'warning', t("Task was cancelled."));
     drupal_goto('node/' . $node->rid);
@@ -182,13 +182,11 @@ function hosting_task_cancel($node) {
   drupal_access_denied();
 }
 
-/*
- * Implements hook_access()
- */
-
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Implements hook_access().
+ *
+ * @param $node object
+ *   the node object we're trying to access
  */
 function hosting_task_cancel_access($node) {
   // Bring $user into scope, so we can test task ownership.
@@ -212,7 +210,7 @@ function hosting_task_cancel_access($node) {
 }
 
 /**
- * Task access controls
+ * Task access controls.
  *
  * This function defines which tasks should be showed to the user but
  * especially which will be accessible to him, in the permissions system.
@@ -249,30 +247,30 @@ function hosting_task_menu_access($node, $task) {
 
       $delete_or_enable = ($deletable || $enabable);
 
-      // If the site is not enabled, we can either delete it, or enable it again
+      // If the site is not enabled, we can either delete it, or enable it again.
       if (!$site_enabled) {
         return ($delete_or_enable);
       }
       else {
-        // Site is enabled
+        // Site is enabled.
         return (
-                 // If we can just delete a site without disabling, allow that
+                 // If we can just delete a site without disabling, allow that.
                  (!variable_get('hosting_require_disable_before_delete', TRUE)) && $deletable
-                 // Otherwise we must disable it first, hide the delete task and the enable task as well
+                 // Otherwise we must disable it first, hide the delete task and the enable task as well.
                  || !$delete_or_enable
                );
       }
     }
     if ($node->type == 'platform') {
-      // if the user can't edit this node, he can't create tasks on it
+      // If the user can't edit this node, he can't create tasks on it.
       if (!node_access('update', $node, $GLOBALS['user'])) {
         return FALSE;
       }
-      // If the platform is in a deleted state, nothing else can be done with it
+      // If the platform is in a deleted state, nothing else can be done with it.
       if (hosting_task_outstanding($node->nid, 'delete') || ($node->platform_status == HOSTING_PLATFORM_DELETED)) {
         return FALSE;
       }
-      // If the platform's been locked, we can unlock it, delete, batch migrate existing sites or verify
+      // If the platform's been locked, we can unlock it, delete, batch migrate existing sites or verify.
       if ($node->platform_status == HOSTING_PLATFORM_LOCKED) {
         $platform_tasks = array('verify', 'unlock', 'delete', 'migrate');
         return (in_array($task, $platform_tasks));
@@ -350,7 +348,7 @@ function hosting_task_node_info() {
  */
 function hosting_task_node_access($node, $op, $account) {
   if (hosting_feature('client')) {
-    // we rely on hosting_client_node_grants() instead of global configuration
+    // We rely on hosting_client_node_grants() instead of global configuration.
     return NULL;
   }
 
@@ -523,7 +521,7 @@ function hosting_add_task($nid, $type, $args = NULL, $status = HOSTING_TASK_QUEU
   if ($status == HOSTING_TASK_QUEUED) {
     $task->revision = TRUE;
   }
-  #arguments, such as which backup to restore.
+  // Arguments, such as which backup to restore.
   if (is_array($args)) {
     $task->task_args = $args;
   }
@@ -544,7 +542,7 @@ function hosting_task_confirm_form($form, $form_state, $node, $task) {
       // We're deleting a Hosting object, and thus its corresponding node. If
       // we stay on the current page, we'll end up with a 404, so redirect to
       // the home page.
-      drupal_set_message(t(':title has been queued for deletion.', array(':title'=>$node->title)));
+      drupal_set_message(t(':title has been queued for deletion.', array(':title' => $node->title)));
       drupal_goto();
     }
     drupal_goto('node/' . $node->nid);
@@ -575,11 +573,11 @@ function hosting_task_confirm_form($form, $form_state, $node, $task) {
     $form['#func_param_2'] = $task;
   }
   $question = t("Are you sure you want to @task @object?", array('@task' => $task, '@object' => $node->title));
-  $path = !empty($_REQUEST['destination'])? $_REQUEST['destination']: 'node/' . $node->nid;
+  $path = !empty($_REQUEST['destination']) ? $_REQUEST['destination'] : 'node/' . $node->nid;
   $form = confirm_form($form, $question, $path, '', $tasks[$task]['title']);
 
-  // add an extra class to the actions to allow us to disable the cancel link via javascript for the modal dialog
-
+  // Add an extra class to the actions to allow us to
+  // disable the cancel link via javascript for the modal dialog.
   $form['actions']['#prefix'] = '<div id="hosting-task-confirm-form-actions" class="container-inline">';
   return $form;
 }
@@ -591,7 +589,7 @@ function hosting_task_confirm_form($form, $form_state, $node, $task) {
  */
 function hosting_task_restore_form($node) {
   $list = hosting_site_backup_list($node->nid);
-  if (sizeof($list)) {
+  if (count($list)) {
     $form['bid'] = array(
       '#type' => 'radios',
       '#title' => t('Backups'),
@@ -611,6 +609,7 @@ function hosting_task_restore_form($node) {
 
 /**
  * Implements hook_form_alter().
+ *
  * TODO: Move restore functions to hosting_site, where backup functions are.
  */
 function hosting_task_restore_form_validate($form, &$form_state) {
@@ -620,7 +619,7 @@ function hosting_task_restore_form_validate($form, &$form_state) {
 }
 
 /**
- * Generic form submit handler for tasks confirmation
+ * Generic form submit handler for tasks confirmation.
  *
  * This handler gets called after any task has been confirmed by the user. It
  * will inject a new task in the queue and redirect the user to the
@@ -640,7 +639,7 @@ function hosting_task_confirm_form_submit($form, &$form_state) {
 }
 
 /**
- * Set the title of tasks automatically and in a consistent way
+ * Set the title of tasks automatically and in a consistent way.
  *
  * Tasks should always be named 'task_type node_title'.
  */
@@ -692,7 +691,8 @@ function hosting_task_outstanding($nid, $type) {
         AND t.task_status = !status
         AND t.task_type = '!type'
         ORDER BY t.vid DESC
-        LIMIT 1", array('!rid' =>$nid, '!status' => HOSTING_TASK_QUEUED, '!type' => $type))->fetchField();
+        LIMIT 1",
+        array('!rid' => $nid, '!status' => HOSTING_TASK_QUEUED, '!type' => $type))->fetchField();
   return $return;
 }
 
@@ -718,11 +718,11 @@ function hosting_task_count_running() {
  *
  * Modules can extend this list using hook_hosting_tasks().
  *
- * @param $type
+ * @param string|null $type
  *   Tasks are grouped by the type of thing that the task is performed on. This
  *   parameter should either be NULL, or a string indicating the type of thing
  *   that you want possible tasks to operate on.
- * @param $reset
+ * @param bool $reset
  *   This function has an internal static cache, to reset the cache, pass in
  *   TRUE.
  *
@@ -740,7 +740,7 @@ function hosting_task_count_running() {
 function hosting_available_tasks($type = NULL, $reset = FALSE) {
   static $cache = array();
 
-  if (!sizeof($cache) || $reset) {
+  if (!count($cache) || $reset) {
     $cache = module_invoke_all('hosting_tasks');
     drupal_alter('hosting_tasks', $cache);
   }
@@ -945,7 +945,7 @@ function hosting_task_update_status_form($form, &$form_state, $vid) {
   $form['#prefix'] = '<div class="hosting-task-retry">';
   $form['task'] = array(
     '#type' => 'hidden',
-    '#default_value' => $vid
+    '#default_value' => $vid,
   );
   $form['update-status'] = array(
     '#type' => 'submit',
@@ -996,7 +996,7 @@ function hosting_task_view($node, $view_mode, $langcode = NULL) {
         '#weight' => 2,
       );
     }
-    else {
+    elseif ($node->executed != NULL) {
       $node->content['info']['executed'] = array(
         '#type' => 'item',
         '#title' => t('Executed'),
@@ -1081,7 +1081,7 @@ function hosting_task_view($node, $view_mode, $langcode = NULL) {
 }
 
 /**
- * Display table containing the logged information for this task
+ * Display table containing the logged information for this task.
  */
 function _hosting_task_log_table($node, $last_position = 0) {
   $result = db_query("SELECT * FROM {hosting_task_log} WHERE vid = :vid AND lid > :lid ORDER BY lid", array(':vid' => $node->vid, ':lid' => $last_position));
@@ -1112,7 +1112,7 @@ function _hosting_task_log_table($node, $last_position = 0) {
       // Add the exec_time to the previous row
       $exec_time = $entry->timestamp - $last_timestamp;
 
-      // "1" is unreliable because timestamps don't allow sub-second granularity
+      // "1" is unreliable because timestamps don't allow sub-second granularity.
       if ($exec_time < 1) {
         $exec_time = '<div>-</div>';
       }
@@ -1172,7 +1172,7 @@ function _hosting_task_log_table($node, $last_position = 0) {
           drupal_get_path('module', 'hosting_task') . '/js/hosting_task.table.js',
         ),
         'library' => array(
-            array('system', 'drupal.ajax'),
+          array('system', 'drupal.ajax'),
         ),
       ),
     );
@@ -1185,7 +1185,7 @@ function _hosting_task_log_table($node, $last_position = 0) {
  * Map entry statuses to coincide with our CSS classes.
  *
  * @todo make this irrelevant.
- * @see _drush_print_log().
+ * @see _drush_print_log()
  */
 function _hosting_task_log_class($type) {
   switch (strtolower($type)) {
@@ -1217,7 +1217,7 @@ function _hosting_task_log_class($type) {
 }
 
 /**
- * Retrieve tasks with specified criterias
+ * Retrieve tasks with specified criteria.
  *
  * @arg $filter_by string a field to filter the list with, unchecked
  * @arg $filter_value string what to restrict the field to, checked
@@ -1316,7 +1316,7 @@ define('HOSTING_TASK_WARNING', 3);
  */
 
 /**
- * Turn bitmask integer error code into associative array
+ * Turn bitmask integer error code into associative array.
  */
 function _hosting_task_error_codes() {
   $codes = array(
@@ -1338,7 +1338,7 @@ function _hosting_parse_error_code($code) {
 }
 
 /**
- * Return the status of the task matching the specification
+ * Return the status of the task matching the specification.
  */
 function hosting_task_status($filter_by, $filter_value, $type = 'install') {
   $query = db_select('node', 'n')
@@ -1365,19 +1365,20 @@ function hosting_task_status_output($filter_by, $filter_value, $type = 'install'
     return _hosting_parse_error_code($status);
   }
   else {
-    return $status; # should be NULL
+    // should be NULL.
+    return $status;
   }
 }
 
 /**
- * Display list of tasks
+ * Display list of tasks.
  */
 function hosting_task_list($filter_by = NULL, $filter_value = NULL) {
   return _hosting_task_list($filter_by, $filter_value, 25, 12, 'title');
 }
 
 /**
- * A concise table listing of the tasks affecting this node
+ * A concise table listing of the tasks affecting this node.
  *
  * This shows a table view of the tasks relevant to this node. It will show
  * tasks that can be executed as well as tasks that have been in a single
@@ -1657,7 +1658,7 @@ function hosting_task_preprocess_views_view_table(&$vars) {
 /**
  * Set a task's status according to its log.
  *
- * @param $task
+ * @param object|int $task
  *   A task object or the revision ID of a task node.
  *
  * @return int
@@ -1688,7 +1689,7 @@ function hosting_task_update_status($task) {
 /**
  * Parse a task's log, and return its status accordingly.
  *
- * @param $vid
+ * @param int $vid
  *   The revision ID of a task node.
  *
  * @return int
