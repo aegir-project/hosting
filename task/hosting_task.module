@@ -235,8 +235,7 @@ function hosting_task_menu_access($node, $task) {
       $safe_tasks = array('backup', 'backup-delete', 'verify', 'enable');
       if (!in_array($task, $safe_tasks)) {
         // Don't show certain tasks if the site is the 'special' main aegir site.
-        $profile = node_load($node->profile);
-        if ($profile->short_name == 'hostmaster') {
+        if ($node->nid == hosting_get_hostmaster_site_nid()) {
           return FALSE;
         }
       }
