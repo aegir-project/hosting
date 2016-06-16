@@ -226,7 +226,9 @@ function hosting_queued_db_close_all() {
   if (is_array($db_url)) {
     foreach ($db_url as $name => $url) {
       db_set_active($name);
-      mysqli_close($active_db);
+      if ($active_db) {
+        mysqli_close($active_db);
+      }
     }
   }
   else {
