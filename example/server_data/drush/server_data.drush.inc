@@ -19,6 +19,8 @@ function server_data_provision_register_autoload() {
 }
 
 /**
+ * Implements hook_provision_services().
+ *
  * Expose the service type this extension defines to provision.
  *
  * @return

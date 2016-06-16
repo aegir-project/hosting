@@ -31,6 +31,8 @@ function example_provision_register_autoload() {
 }
 
 /**
+ * Implements hook_provision_services().
+ *
  * Expose the service type this extension defines to provision.
  *
  * Implementations are then conditionally loaded when the option 
