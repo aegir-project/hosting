@@ -397,31 +397,35 @@ function hosting_server_form($node, &$form_state) {
       '#title' => check_plain($service['title']),
       '#weight' => isset($service['weight']) ? $service['weight'] : 0,
     );
-
-    $form['services'][$name]['type'] = array(
-      '#type' => 'radios',
-      '#weight' => -99,
-      '#options' => array_merge(array('null' => 'None'), drupal_map_assoc(array_keys($service['types']))),
-      '#default_value' => isset($node->services[$name]->available) && $node->services[$name]->available ? $node->services[$name]->type : 'null',
-    );
-
-    // Service-specific configuration.
-    foreach ($service['types'] as $type => $class) {
-      $form['services'][$name][$type] = array(
-        '#states' => array(
-          'visible' => array(
-            ":input[name='services[{$name}][type]']" => array('value' => $type),
-          ),
-        ),
-        '#type' => 'container',
+    if (array_key_exists('types', $service)) {
+      $form['services'][$name]['type'] = array(
+        '#type' => 'radios',
+        '#weight' => -99,
+        '#options' => array_merge(array('null' => 'None'), drupal_map_assoc(array_keys($service['types']))),
+        '#default_value' => isset($node->services[$name]->available) && $node->services[$name]->available ? $node->services[$name]->type : 'null',
       );
-      if (isset($node->services[$name]) && $node->services[$name]->type === $type) {
-        $node->services[$name]->form($form['services'][$name][$type]);
+
+      // Service-specific configuration.
+      foreach ($service['types'] as $type => $class) {
+        $form['services'][$name][$type] = array(
+          '#states' => array(
+            'visible' => array(
+              ":input[name='services[{$name}][type]']" => array('value' => $type),
+            ),
+          ),
+          '#type' => 'container',
+        );
+        if (isset($node->services[$name]) && $node->services[$name]->type === $type) {
+          $node->services[$name]->form($form['services'][$name][$type]);
+        }
+        else {
+          $service_object = hosting_services_new_object($name, $type, $node);
+          $service_object->form($form['services'][$name][$type]);
+        }
       }
-      else {
-        $service_object = hosting_services_new_object($name, $type, $node);
-        $service_object->form($form['services'][$name][$type]);
-      }
+    }
+    else {
+      drupal_set_message(t('No implementations available for the :type service. Please visit the !features_link page and enable one.', array(':type' => $service['title'], '!features_link' => l(t('Hosting Features'), '/admin/hosting'))), 'warning');
     }
   }
   foreach (array('verified', 'platform_status') as $extra_attribute) {
