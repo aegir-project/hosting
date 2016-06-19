@@ -628,6 +628,7 @@ function hosting_client_view($node, $view_mode, $langcode = NULL) {
 
   $node->content['info']['#suffix'] = '</div>';
   if ($view_mode = 'full') {
+    $rows = array();
     $users = hosting_client_users($node);
     foreach ($users as $uid => $uname) {
       if (user_access('access user profiles') || ($uid == $GLOBALS['user']->uid)) {
