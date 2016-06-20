@@ -303,12 +303,19 @@ function hosting_ssl_nodeapi_site_update($node) {
  */
 function hosting_ssl_node_load($nodes, $types) {
   foreach ($nodes as $k => $node) {
-    $result = db_query("SELECT ssl_enabled, ssl_key FROM {hosting_ssl_site} WHERE vid = :vid",
-      array(':vid' => $node->vid)
-      )->fetchObject();
-    if ($result) {
-      $nodes[$k]->ssl_enabled = $result->ssl_enabled;
-      $nodes[$k]->ssl_key = $result->ssl_key;
+    switch ($node->type) {
+      case 'site':
+        $result = db_query("SELECT ssl_enabled, ssl_key FROM {hosting_ssl_site} WHERE vid = :vid",
+          array(':vid' => $node->vid)
+          )->fetchObject();
+        if ($result) {
+          $nodes[$k]->ssl_enabled = $result->ssl_enabled;
+          $nodes[$k]->ssl_key = $result->ssl_key;
+        }
+        break;
+      case 'server':
+        $nodes[$k]->ip_addresses = _hosting_ip_load($node);
+        break;
     }
   }
 }
