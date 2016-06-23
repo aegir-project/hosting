@@ -303,19 +303,12 @@ function hosting_ssl_nodeapi_site_update($node) {
  */
 function hosting_ssl_node_load($nodes, $types) {
   foreach ($nodes as $k => $node) {
-    switch ($node->type) {
-      case 'site':
-        $result = db_query("SELECT ssl_enabled, ssl_key FROM {hosting_ssl_site} WHERE vid = :vid",
-          array(':vid' => $node->vid)
-          )->fetchObject();
-        if ($result) {
-          $nodes[$k]->ssl_enabled = $result->ssl_enabled;
-          $nodes[$k]->ssl_key = $result->ssl_key;
-        }
-        break;
-      case 'server':
-        $nodes[$k]->ip_addresses = _hosting_ip_load($node);
-        break;
+    $result = db_query("SELECT ssl_enabled, ssl_key FROM {hosting_ssl_site} WHERE vid = :vid",
+      array(':vid' => $node->vid)
+      )->fetchObject();
+    if ($result) {
+      $nodes[$k]->ssl_enabled = $result->ssl_enabled;
+      $nodes[$k]->ssl_key = $result->ssl_key;
     }
   }
 }
@@ -452,12 +445,5 @@ function hosting_ssl_clean_keys($node) {
     db_delete('hosting_ssl_cert_ips')
       ->condition('cid', $ssl_key)
       ->execute();
-  }
-}
-
-function hosting_ssl_node_view($node, $view_mode, $langcode) {
-  _hosting_ip_view($node);
-  if (isset($node->content->info->ip_addresses['#weight'])) {
-    $node->content->info->ip_addresses['#weight'] = -30;
   }
 }

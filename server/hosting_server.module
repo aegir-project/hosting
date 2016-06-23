@@ -6,6 +6,7 @@
  */
 
 include_once "hosting_server.service.inc";
+include_once "hosting.ip.inc";
 
 /**
  * This server has been deleted.
@@ -341,6 +342,49 @@ function hosting_server_form($node, &$form_state) {
 
   if (!isset($node->nid)) {
     $node->services = array();
+    $node->ip_addresses = array();
+  }
+
+  // Taken mostly from the hosting_site alias stuff.
+  $form['ips_wrapper'] = array(
+    '#title' => t('IP addresses'),
+    '#description' => t('A list of IP addresses this server is publicly available under, one per line. If none is specified, X509 certificates will be offered through the SNI mechanism by TLS-enabled webservers. <br /><strong>This should point to the public network, if you have such a separation.</strong>'),
+    '#type' => 'fieldset',
+    '#tree' => FALSE,
+    '#weight' => 2,
+    '#prefix' => '<div class="clear-block" id="hosting-ips-wrapper">',
+    '#suffix' => '</div>',
+  );
+
+  $form['ips_wrapper']['ip_addresses'] = array(
+    '#prefix' => '<div id="hosting-ip-addresses">',
+    '#suffix' => '</div>',
+    '#tree' => TRUE,
+    // '#theme' => 'hosting_alias_form',
+  );
+
+  // Get the list of existing IPs.
+  $ips = $node->ip_addresses;
+  $ips_count = max(3, empty($ips) ? 3 : count($ips) + 1);
+
+  // Add alias textfields.
+  foreach ($ips as $id => $ip) {
+    $form['ips_wrapper']['ip_addresses'][$id] = array(
+      '#type' => 'textfield',
+      '#default_value' => $ip,
+    );
+    $ips_count--;
+  }
+  $form['ips_wrapper']['new_ip_addresses'] = array(
+    '#prefix' => '<div id="hosting-ip-addresses">',
+    '#suffix' => '</div>',
+    '#tree' => TRUE,
+    // '#theme' => 'hosting_alias_form',
+  );
+  for ($delta = 0; $delta < $ips_count; $delta++) {
+    $form['ips_wrapper']['new_ip_addresses'][$delta] = array(
+      '#type' => 'textfield',
+    );
   }
 
   $form['services_tabs'] = array(
@@ -557,6 +601,7 @@ function hosting_server_load($nodes) {
     hosting_server_init_services($node);
     hosting_server_invoke_services($node, 'load');
     $additions->services = $node->services;
+    $additions->ip_addresses = _hosting_ip_load($node);
 
     foreach ($additions as $property => &$value) {
       $node->$property = $value;
@@ -614,6 +659,11 @@ function hosting_server_view($node, $view_mode, $langcode = NULL) {
     '#markup' => $node->title,
     '#weight' => -50,
   );
+
+  _hosting_ip_view($node);
+  if (isset($node->content->info->ip_addresses['#weight'])) {
+    $node->content->info->ip_addresses['#weight'] = -30;
+  }
 
   if (isset($node->services)) {
     foreach ($node->services as $name => $service) {
