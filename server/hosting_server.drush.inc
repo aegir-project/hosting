@@ -13,7 +13,7 @@
 function hosting_hosting_server_context_options(&$task) {
   $task->context_options['remote_host'] = $task->ref->title;
   $ip_list = $task->ref->ip_addresses;
-  $task->context_options['ip_addresses'] = sizeof($ip_list) ? implode(',', $ip_list) : 'null';
+  $task->context_options['ip_addresses'] = count($ip_list) ? implode(',', $ip_list) : 'null';
 
   foreach (hosting_server_services() as $type => $info) {
     if (isset($task->ref->services[$type])) {
@@ -28,9 +28,9 @@ function hosting_hosting_server_context_options(&$task) {
   }
 }
 
+
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Implements hook_drush_context_import().
  */
 function hosting_server_drush_context_import($context, &$node) {
   if ($context->type == 'server') {
@@ -47,7 +47,7 @@ function hosting_server_drush_context_import($context, &$node) {
           }
         }
         if (!isset($node->services[$type])) {
-          // only support the base configuration things for now.
+          // Only support the base configuration things for now.
           hosting_services_add($node, $type, $service_type, $values);
         }
 
@@ -63,7 +63,10 @@ function hosting_server_drush_context_import($context, &$node) {
 function hosting_server_post_hosting_verify_task($task, $data) {
   if ($task->ref->type == 'server') {
     $task->ref->no_verify = TRUE;
-    $task->ref->verified = REQUEST_TIME; // set verified flag on server, to let it know it has been checked.
+
+    // Set verified flag on server, to let it know it has been checked.
+    $task->ref->verified = REQUEST_TIME;
+
     $task->ref->server_status = HOSTING_SERVER_ENABLED;
     node_save($task->ref);
   }

@@ -52,12 +52,13 @@ function hosting_platform_post_hosting_verify_task($task, $data) {
     $context = $data['context'];
     $packages = $context['packages'];
 
-    // Lock platforms by default
+    // Lock platforms by default.
     if ($node->verified == 0 && variable_get('hosting_lock_platforms_by_default', FALSE)) {
       $node->platform_status = HOSTING_PLATFORM_LOCKED;
     }
 
-    $node->verified = REQUEST_TIME; // set verified flag on platform, to let it know it has been checked.
+    // Set verified flag on platform, to let it know it has been checked.
+    $node->verified = REQUEST_TIME;
 
     /**
      * If we are verifying a Locked platform (i.e if the publish_path has changed),
@@ -69,7 +70,7 @@ function hosting_platform_post_hosting_verify_task($task, $data) {
       $node->platform_status = HOSTING_PLATFORM_ENABLED;
     }
     $node->no_verify = TRUE;
-    // Save the platform being verified
+    // Save the platform being verified.
     node_save($node);
 
     hosting_package_sync($packages['base']);
@@ -122,7 +123,7 @@ function hosting_platform_post_hosting_delete_task($task, $data) {
   db_delete('hosting_platform_client_access')
     ->condition('pid', $task->ref->nid)
     ->execute();
-  // Clean up package instances
+  // Clean up package instances.
   hosting_package_instance_sync($task->ref->nid, 'platform');
 }
 
@@ -145,4 +146,3 @@ function hosting_platform_post_hosting_unlock_task($task, $data) {
   $task->ref->no_verify = TRUE;
   node_save($task->ref);
 }
-
