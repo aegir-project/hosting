@@ -615,6 +615,11 @@ function hosting_server_view($node, $view_mode, $langcode = NULL) {
     '#weight' => -50,
   );
 
+  _hosting_ip_view($node);
+  if (isset($node->content->info->ip_addresses['#weight'])) {
+    $node->content->info->ip_addresses['#weight'] = -30;
+  }
+
   if (isset($node->services)) {
     foreach ($node->services as $name => $service) {
       $node->content['info'][$name] = array(

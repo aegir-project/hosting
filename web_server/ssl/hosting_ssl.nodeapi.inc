@@ -454,10 +454,3 @@ function hosting_ssl_clean_keys($node) {
       ->execute();
   }
 }
-
-function hosting_ssl_node_view($node, $view_mode, $langcode) {
-  _hosting_ip_view($node);
-  if (isset($node->content->info->ip_addresses['#weight'])) {
-    $node->content->info->ip_addresses['#weight'] = -30;
-  }
-}
