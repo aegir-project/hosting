@@ -66,12 +66,6 @@ function hosting_server_post_hosting_verify_task($task, $data) {
     $task->ref->verified = REQUEST_TIME; // set verified flag on server, to let it know it has been checked.
     $task->ref->server_status = HOSTING_SERVER_ENABLED;
     node_save($task->ref);
-
-    // Verify the platforms on this server
-    $query = db_query("SELECT nid FROM {hosting_platform} WHERE status <> :status AND web_server = :web_server", array(':status' => HOSTING_PLATFORM_DELETED, ':web_server' => $task->ref->nid));
-    while ($nid = $query->fetch()) {
-      hosting_add_task($nid->nid, 'verify');
-    }
   }
 }
 
