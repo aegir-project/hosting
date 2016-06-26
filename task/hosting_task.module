@@ -1218,6 +1218,19 @@ function _hosting_task_log_class($type) {
 }
 
 /**
+ * Retrieve the latest task related to the specified platform, of a specific type
+ *
+ * This is used for documenting issues with verification.
+ */
+function hosting_get_most_recent_task($rid, $type) {
+  $nid = db_query("SELECT t.nid FROM {hosting_task} t INNER JOIN {node} n ON n.vid = t.vid WHERE task_type = !task_type and t.rid = !t.rid ORDER BY t.vid DESC limit 1", array('!task_type' => $type, '!t.rid' => $rid))->fetchField();
+  if ($nid) {
+    return node_load($nid);
+  }
+  return FALSE;
+}
+
+/**
  * Retrieve tasks with specified criteria.
  *
  * @arg $filter_by string a field to filter the list with, unchecked
