@@ -9,6 +9,7 @@ module_load_include('service.inc', 'hosting_ssl');
 class hostingService_http_nginx_ssl extends hostingService_http_ssl {
 
   public $type = 'nginx_ssl';
+  public $name = 'NGINX SSL';
   protected $has_restart_cmd = TRUE;
 
   function default_restart_cmd() {

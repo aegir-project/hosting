@@ -8,6 +8,7 @@ module_load_include('service.inc', 'hosting_web_server');
 
 class hostingService_http_pack extends hostingService_http {
   public $type = 'pack';
+  public $name = 'Web Pack';
 
   function view(&$render) {
     $render['master_servers'] = array(

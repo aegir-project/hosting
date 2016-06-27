@@ -29,6 +29,10 @@ class hostingService_example_basic extends hostingService_example {
    */
   public $type = 'basic';
 
+  /**
+   * The name displayed to users when creating or editing a server.
+   */
+  public $name = 'Basic';
 
   /**
    * this service needs to have a port specified for it.

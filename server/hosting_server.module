@@ -397,11 +397,21 @@ function hosting_server_form($node, &$form_state) {
       '#title' => check_plain($service['title']),
       '#weight' => isset($service['weight']) ? $service['weight'] : 0,
     );
+    // Check to ensure at least one service provider for each type exists.
     if (array_key_exists('types', $service)) {
+
+      $options = array(
+        'null' => t('None'),
+      );
+      foreach ($service['types'] as $type => $class_name) {
+        $service_objects[$name][$type] = hosting_services_new_object($name, $type, $node);
+        $options[$type] = $service_objects[$name][$type]->getName();
+      }
+
       $form['services'][$name]['type'] = array(
         '#type' => 'radios',
         '#weight' => -99,
-        '#options' => array_merge(array('null' => 'None'), drupal_map_assoc(array_keys($service['types']))),
+        '#options' => $options,
         '#default_value' => isset($node->services[$name]->available) && $node->services[$name]->available ? $node->services[$name]->type : 'null',
       );
 
@@ -419,7 +429,7 @@ function hosting_server_form($node, &$form_state) {
           $node->services[$name]->form($form['services'][$name][$type]);
         }
         else {
-          $service_object = hosting_services_new_object($name, $type, $node);
+          $service_object = $service_objects[$name][$type];
           $service_object->form($form['services'][$name][$type]);
         }
       }
