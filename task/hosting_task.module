@@ -1785,6 +1785,9 @@ function hosting_task_dangerous_task_is_allowed($task_type, $nid) {
   return $allowed;
 }
 
+/**
+ * Implements hook_entity_property_info_alter().
+ */
 function hosting_task_entity_property_info_alter(&$info) {
   $task_properties = &$info['node']['bundles']['task']['properties'];
 

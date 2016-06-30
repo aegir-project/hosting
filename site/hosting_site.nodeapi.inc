@@ -118,7 +118,7 @@ function hosting_site_view($node, $view_mode, $langcode = NULL) {
 }
 
 /**
- * Implements hook_field_extra_fields()
+ * Implements hook_field_extra_fields().
  */
 function hosting_site_field_extra_fields() {
   $return['node']['site'] = array(
@@ -159,7 +159,7 @@ function hosting_site_entity_property_info() {
     'db_name' => array(
       'label' => t('Database name'),
       'description' => t('The name of the database on the database server for the site.'),
-      'type' =>  'text',
+      'type' => 'text',
     ),
     'platform' => array(
       'label' => t('Platform'),
