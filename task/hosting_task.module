@@ -116,8 +116,17 @@ function hosting_task_log_ajax($node, $last_position, $id) {
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Prepare a JS command array to be returned via AJAX.
+ *
+ * @param string $selector
+ *   HTML css selector.
+ * @param string $html
+ *   HTML code to append.
+ * @param array $settings
+ *   Extra settings.
+ *
+ * @return array
+ *   A JS command array.
  */
 function hosting_task_ajax_command_hosting_table_append($selector, $html, $settings = NULL) {
   return array(
@@ -129,8 +138,17 @@ function hosting_task_ajax_command_hosting_table_append($selector, $html, $setti
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Prepare a JS command array to be returned via AJAX.
+ *
+ * @param string $selector
+ *   HTML css selector.
+ * @param string $url
+ *   URL
+ * @param array $settings
+ *   Extra settings.
+ *
+ * @return array
+ *   A JS command array.
  */
 function hosting_task_ajax_command_hosting_table_check($selector, $url, $settings = NULL) {
   return array(
@@ -142,8 +160,7 @@ function hosting_task_ajax_command_hosting_table_check($selector, $url, $setting
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Page callback to provide JSON output for a task.
  */
 function hosting_task_ajax_list($node) {
   $return['markup'] = hosting_task_table($node);
@@ -1218,7 +1235,7 @@ function _hosting_task_log_class($type) {
 }
 
 /**
- * Retrieve the latest task related to the specified platform, of a specific type
+ * Retrieve the latest task related to the specified platform, of a specific type.
  *
  * This is used for documenting issues with verification.
  */
@@ -1268,6 +1285,7 @@ function hosting_get_tasks($filter_by = NULL, $filter_value = NULL, $count = 5, 
  *
  * @param int $limit
  *   The amount of items to return.
+ *
  * @return array
  *   An associative array containing task nodes, indexed by node id.
  */
@@ -1369,7 +1387,7 @@ function hosting_task_status($filter_by, $filter_value, $type = 'install') {
 }
 
 /**
- * Return the status of a task in human-readable form
+ * Return the status of a task in human-readable form.
  *
  * @see hosting_task_status()
  */
