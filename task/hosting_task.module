@@ -1784,3 +1784,54 @@ function hosting_task_dangerous_task_is_allowed($task_type, $nid) {
   }
   return $allowed;
 }
+
+function hosting_task_entity_property_info_alter(&$info) {
+  $task_properties = &$info['node']['bundles']['task']['properties'];
+
+  $task_properties['task_type'] = array(
+    'label' => t("Task type"),
+    'description' => t("The type the task node uses."),
+    'type' => 'text',
+    'getter callback' => 'entity_property_verbatim_get',
+    'setter callback' => 'entity_property_verbatim_set',
+  );
+
+  $task_properties['task_status'] = array(
+    'label' => t('Task status'),
+    'description' => t('The status of the task. E.g. @TODO, etc.'),
+    'type' => 'integer',
+    'options list' => '_hosting_task_status_codes_labels',
+    'setter callback' => 'entity_property_verbatim_set',
+  );
+
+  $task_properties['rid'] = array(
+    'label' => t('Relation ID'),
+    'description' => t('The relation this task belong to: site, platform, etc.'),
+    'type' => 'integer',
+    'getter callback' => 'entity_property_verbatim_get',
+    'setter callback' => 'entity_property_verbatim_set',
+  );
+
+  // TODO: how should we expand these arguments?
+  /*
+  $task_properties['task_arguments'] = array(
+    'label' => t('Task arguments'),
+    'description' => t('The argument for the given task.'),
+    // TODO list<text> is insufficient, list<struct> maybe the solution
+    // see ie commerce/modules/price/commerce_price.module commerce_price_field_data_property_info
+    'type' => 'list<struct>',
+    'setter callback' => 'entity_property_verbatim_set',
+  );
+  */
+}
+
+/**
+ * Task status codes to human-readable label map.
+ */
+function _hosting_task_status_codes_labels() {
+  $labels = array();
+  foreach (_hosting_server_status_codes() as $code => $info) {
+    $labels[$code] = $info['label'];
+  }
+  return $labels;
+}
