@@ -797,6 +797,56 @@ function hosting_platform_field_extra_fields() {
 }
 
 /**
+ * Implements hook_entity_property_info().
+ */
+function hosting_platform_entity_property_info() {
+  $info['node']['bundles']['platform']['properties'] = array(
+    'publish_path' => array(
+      'label' => t('Publish path'),
+      'description' => t('The location on disk of the platform.'),
+      'type' => 'text',
+    ),
+    'makefile' => array(
+      'label' => t('Makefile'),
+      'description' => t('The makefile used to generate this platform (if any).'),
+      'type' => 'text',
+    ),
+    'verified' => array(
+      'label' => t('Last verification time'),
+      'description' => t('The date and time of the last verification of the platform.'),
+      'type' =>  'date',
+    ),
+    'web_server' => array(
+      'label' => t('Web server'),
+      'description' => t('The server the platform is on.'),
+      'type' => 'node',
+      'bundle' => 'server',
+    ),
+    'platform_status' => array(
+      'label' => t('Platform status'),
+      'description' => t('The status of the platform. E.g. enabled, deleted, etc.'),
+      'type' => 'integer',
+      'options list' => '_hosting_platform_status_codes_labels',
+    ),
+    'make_working_copy' => array(
+      'label' => t('Drush make - Working copy'),
+      'description' => t('Determines if the working-copy option is used when using Drush make to generate the codebase for the platform.'),
+      'type' => 'boolean',
+    ),
+  );
+  if (hosting_feature('client')) {
+    $info['node']['bundles']['platform']['properties']['clients'] = array(
+      'label' => t('Clients with access'),
+      'description' => t('An array of clients with access to this platform.'),
+      'type' => 'list<node>',
+      'bundle' => 'client',
+    );
+  }
+
+  return $info;
+}
+
+/**
  * Implements hook_hosting_site_site_list_filters().
  */
 function hosting_platform_hosting_site_site_list_filters() {
@@ -826,6 +876,17 @@ function _hosting_platform_status_codes() {
     ),
   );
   return $codes;
+}
+
+/**
+ * Platform status codes to human-readable label map.
+ */
+function _hosting_platform_status_codes_labels() {
+  $labels = array();
+  foreach (_hosting_platform_status_codes() as $code => $info) {
+    $labels[$code] = $info['label'];
+  }
+  return $labels;
 }
 
 /**

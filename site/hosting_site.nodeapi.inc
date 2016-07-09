@@ -118,7 +118,7 @@ function hosting_site_view($node, $view_mode, $langcode = NULL) {
 }
 
 /**
- * Implements hook_field_extra_fields()
+ * Implements hook_field_extra_fields().
  */
 function hosting_site_field_extra_fields() {
   $return['node']['site'] = array(
@@ -137,6 +137,71 @@ function hosting_site_field_extra_fields() {
   );
 
   return $return;
+}
+
+/**
+ * Implements hook_entity_property_info().
+ */
+function hosting_site_entity_property_info() {
+  $info['node']['bundles']['site']['properties'] = array(
+    'client' => array(
+      'label' => t('Client'),
+      'description' => t('The client that owns the site.'),
+      'type' => 'node',
+      'bundle' => 'client',
+    ),
+    'db_server' => array(
+      'label' => t('Database server'),
+      'description' => t('The database server for the site.'),
+      'type' => 'node',
+      'bundle' => 'server',
+    ),
+    'db_name' => array(
+      'label' => t('Database name'),
+      'description' => t('The name of the database on the database server for the site.'),
+      'type' => 'text',
+    ),
+    'platform' => array(
+      'label' => t('Platform'),
+      'description' => t('The platform the site is on.'),
+      'type' => 'node',
+      'bundle' => 'platform',
+    ),
+    'profile' => array(
+      'label' => t('Profile'),
+      'description' => t('The install profile used to install the site.'),
+      'type' => 'node',
+      'bundle' => 'package',
+    ),
+    'site_language' => array(
+      'label' => t('Site language'),
+      'description' => t('The language of the site.'),
+      'type' => 'text',
+    ),
+    'last_cron' => array(
+      'label' => t('Last cron run time'),
+      'description' => t('The date of the last cron run time for the site.'),
+      'type' => 'date',
+    ),
+    'cron_key' => array(
+      'label' => t('Cron key'),
+      'description' => t('The cron key for the site.'),
+      'type' => 'text',
+    ),
+    'site_status' => array(
+      'label' => t('Site status'),
+      'description' => t('The status of the site, e.g. enabled, deleted etc.'),
+      'type' => 'integer',
+      'options list' => 'hosting_site_status_codes_labels',
+    ),
+    'verified' => array(
+      'label' => t('Last verification time'),
+      'description' => t('The date of the time the site was verified.'),
+      'type' => 'date',
+    ),
+  );
+
+  return $info;
 }
 
 /**

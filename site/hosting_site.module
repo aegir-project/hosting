@@ -597,6 +597,15 @@ function _hosting_site_status($node) {
 }
 
 /**
+ * Site status codes to human readable label mappings.
+ *
+ * @see hosting_site_status_codes
+ */
+function hosting_site_status_codes_labels() {
+  return hosting_site_status_codes('label');
+}
+
+/**
  * Define the status type labels and classes.
  *
  * @param $type

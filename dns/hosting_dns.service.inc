@@ -111,6 +111,7 @@ class hostingService_dns_master extends hostingService_dns {
  */
 class hostingService_dns_dnsmasq extends hostingService_dns_master {
   public $type = 'dnsmasq';
+  public $name = 'DNSMasq';
 
   public $has_restart_cmd = TRUE;
 
@@ -124,6 +125,7 @@ class hostingService_dns_dnsmasq extends hostingService_dns_master {
  */
 class hostingService_dns_bind extends hostingService_dns_master {
   public $type = 'bind';
+  public $name = 'Bind';
 
   public $has_restart_cmd = TRUE;
 
@@ -137,6 +139,7 @@ class hostingService_dns_bind extends hostingService_dns_master {
  */
 class hostingService_dns_bind_slave extends hostingService_dns {
   public $type = 'bind_slave';
+  public $name = 'Bind Slave';
 
   public $has_restart_cmd = TRUE;
 

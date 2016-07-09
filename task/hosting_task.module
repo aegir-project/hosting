@@ -116,8 +116,17 @@ function hosting_task_log_ajax($node, $last_position, $id) {
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Prepare a JS command array to be returned via AJAX.
+ *
+ * @param string $selector
+ *   HTML css selector.
+ * @param string $html
+ *   HTML code to append.
+ * @param array $settings
+ *   Extra settings.
+ *
+ * @return array
+ *   A JS command array.
  */
 function hosting_task_ajax_command_hosting_table_append($selector, $html, $settings = NULL) {
   return array(
@@ -129,8 +138,17 @@ function hosting_task_ajax_command_hosting_table_append($selector, $html, $setti
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Prepare a JS command array to be returned via AJAX.
+ *
+ * @param string $selector
+ *   HTML css selector.
+ * @param string $url
+ *   URL
+ * @param array $settings
+ *   Extra settings.
+ *
+ * @return array
+ *   A JS command array.
  */
 function hosting_task_ajax_command_hosting_table_check($selector, $url, $settings = NULL) {
   return array(
@@ -142,8 +160,7 @@ function hosting_task_ajax_command_hosting_table_check($selector, $url, $setting
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Page callback to provide JSON output for a task.
  */
 function hosting_task_ajax_list($node) {
   $return['markup'] = hosting_task_table($node);
@@ -688,12 +705,12 @@ function hosting_task_outstanding($nid, $type) {
       SELECT t.nid FROM {hosting_task} t
         INNER JOIN {node} n ON t.vid = n.vid
       WHERE
-        t.rid = !rid
-        AND t.task_status = !status
-        AND t.task_type = '!type'
+        t.rid = :rid
+        AND t.task_status = :status
+        AND t.task_type = :type
         ORDER BY t.vid DESC
         LIMIT 1",
-        array('!rid' => $nid, '!status' => HOSTING_TASK_QUEUED, '!type' => $type))->fetchField();
+        array(':rid' => $nid, ':status' => HOSTING_TASK_QUEUED, ':type' => $type))->fetchField();
   return $return;
 }
 
@@ -701,7 +718,7 @@ function hosting_task_outstanding($nid, $type) {
  * Return the amount of items still in the queue.
  */
 function hosting_task_count() {
-  $result = db_query("SELECT COUNT(t.vid) FROM {hosting_task} t INNER JOIN {node} n ON t.vid = n.vid WHERE t.task_status = '!task_status'", array('task_status' => HOSTING_TASK_QUEUED))->fetchField();
+  $result = db_query("SELECT COUNT(t.vid) FROM {hosting_task} t INNER JOIN {node} n ON t.vid = n.vid WHERE t.task_status = :task_status", array(':task_status' => HOSTING_TASK_QUEUED))->fetchField();
   return $result;
 }
 
@@ -709,7 +726,7 @@ function hosting_task_count() {
  * Return the amount of items running in the queue.
  */
 function hosting_task_count_running() {
-  return db_query("SELECT count(t.nid) FROM {node} n INNER JOIN {hosting_task} t ON n.vid=t.vid WHERE n.type = :type AND t.task_status = :task_status", array(':type' => 'task', ':task_status' => HOSTING_TASK_PROCESSING))->fetchField();
+  return db_query("SELECT COUNT(t.nid) FROM {node} n INNER JOIN {hosting_task} t ON n.vid = t.vid WHERE type = :type AND t.task_status = :task_status", array(':type' => 'task', ':task_status' => HOSTING_TASK_PROCESSING))->fetchField();
 }
 
 /**
@@ -1218,6 +1235,19 @@ function _hosting_task_log_class($type) {
 }
 
 /**
+ * Retrieve the latest task related to the specified platform, of a specific type.
+ *
+ * This is used for documenting issues with verification.
+ */
+function hosting_get_most_recent_task($rid, $type) {
+  $nid = db_query("SELECT t.nid FROM {hosting_task} t INNER JOIN {node} n ON n.vid = t.vid WHERE task_type = !task_type and t.rid = !t.rid ORDER BY t.vid DESC limit 1", array('!task_type' => $type, '!t.rid' => $rid))->fetchField();
+  if ($nid) {
+    return node_load($nid);
+  }
+  return FALSE;
+}
+
+/**
  * Retrieve tasks with specified criteria.
  *
  * @arg $filter_by string a field to filter the list with, unchecked
@@ -1255,6 +1285,7 @@ function hosting_get_tasks($filter_by = NULL, $filter_value = NULL, $count = 5, 
  *
  * @param int $limit
  *   The amount of items to return.
+ *
  * @return array
  *   An associative array containing task nodes, indexed by node id.
  */
@@ -1356,7 +1387,7 @@ function hosting_task_status($filter_by, $filter_value, $type = 'install') {
 }
 
 /**
- * Return the status of a task in human-readable form
+ * Return the status of a task in human-readable form.
  *
  * @see hosting_task_status()
  */
@@ -1770,4 +1801,58 @@ function hosting_task_dangerous_task_is_allowed($task_type, $nid) {
     }
   }
   return $allowed;
+}
+
+/**
+ * Implements hook_entity_property_info_alter().
+ */
+function hosting_task_entity_property_info_alter(&$info) {
+  $task_properties = &$info['node']['bundles']['task']['properties'];
+
+  $task_properties['task_type'] = array(
+    'label' => t("Task type"),
+    'description' => t("The type the task node uses."),
+    'type' => 'text',
+    'getter callback' => 'entity_property_verbatim_get',
+    'setter callback' => 'entity_property_verbatim_set',
+  );
+
+  $task_properties['task_status'] = array(
+    'label' => t('Task status'),
+    'description' => t('The status of the task. E.g. @TODO, etc.'),
+    'type' => 'integer',
+    'options list' => '_hosting_task_status_codes_labels',
+    'setter callback' => 'entity_property_verbatim_set',
+  );
+
+  $task_properties['rid'] = array(
+    'label' => t('Relation ID'),
+    'description' => t('The relation this task belong to: site, platform, etc.'),
+    'type' => 'integer',
+    'getter callback' => 'entity_property_verbatim_get',
+    'setter callback' => 'entity_property_verbatim_set',
+  );
+
+  // TODO: how should we expand these arguments?
+  /*
+  $task_properties['task_arguments'] = array(
+    'label' => t('Task arguments'),
+    'description' => t('The argument for the given task.'),
+    // TODO list<text> is insufficient, list<struct> maybe the solution
+    // see ie commerce/modules/price/commerce_price.module commerce_price_field_data_property_info
+    'type' => 'list<struct>',
+    'setter callback' => 'entity_property_verbatim_set',
+  );
+  */
+}
+
+/**
+ * Task status codes to human-readable label map.
+ */
+function _hosting_task_status_codes_labels() {
+  $labels = array();
+  foreach (_hosting_server_status_codes() as $code => $info) {
+    $labels[$code] = $info['label'];
+  }
+  return $labels;
 }

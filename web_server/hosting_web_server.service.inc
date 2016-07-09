@@ -28,6 +28,7 @@ class hostingService_http_public extends hostingService_http {
 
 class hostingService_http_apache extends hostingService_http_public {
   public $type = 'apache';
+  public $name = 'Apache';
 
   protected $has_restart_cmd = TRUE;
 

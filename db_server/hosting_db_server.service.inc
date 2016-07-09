@@ -16,6 +16,7 @@ class hostingService_db extends hostingService {
  */
 class hostingService_db_mysql extends hostingService_db {
   public $type = 'mysql';
+  public $name = 'MySQL';
   public $has_port = TRUE;
 
   function default_port() {

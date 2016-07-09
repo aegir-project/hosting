@@ -54,6 +54,17 @@ function _hosting_server_status_codes() {
 }
 
 /**
+ * Server status codes to human-readable label map.
+ */
+function _hosting_server_status_codes_labels() {
+  $labels = array();
+  foreach (_hosting_server_status_codes() as $code => $info) {
+    $labels[$code] = $info['label'];
+  }
+  return $labels;
+}
+
+/**
  * Return the appropriate status label.
  */
 function _hosting_server_status($status) {
@@ -397,11 +408,21 @@ function hosting_server_form($node, &$form_state) {
       '#title' => check_plain($service['title']),
       '#weight' => isset($service['weight']) ? $service['weight'] : 0,
     );
+    // Check to ensure at least one service provider for each type exists.
     if (array_key_exists('types', $service)) {
+
+      $options = array(
+        'null' => t('None'),
+      );
+      foreach ($service['types'] as $type => $class_name) {
+        $service_objects[$name][$type] = hosting_services_new_object($name, $type, $node);
+        $options[$type] = $service_objects[$name][$type]->getName();
+      }
+
       $form['services'][$name]['type'] = array(
         '#type' => 'radios',
         '#weight' => -99,
-        '#options' => array_merge(array('null' => 'None'), drupal_map_assoc(array_keys($service['types']))),
+        '#options' => $options,
         '#default_value' => isset($node->services[$name]->available) && $node->services[$name]->available ? $node->services[$name]->type : 'null',
       );
 
@@ -419,7 +440,7 @@ function hosting_server_form($node, &$form_state) {
           $node->services[$name]->form($form['services'][$name][$type]);
         }
         else {
-          $service_object = hosting_services_new_object($name, $type, $node);
+          $service_object = $service_objects[$name][$type];
           $service_object->form($form['services'][$name][$type]);
         }
       }
@@ -732,6 +753,38 @@ function hosting_server_field_extra_fields() {
     ),
   );
   return $return;
+}
+
+/**
+ * Implements hook_entity_property_info().
+ */
+function hosting_server_entity_property_info() {
+  $info['node']['bundles']['server']['properties'] = array(
+    'human_name' => array(
+      'label' => t('Human-readable name'),
+      'description' => t('The optional human readable name of the server.'),
+      'type' => 'text',
+    ),
+    'verified' => array(
+      'label' => t('Last verification time'),
+      'description' => t('The date and time of the last verification of the server.'),
+      'type' =>  'date',
+    ),
+    'server_status' => array(
+      'label' => t('Server status'),
+      'description' => t('The status of the server. E.g. enabled, deleted, etc.'),
+      'type' => 'integer',
+      'options list' => '_hosting_server_status_codes_labels',
+    ),
+    'ip_addresses' => array(
+      'label' => t('IP addresses'),
+      'description' => t('The list of IP addresses the server is assigned.'),
+      // @TODO: use a type that defines an IP address and add validation.
+      'type' => 'list<text>',
+    ),
+  );
+
+  return $info;
 }
 
 /**

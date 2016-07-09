@@ -83,7 +83,7 @@ class hostingService_http_ssl extends hostingService_http_public {
 
 class hostingService_http_apache_ssl extends hostingService_http_ssl {
   public $type = 'apache_ssl';
-
+  public $name = 'Apache SSL';
 
   protected $has_restart_cmd = TRUE;
 

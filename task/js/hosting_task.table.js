@@ -86,6 +86,7 @@
       $(wrapper).trigger('hosting_table_ajax');
 
       if (at_bottom) {
+        // Scroll to the new bottom.
         $(window).scrollTop($(document).height());
       }
     }, 200);

@@ -8,6 +8,7 @@ module_load_include('service.inc', 'hosting_web_server');
 
 class hostingService_http_cluster extends hostingService_http {
   public $type = 'cluster';
+  public $name = 'Web Cluster';
 
   function view(&$render) {
     $render['web_servers'] = array(
