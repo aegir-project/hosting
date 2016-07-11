@@ -332,7 +332,7 @@ function hosting_site_hosting_tasks() {
   $tasks['site']['install'] = array(
     'title' => t('Install'),
     'description' => t('Install a site'),
-    'hidden' => TRUE,
+//    'hidden' => TRUE,
     'provision_save' => TRUE,
   );
 
