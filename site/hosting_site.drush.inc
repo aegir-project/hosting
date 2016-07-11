@@ -245,6 +245,12 @@ function hosting_site_post_hosting_verify_task($task, $data) {
     if ($data['context']['cron_key']) {
       $task->ref->cron_key = $data['context']['cron_key'];
     }
+
+    // If site status is not explicity disabled or deleted, set to enabled.
+    if ($task->ref->site_status != HOSTING_SITE_DISABLED && $task->ref->site_status != HOSTING_SITE_DELETED) {
+      $task->ref->site_status = HOSTING_SITE_ENABLED;
+    }
+
     node_save($task->ref);
 
     $context = $data['context'];
