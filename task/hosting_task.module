@@ -1436,6 +1436,11 @@ function hosting_task_table($node) {
       continue;
     }
 
+    if (empty($info['title'])) {
+      // Skip tasks from types that have since been removed.
+      continue;
+    }
+
     $row['type'] = array(
       'data' => $info['title'],
       'class' => array('hosting-status'),
