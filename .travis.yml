@@ -7,6 +7,7 @@ env:
     - DOCKER_VERSION=1.11.2-0~trusty
     - DOCKER_COMPOSE_VERSION=1.7.1
     - AEGIR_TESTS_VERSION
+    - AEGIR_HOSTMASTER_VERSION=7.x-3.x
 
 #env:
 #  - test: Ubuntu 14.04 Apache
@@ -30,6 +31,11 @@ before_install:
   # Get test scripts
   - git clone http://github.com/aegir-project/tests.git
   - cd tests/travis
+
+  # Get Hostmaster
+  - git clone http://git.drupal.org/project/hostmaster.git /home/travis/build/aegir-project/hostmaster
+  - cd /home/travis/build/aegir-project/hostmaster
+  - git checkout $AEGIR_HOSTMASTER_VERSION
 
   # list docker-engine versions
   - apt-cache madison docker-engine
