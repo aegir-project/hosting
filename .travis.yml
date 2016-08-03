@@ -52,4 +52,5 @@ before_install:
 script:
 
   # Tests are included in the docker-compose.yml file in the tests repo.
+  # See https://github.com/aegir-project/tests/blob/master/travis/docker-compose.yml
   - sudo docker-compose run hostmaster --rm
