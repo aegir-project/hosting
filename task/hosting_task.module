@@ -5,6 +5,19 @@
  */
 
 /**
+ * Implements hook_init().
+ *
+ * Adds refreshTimeout javascript variable.
+ */
+function hosting_task_init() {
+  $settings['hostingTaskRefresh'] = array(
+      'refreshTimeout' => variable_get('hosting_task_refresh_timeout', 3000),
+  );
+  drupal_add_js($settings, 'setting');
+}
+
+
+/**
  * Implements hook_menu().
  */
 function hosting_task_menu() {
