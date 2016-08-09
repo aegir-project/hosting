@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Module code for Hosting task garbage collection
+ */
+
+/**
  * Implements hook_hosting_queues().
  *
  * Return a list of queues that this module needs to manage.
@@ -10,7 +15,8 @@ function hosting_task_gc_hosting_queues() {
   $queue['task_gc'] = array(
     'name' => t('Task GC'),
     'description' => t('Process the garbage collection of task logs.'),
-    'type' => HOSTING_QUEUE_TYPE_BATCH,  # run queue sequentially. always with the same parameters.
+    // Run queue sequentially. always with the same parameters.
+    'type' => HOSTING_QUEUE_TYPE_BATCH,
     'frequency' => strtotime("1 hour", 0),
     'items' => 20,
     'total_items' => $count,
@@ -59,6 +65,7 @@ function hosting_task_gc_queue() {
  * Prepare a list of sites with garbage to collect.
  *
  * @return DatabaseStatementInterface
+ *   A result object.
  */
 function hosting_task_gc_list_sites() {
   $query = "SELECT DISTINCT s.nid "
@@ -71,6 +78,7 @@ function hosting_task_gc_list_sites() {
  * Get the number of sites with garbage to collect.
  *
  * @return int
+ *   The number of sites.
  */
 function hosting_task_gc_count_sites() {
   $query = "SELECT COUNT(DISTINCT s.nid) AS num_sites "
