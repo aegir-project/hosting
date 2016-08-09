@@ -132,10 +132,54 @@ function hook_hosting_feature() {
 /**
  * Define hosting queues.
  *
- * @see hosting_get_queues()
+ * @see hosting_get_queues
  */
 function hook_hosting_queues() {
 
+}
+
+/**
+ * Alter module defined queue definitions before they are processed.
+ *
+ * This hook is invoked before hosting calculates the number of items to
+ * process when processing queues, so, for example, you could alter the number of apparent
+ * items in the queue.
+ *
+ * @param array $queues
+ *   The array of queue definitions of queues provided by modules.
+ *
+ * @see hosting_get_queues
+ * @see hook_hosting_queues
+ * @see hook_hosting_processed_queues_alter
+ */
+function hook_hosting_queues_alter(&$queues) {
+  if (isset($queues['cron'])) {
+    // Do not execute the cron queue at weekends.
+    if (date('N', REQUEST_TIME) > 5) {
+      $queues['cron']['total_items'] = 0;
+    }
+  }
+}
+
+/**
+ * Alter module defined queue definitions after they are processed.
+ *
+ * This hook is invoked after hosting module calculates the number of items to
+ * process when processing queues, and after the configurable information has
+ * been merged in.
+ *
+ * @param array $queues
+ *   The processed array of queue definitions of queues provided by modules.
+ *
+ * @see hosting_get_queues
+ * @see hook_hosting_queues
+ * @see hook_hosting_queues_alter
+ */
+function hook_hosting_processed_queues_alter(&$queues) {
+  if (isset($queues['cron'])) {
+    // Force the cron queue to always be disabled.
+    $queues['cron']['enabled'] = FALSE;
+  }
 }
 
 /**

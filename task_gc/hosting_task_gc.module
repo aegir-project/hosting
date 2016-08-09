@@ -10,7 +10,7 @@ function hosting_task_gc_hosting_queues() {
   $queue['task_gc'] = array(
     'name' => t('Task GC'),
     'description' => t('Process the garbage collection of task logs.'),
-    'type' => 'batch',  # run queue sequentially. always with the same parameters.
+    'type' => HOSTING_QUEUE_TYPE_BATCH,  # run queue sequentially. always with the same parameters.
     'frequency' => strtotime("1 hour", 0),
     'items' => 20,
     'total_items' => $count,

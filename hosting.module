@@ -14,6 +14,53 @@
 define('HOSTING_MAX_ALIAS_LENGTH', 235);
 
 /**
+ * A serial queue type.
+ *
+ * This queue will be processed at a specified interval. When the interval has
+ * elapsed a configurable number of the items will be processed.
+ */
+define('HOSTING_QUEUE_TYPE_SERIAL', 'serial');
+
+/**
+ * A batch queue type.
+ *
+ * This queue type aims to process repeatable tasks spread out over a
+ * configurable interval.
+ *
+ * See the processing code in hosting_get_queues() for the exact
+ * implementation.
+ *
+ * This queue type will:
+ * - Process items in the queue at some small number of specific points, evenly spaced throughout
+ *   the configurable interval.
+ * - Process as many items at those intervals so that all the items are
+ *   processed at least once over the configurable interval.
+ *
+ * @see HOSTING_QUEUE_TYPE_SPREAD
+ */
+define('HOSTING_QUEUE_TYPE_BATCH', 'batch');
+
+/**
+ * A spread queue type.
+ *
+ * This queue type aims to process repeatable tasks spread out over a
+ * configurable interval.
+ *
+ * See the processing code in hosting_get_queues() for the exact
+ * implementation.
+ *
+ * This queue type will attempt to:
+ * - Process items at as many points as possible evenly spread over the
+ *   configurable interval.
+ * - Points will be at least 1 minute apart to allow for the default dispatcher to execute them.
+ * - At each point process the minimum number of items needed to result in all
+ *   items being processed at least once over the configurable interval.
+ *
+ * @see HOSTING_QUEUE_TYPE_BATCH
+ */
+define('HOSTING_QUEUE_TYPE_SPREAD', 'spread');
+
+/**
  * Not split for performance reasons. Just to keep code together.
  */
 include_once dirname(__FILE__) . '/hosting.inc';
@@ -859,7 +906,17 @@ function hosting_queues_configure($form, &$form_state) {
     $form[$queue]['frequency']['#prefix'] = "<div class='hosting-queue-frequency'>";
     $form[$queue]['frequency']['#suffix'] = "</div>";
 
-    if ($info['type'] == 'batch') {
+    if ($info['type'] == HOSTING_QUEUE_TYPE_BATCH) {
+      $form[$queue]['frequency']['items'] = array(
+        '#markup' => t('%count %items every', array(
+          "%count" => $info['total_items'],
+          "%items" => format_plural($info['total_items'], $info['singular'], $info['plural']),
+        )),
+        '#prefix' => "<div class='hosting-queue-frequency-items'>",
+        '#suffix' => "</div>",
+      );
+    }
+    elseif ($info['type'] == HOSTING_QUEUE_TYPE_SPREAD) {
       $form[$queue]['frequency']['items'] = array(
         '#markup' => t('%count %items every', array(
           "%count" => $info['total_items'],
@@ -982,7 +1039,7 @@ function hosting_queues_configure_submit($form, &$form_state) {
     if ($form_state['values'][$queue]) {
       variable_set("hosting_queue_" . $queue . "_enabled", $form_state['values'][$queue]['enabled']);
       variable_set("hosting_queue_" . $queue . "_frequency", $form_state['values'][$queue]['frequency']['ticks'] * $form_state['values'][$queue]['frequency']['unit']);
-      if ($info['type'] == 'serial') {
+      if ($info['type'] == HOSTING_QUEUE_TYPE_SERIAL) {
         variable_set("hosting_queue_" . $queue . "_items", $form_state['values'][$queue]['frequency']['items']);
       }
     }
