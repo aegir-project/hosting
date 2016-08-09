@@ -579,7 +579,6 @@ function hosting_add_task($nid, $type, $args = NULL, $status = HOSTING_TASK_QUEU
  * Implements hook_form().
  */
 function hosting_task_confirm_form($form, $form_state, $node, $task) {
-  drupal_add_js(drupal_get_path('module', 'hosting_task') . '/hosting_task.js');
   $tasks = hosting_available_tasks($node->type);
 
   if (!isset($tasks[$task]['dialog']) || !$tasks[$task]['dialog']) {
@@ -1719,8 +1718,6 @@ function hosting_task_preprocess_views_view_table(&$vars) {
 
   switch ($id) {
     case 'hosting_task_list-block':
-      drupal_add_js(drupal_get_path('module', 'hosting_task') . '/hosting_task.js');
-
       $settings['hostingTaskRefresh'] = array(
         'queueBlock' => 1,
       );
