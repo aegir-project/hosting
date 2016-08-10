@@ -27,7 +27,15 @@ function hosting_ssl_site_form(&$form, &$form_state, $form_id) {
       $ssl_available = TRUE;
     }
   }
-  
+  elseif (count(hosting_ssl_get_servers('http')) > 0) {
+    $ssl_available = TRUE;
+  }
+
+
+  if (!$ssl_available) {
+    return;
+  }
+
   _hosting_site_field($form, $node, 'hosting_ssl_wrapper', array(
     '#type' => 'fieldset',
     '#title' => t('SSL Settings'),
@@ -208,7 +216,7 @@ function hosting_ssl_filter_key($key) {
  * Implements hook_nodeapi_TYPE_OP().
  */
 function hosting_ssl_nodeapi_site_validate($node, &$form) {
-  if ($node->ssl_enabled) {
+  if (isset($node->ssl_enabled) && $node->ssl_enabled) {
     // TODO: find a way to avoid calling this function multiple times in hook_validate
     $valid_options = hosting_site_available_options($node);
 
