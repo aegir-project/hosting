@@ -395,7 +395,12 @@ function hosting_task_node_info() {
 function hosting_task_node_access($node, $op, $account) {
   if (hosting_feature('client')) {
     // We rely on hosting_client_node_grants() instead of global configuration.
-    return NULL;
+    return NODE_ACCESS_IGNORE;
+  }
+
+  $type = is_string($node) ? $node : $node->type;
+  if ($type != 'task' ) {
+    return NODE_ACCESS_IGNORE;
   }
 
   if (user_access('administer tasks', $account)) {

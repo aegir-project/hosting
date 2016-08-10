@@ -372,10 +372,16 @@ function hosting_site_permission() {
  * Implements hook_node_access().
  */
 function hosting_site_node_access($node, $op, $account) {
-  if ($op != 'create' && hosting_feature('client')) {
-    // we rely on hosting_client_node_grants() instead of global configuration
-    return NULL; //@todo check this return value -> NODE_ACCESS_IGNORE?
+  if (hosting_feature('client') && $op != 'create') {
+    // We rely on hosting_client_node_grants() instead of global configuration.
+    return NODE_ACCESS_IGNORE;
   }
+
+  $type = is_string($node) ? $node : $node->type;
+  if ($type != 'site' ) {
+    return NODE_ACCESS_IGNORE;
+  }
+
   if ($op == 'create' && user_access('create site', $account)) {
     return NODE_ACCESS_ALLOW;
   }

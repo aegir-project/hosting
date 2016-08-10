@@ -100,6 +100,12 @@ function hosting_client_node_access($node, $op, $account) {
     return FALSE;
   }
 
+  $type = is_string($node) ? $node : $node->type;
+  if ($type != 'client' ) {
+    return NODE_ACCESS_IGNORE;
+  }
+
+
   if (user_access('administer clients', $account)) {
     return TRUE;
   }
@@ -110,6 +116,7 @@ function hosting_client_node_access($node, $op, $account) {
         return user_access('create client', $account);
 
       case 'view':
+        // TODO shoudn't this SQL query be covered by node_grants?
         return user_access('view client', $account) && db_query("SELECT user FROM {hosting_client_user} WHERE user = :user and client = :client", array(':user' => $account->uid, ':client' => $node->nid))->fetchAssoc();
 
       case 'update':
