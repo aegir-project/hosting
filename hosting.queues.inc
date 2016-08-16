@@ -59,7 +59,7 @@ function hosting_get_queues($refresh = FALSE) {
   if (is_null($cache) || $refresh) {
     $cache = array();
     $defaults = array(
-      'type' => 'serial',
+      'type' => HOSTING_QUEUE_TYPE_SERIAL,
       'max_threads' => 6,
       'threshold' => '100',
       'min_threads' => 1,
@@ -70,7 +70,11 @@ function hosting_get_queues($refresh = FALSE) {
       'singular' => t('item'),
       'plural' => t('items'),
     );
-    $queues = module_invoke_all("hosting_queues");
+    $queues = module_invoke_all('hosting_queues');
+    if (!is_array($queues)) {
+      $queues = array();
+    }
+    drupal_alter('hosting_queues', $queues);
     foreach ($queues as $key => $queue) {
       $queue = array_merge($defaults, $queue);
 
@@ -84,7 +88,7 @@ function hosting_get_queues($refresh = FALSE) {
       );
       $queue = array_merge($queue, $configured);
 
-      if ($queue['type'] == 'batch') {
+      if ($queue['type'] == HOSTING_QUEUE_TYPE_BATCH) {
         $threads = $queue['total_items'] / $queue['threshold'];
         if ($threads <= $queue['min_threads']) {
           $threads = $queue['min_threads'];
@@ -96,6 +100,24 @@ function hosting_get_queues($refresh = FALSE) {
         $queue['calc_frequency'] = ceil($queue['frequency'] / $threads);
         $queue['calc_items'] = ceil($queue['total_items'] / $threads);
       }
+      elseif ($queue['type'] == HOSTING_QUEUE_TYPE_SPREAD) {
+        // If there are 0 items in the queue avoid a division by 0.
+        if ($queue['total_items'] > 0) {
+          // Process the queue as often as is needed to get through all the
+          // items once per frequency, but at most once a minute since the
+          // default dispatcher runs that quickly.
+          $queue['calc_frequency'] = max(60, $queue['frequency'] / $queue['total_items']);
+          // Compute the number of items to process per invocation. Usually this is will be 1.
+          $queue['calc_items'] = ceil($queue['calc_frequency'] / $queue['frequency'] * $queue['total_items']);
+        }
+        else {
+          // There are 0 items in the queue, process 0 tasks once a day anyway.
+          $queue['calc_frequency'] = 86400;
+          $queue['calc_items'] = 0;
+        }
+        // Pretend like we do not have any previously run items still processing.
+        $queue['running_items'] = 0;
+      }
       else {
         $queue['calc_frequency'] = $queue['frequency'];
         $queue['calc_items'] = $queue['items'];
@@ -104,6 +126,8 @@ function hosting_get_queues($refresh = FALSE) {
       $queue['last'] = variable_get('hosting_queue_' . $key . '_last_run', 0);
       $queues[$key] = $queue;
     }
+    // Allow altering the processed queue data.
+    drupal_alter('hosting_processed_queues', $queues);
     $cache = $queues;
   }
 
