@@ -717,7 +717,7 @@ function _hosting_setup_cron($add = TRUE) {
   exec('crontab -l 2> /dev/null', $cron_lines);
   variable_set('hosting_cron_backup', $cron_lines);
   if (count($cron_lines)) {
-    drush_log(dt("Replacing existing crontab"), 'warning');
+    drush_log(dt("Replacing existing crontab"), 'notice');
     $cron_lines = hosting_queues_cron_removal($cron_lines);
     $cron = implode("\n", $cron_lines);
   }
