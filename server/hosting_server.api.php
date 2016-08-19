@@ -35,11 +35,39 @@ function hook_hosting_servers_titles_alter(&$servers, $service) {
   foreach ($servers as $nid => $title) {
     $servers[$nid] .= 'SERVER';
   }
-  
+
   // Don't allow the user to use the server with $nid == 123, for the 'db' service
   if ($service == 'db') {
     unset($servers[123]);
   }
+}
+
+/**
+ * Define a service.
+ *
+ * @return Array
+ *
+ * @see hosting_server_services()
+ */
+function hook_hosting_service() {
+  return array(
+    'mysql' => 'db',
+  );
+}
+
+/**
+ * Define a service type.
+ *
+ * @return Array
+ *
+ * @see hosting_server_services()
+ */
+function hook_hosting_service_type() {
+  return array(
+    'db' => array(
+      'title' => t('Database'),
+    ),
+  );
 }
 
 /**

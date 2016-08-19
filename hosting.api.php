@@ -132,7 +132,8 @@ function hook_hosting_feature() {
 /**
  * Define hosting queues.
  *
- * @see hosting_get_queues
+ * @return array
+ *   An array with the queue specification. @see hosting_get_queues for an example
  */
 function hook_hosting_queues() {
 
@@ -370,6 +371,7 @@ function hosting_TASK_SINGULAR_list() {
 }
 
 /**
+ * @return string
  * @see hosting_queue_block()
  */
 function hosting_TASK_SINGULAR_summary() {
