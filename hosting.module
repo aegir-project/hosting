@@ -14,6 +14,53 @@
 define('HOSTING_MAX_ALIAS_LENGTH', 235);
 
 /**
+ * A serial queue type.
+ *
+ * This queue will be processed at a specified interval. When the interval has
+ * elapsed a configurable number of the items will be processed.
+ */
+define('HOSTING_QUEUE_TYPE_SERIAL', 'serial');
+
+/**
+ * A batch queue type.
+ *
+ * This queue type aims to process repeatable tasks spread out over a
+ * configurable interval.
+ *
+ * See the processing code in hosting_get_queues() for the exact
+ * implementation.
+ *
+ * This queue type will:
+ * - Process items in the queue at some small number of specific points, evenly spaced throughout
+ *   the configurable interval.
+ * - Process as many items at those intervals so that all the items are
+ *   processed at least once over the configurable interval.
+ *
+ * @see HOSTING_QUEUE_TYPE_SPREAD
+ */
+define('HOSTING_QUEUE_TYPE_BATCH', 'batch');
+
+/**
+ * A spread queue type.
+ *
+ * This queue type aims to process repeatable tasks spread out over a
+ * configurable interval.
+ *
+ * See the processing code in hosting_get_queues() for the exact
+ * implementation.
+ *
+ * This queue type will attempt to:
+ * - Process items at as many points as possible evenly spread over the
+ *   configurable interval.
+ * - Points will be at least 1 minute apart to allow for the default dispatcher to execute them.
+ * - At each point process the minimum number of items needed to result in all
+ *   items being processed at least once over the configurable interval.
+ *
+ * @see HOSTING_QUEUE_TYPE_BATCH
+ */
+define('HOSTING_QUEUE_TYPE_SPREAD', 'spread');
+
+/**
  * Not split for performance reasons. Just to keep code together.
  */
 include_once dirname(__FILE__) . '/hosting.inc';
@@ -211,15 +258,13 @@ function hosting_node_insert($node) {
  */
 function hosting_node_load($nodes, $types) {
   // Decide whether any of $types are relevant to our purposes.
-  if (count(array_intersect(hosting_context_node_types(), $types))) {
-    // Gather our extra data for each of these nodes.
-    $result = db_query("SELECT nid, name AS hosting_name FROM {hosting_context} WHERE nid IN(:nids)", array(':nids' => array_keys($nodes)))->fetchAllKeyed();
-    // Add our extra data to the node objects.
-    foreach ($result as $nid => $hosting_name) {
-      $nodes[$nid]->hosting_name = $hosting_name;
-      // Redispatch through our custom nodeapi implementation.
-      hosting_nodeapi($nodes[$nid], 'load');
-    }
+  // Gather our extra data for each of these nodes.
+  $result = db_query("SELECT nid, name AS hosting_name FROM {hosting_context} WHERE nid IN(:nids)", array(':nids' => array_keys($nodes)))->fetchAllKeyed();
+  // Add our extra data to the node objects.
+  foreach ($result as $nid => $hosting_name) {
+    $nodes[$nid]->hosting_name = $hosting_name;
+    // Redispatch through our custom nodeapi implementation.
+    hosting_nodeapi($nodes[$nid], 'load');
   }
 }
 
@@ -239,12 +284,6 @@ function hosting_node_prepare($node) {
  * @see hook_nodeapi_TYPE_OP()
  */
 function hosting_node_presave($node) {
-  if (in_array($node->type, hosting_context_node_types())) {
-    if (!isset($node->uid)) {
-      global $user;
-      $node->uid = $user->uid;
-    }
-  }
   // Redispatch through our custom nodeapi implementation.
   hosting_nodeapi($node, 'presave');
 }
@@ -588,6 +627,7 @@ function hosting_queue_block() {
     $queues = hosting_get_queues();
     $output = '';
     foreach ($queues as $queue => $info) {
+      // Invoke hosting_TASK_SINGULAR_summary().
       $func = 'hosting_' . $info['singular'] . '_summary';
       if (function_exists($func)) {
         $output .= $func();
@@ -678,7 +718,7 @@ function _hosting_setup_cron($add = TRUE) {
   exec('crontab -l 2> /dev/null', $cron_lines);
   variable_set('hosting_cron_backup', $cron_lines);
   if (count($cron_lines)) {
-    drush_log(dt("Replacing existing crontab"), 'warning');
+    drush_log(dt("Replacing existing crontab"), 'notice');
     $cron_lines = hosting_queues_cron_removal($cron_lines);
     $cron = implode("\n", $cron_lines);
   }
@@ -782,6 +822,7 @@ function hosting_queues($key = '') {
       $output .= "<h1>" . $queues[$key]['name'] . "</h1>";
     }
 
+    // Invoke hosting_TASK_SINGULAR_list().
     $func = 'hosting_' . $queues[$key]['singular'] . '_list';
     if (function_exists($func)) {
       $output .= $func();
@@ -859,7 +900,17 @@ function hosting_queues_configure($form, &$form_state) {
     $form[$queue]['frequency']['#prefix'] = "<div class='hosting-queue-frequency'>";
     $form[$queue]['frequency']['#suffix'] = "</div>";
 
-    if ($info['type'] == 'batch') {
+    if ($info['type'] == HOSTING_QUEUE_TYPE_BATCH) {
+      $form[$queue]['frequency']['items'] = array(
+        '#markup' => t('%count %items every', array(
+          "%count" => $info['total_items'],
+          "%items" => format_plural($info['total_items'], $info['singular'], $info['plural']),
+        )),
+        '#prefix' => "<div class='hosting-queue-frequency-items'>",
+        '#suffix' => "</div>",
+      );
+    }
+    elseif ($info['type'] == HOSTING_QUEUE_TYPE_SPREAD) {
       $form[$queue]['frequency']['items'] = array(
         '#markup' => t('%count %items every', array(
           "%count" => $info['total_items'],
@@ -982,7 +1033,7 @@ function hosting_queues_configure_submit($form, &$form_state) {
     if ($form_state['values'][$queue]) {
       variable_set("hosting_queue_" . $queue . "_enabled", $form_state['values'][$queue]['enabled']);
       variable_set("hosting_queue_" . $queue . "_frequency", $form_state['values'][$queue]['frequency']['ticks'] * $form_state['values'][$queue]['frequency']['unit']);
-      if ($info['type'] == 'serial') {
+      if ($info['type'] == HOSTING_QUEUE_TYPE_SERIAL) {
         variable_set("hosting_queue_" . $queue . "_items", $form_state['values'][$queue]['frequency']['items']);
       }
     }
@@ -1195,6 +1246,9 @@ function hosting_context_nid($alias) {
 
 /**
  * Define the node types that have associated provision contexts.
+ *
+ * @deprecated See issue #2763509. If you really need this, you can check
+ * if a nid is in the hosting_context table.
  */
 function hosting_context_node_types() {
   return array('site', 'platform', 'server');

@@ -5,6 +5,19 @@
  */
 
 /**
+ * Implements hook_init().
+ *
+ * Adds refreshTimeout javascript variable.
+ */
+function hosting_task_init() {
+  $settings['hostingTaskRefresh'] = array(
+      'refreshTimeout' => variable_get('hosting_task_refresh_timeout', 30000),
+  );
+  drupal_add_js($settings, 'setting');
+}
+
+
+/**
  * Implements hook_menu().
  */
 function hosting_task_menu() {
@@ -107,7 +120,9 @@ function hosting_task_log_ajax($node, $last_position, $id) {
     $commands[] = hosting_task_ajax_command_hosting_table_append('#' . $id, drupal_render($table));
   }
 
-  $commands[] = hosting_task_ajax_command_hosting_table_check('#' . $id, $url);
+  if (!hosting_task_task_has_finished($node)) {
+    $commands[] = hosting_task_ajax_command_hosting_table_check('#' . $id, $url);
+  }
 
   return array(
     '#type' => 'ajax',
@@ -116,14 +131,29 @@ function hosting_task_log_ajax($node, $last_position, $id) {
 }
 
 /**
- * Prepare a JS command array to be returned via AJAX.
+ * Determine if the given task has finished and completed.
+ *
+ * @param $task
+ *   The task node to check.
+ *
+ * @return bool
+ *   True if task has finished, false otherwise.
+ */
+function hosting_task_task_has_finished($task) {
+  // Check to see if the execution time of task has been set, and if it has
+  // allow an additional 30 seconds for the logs to be entered into the DB.
+  return !empty($task->delta) && $task->executed + $task->delta + 30 < REQUEST_TIME;
+}
+
+/**
+ * Prepare a JS command array for AJAX to append to a hosting task log table.
  *
  * @param string $selector
- *   HTML css selector.
+ *   HTML css selector of the table to append entries to.
  * @param string $html
- *   HTML code to append.
+ *   HTML table of rows to append.
  * @param array $settings
- *   Extra settings.
+ *   Extra settings to add to Drupal.settings.
  *
  * @return array
  *   A JS command array.
@@ -138,14 +168,14 @@ function hosting_task_ajax_command_hosting_table_append($selector, $html, $setti
 }
 
 /**
- * Prepare a JS command array to be returned via AJAX.
+ * Prepare a JS command array for AJAX to poll for additional log entries.
  *
  * @param string $selector
- *   HTML css selector.
+ *   HTML css selector of the log entries table.
  * @param string $url
- *   URL
+ *   URL to poll for changes.
  * @param array $settings
- *   Extra settings.
+ *   Extra settings to add to Drupal.settings.
  *
  * @return array
  *   A JS command array.
@@ -365,7 +395,12 @@ function hosting_task_node_info() {
 function hosting_task_node_access($node, $op, $account) {
   if (hosting_feature('client')) {
     // We rely on hosting_client_node_grants() instead of global configuration.
-    return NULL;
+    return NODE_ACCESS_IGNORE;
+  }
+
+  $type = is_string($node) ? $node : $node->type;
+  if ($type != 'task' ) {
+    return NODE_ACCESS_IGNORE;
   }
 
   if (user_access('administer tasks', $account)) {
@@ -1166,7 +1201,8 @@ function _hosting_task_log_table($node, $last_position = 0) {
       $last_lid = $entry->lid;
     }
 
-    return array(
+
+    $table = array(
       '#theme' => "table",
       '#header' => $headers,
       '#rows' => $rows,
@@ -1176,24 +1212,30 @@ function _hosting_task_log_table($node, $last_position = 0) {
           'hosting-table',
         ),
       ),
-      '#refresh_url' => url('hosting/task/log/ajax/' . $node->nid . '/' . $last_lid),
-      '#attached' => array(
-        'js' => array(
-          array(
-            'data' => array(
-              'hosting_task' => array(
-                'refresh_url' => url('hosting/task/log/ajax/' . $node->nid . '/' . $last_lid),
-              ),
-            ),
-            'type' => 'setting',
-          ),
-          drupal_get_path('module', 'hosting_task') . '/js/hosting_task.table.js',
-        ),
-        'library' => array(
-          array('system', 'drupal.ajax'),
-        ),
-      ),
     );
+    // If the task has not finished executing, update via AJAX.
+    if (!hosting_task_task_has_finished($node)) {
+      $table += array(
+        '#refresh_url' => url('hosting/task/log/ajax/' . $node->nid . '/' . $last_lid),
+        '#attached' => array(
+          'js' => array(
+            array(
+              'data' => array(
+                'hosting_task' => array(
+                  'refresh_url' => url('hosting/task/log/ajax/' . $node->nid . '/' . $last_lid),
+                ),
+              ),
+              'type' => 'setting',
+            ),
+            drupal_get_path('module', 'hosting_task') . '/js/hosting_task.table.js',
+          ),
+          'library' => array(
+            array('system', 'drupal.ajax'),
+          ),
+        ),
+      );
+    }
+    return $table;
   }
 
   return FALSE;
@@ -1433,6 +1475,11 @@ function hosting_task_table($node) {
 
     if (!isset($info['nid']) && !$info['task_permitted']) {
       // Just don't show those tasks, since we'll not be able to run them.
+      continue;
+    }
+
+    if (empty($info['title'])) {
+      // Skip tasks from types that have since been removed.
       continue;
     }
 

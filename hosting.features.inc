@@ -295,6 +295,9 @@ function hosting_get_features($refresh = FALSE) {
     $module_cache = system_rebuild_module_data();
     $modules = array();
     foreach ($features as $feature => $info) {
+      if (isset($module_cache[$info['module']]->info['required']) && $module_cache[$info['module']]->info['required']) {
+        $features[$feature]['status'] = HOSTING_FEATURE_REQUIRED;
+      }
       $features[$feature]['enabled'] = $module_cache[$info['module']]->status;
       $features[$feature]['package'] = $module_cache[$info['module']]->info['package'];
       $features[$feature]['dependencies']['modules'] = $module_cache[$info['module']]->info['dependencies'];

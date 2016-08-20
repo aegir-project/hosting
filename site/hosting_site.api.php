@@ -11,6 +11,7 @@
  */
 
 /**
+ * Alters which site options are available.
  *
  * @param $return
  *  An array of arrays, keys are fields on the $node and values are valid

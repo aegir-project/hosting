@@ -79,6 +79,11 @@ function hosting_package_permission() {
  * @todo: check that we don't want to manage this through node_grants.
  */
 function hosting_package_node_access($node, $op, $account) {
+  $type = is_string($node) ? $node : $node->type;
+  if ($type != 'platform' ) {
+    return NODE_ACCESS_IGNORE;
+  }
+
   switch ($op) {
     case 'create':
       return user_access('create package', $account);
