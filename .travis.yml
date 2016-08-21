@@ -11,6 +11,7 @@ env:
   global:
     - AEGIR_HOSTING_VERSION=7.x-3.x
     - AEGIR_TESTS_VERSION=master
+    - AEGIR_PROVISION_VERSION=7.x-3.x
 
 #env:
 #  - test: Ubuntu 14.04 Apache
@@ -32,6 +33,11 @@ before_install:
   - git clone http://github.com/aegir-project/tests.git /home/travis/build/aegir-project/tests
   - cd /home/travis/build/aegir-project/tests
   - git checkout $AEGIR_TESTS_VERSION
+
+  # Get Provision
+  - git clone http://github.com/aegir-project/provision.git /home/travis/build/aegir-project/provision
+  - cd /home/travis/build/aegir-project/provision
+  - git checkout $AEGIR_PROVISION_VERSION
 
   # Run docker prepare script.
   - cd /home/travis/build/aegir-project/tests/travis
