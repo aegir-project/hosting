@@ -1868,7 +1868,7 @@ function hosting_task_entity_property_info_alter(&$info) {
     'label' => t('Task status'),
     'description' => t('The status of the task. E.g. @TODO, etc.'),
     'type' => 'integer',
-    'options list' => '_hosting_task_status_codes_labels',
+    'options list' => '_hosting_task_error_codes',
     'setter callback' => 'entity_property_verbatim_set',
   );
 
@@ -1891,15 +1891,4 @@ function hosting_task_entity_property_info_alter(&$info) {
     'setter callback' => 'entity_property_verbatim_set',
   );
   */
-}
-
-/**
- * Task status codes to human-readable label map.
- */
-function _hosting_task_status_codes_labels() {
-  $labels = array();
-  foreach (_hosting_server_status_codes() as $code => $info) {
-    $labels[$code] = $info['label'];
-  }
-  return $labels;
 }
