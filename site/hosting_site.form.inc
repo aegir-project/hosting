@@ -414,7 +414,7 @@ function hosting_site_validate($node, &$form) {
 
   // Check that we are selecting a valid language for this profile,
   // but only when a new site is created.
-  if (!in_array($node->site_language, $valid_options['site_language']) && !$node->nid) {
+  if (!in_array($node->site_language, $valid_options['site_language']) && empty($node->nid)) {
     form_set_error('site_language', t('Please fill in a valid language'));
   }
 
