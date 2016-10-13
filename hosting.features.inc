@@ -529,13 +529,7 @@ function hosting_feature_rebuild_caches($features = array()) {
 
   // Record enabled features in the Hosting features registry (in
   // /var/aegir/.drush/drushrc.php)
-  $all_features = hosting_get_features();
-  foreach ($features as $feature) {
-    // Don't add a verify task during install of hostmaster site.
-    if ($all_features[$feature]['status'] == HOSTING_FEATURE_REQUIRED) {
-      return;
-    }
-  }
+
   // Allow scripts to skip automatic verify tasks by passing '--no-verify'
   if (function_exists('drush_get_option') &&
       drush_get_option('no-verify', FALSE)) {
