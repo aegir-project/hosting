@@ -139,12 +139,16 @@ function hosting_platform_permission() {
 
 /**
  * Implements hook_node_access().
- * @todo: switch to node access constants
  */
 function hosting_platform_node_access($node, $op, $account) {
-  if ($op != 'create' && hosting_feature('client')) {
+  if (hosting_feature('client') && $op != 'create') {
     // We rely on hosting_client_node_grants() instead of global configuration.
-    return NULL;
+    return NODE_ACCESS_IGNORE;
+  }
+
+  $type = is_string($node) ? $node : $node->type;
+  if ($type != 'platform' ) {
+    return NODE_ACCESS_IGNORE;
   }
 
   switch ($op) {
@@ -153,6 +157,9 @@ function hosting_platform_node_access($node, $op, $account) {
 
     case 'update':
       return user_access('edit platform', $account);
+
+    case 'delete':
+      return user_access('delete platform', $account);
 
     case 'view':
       return user_access('view platform', $account);

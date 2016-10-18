@@ -132,7 +132,8 @@ function hook_hosting_feature() {
 /**
  * Define hosting queues.
  *
- * @see hosting_get_queues
+ * @return array
+ *   An array with the queue specification. @see hosting_get_queues for an example
  */
 function hook_hosting_queues() {
 
@@ -370,6 +371,7 @@ function hosting_TASK_SINGULAR_list() {
 }
 
 /**
+ * @return string
  * @see hosting_queue_block()
  */
 function hosting_TASK_SINGULAR_summary() {
@@ -379,10 +381,12 @@ function hosting_TASK_SINGULAR_summary() {
 /**
  * Reacts to tasks ending, with any status.
  *
- * @param $task
+ * @param object $task
  *   The task that has just completed.
- * @param $status
- *   The status of that task.  Can be HOSTING_TASK_SUCCESS, etc.
+ *   Note that $task->task_status has the old value, $status has the new value.
+ *   The database will just have been updated before this hook is called.
+ * @param int $status
+ *   The new status of that task. Can be HOSTING_TASK_SUCCESS, etc.
  */
 function hook_hosting_task_update_status($task, $status) {
 

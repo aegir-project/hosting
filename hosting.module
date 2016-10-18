@@ -258,15 +258,13 @@ function hosting_node_insert($node) {
  */
 function hosting_node_load($nodes, $types) {
   // Decide whether any of $types are relevant to our purposes.
-  if (count(array_intersect(hosting_context_node_types(), $types))) {
-    // Gather our extra data for each of these nodes.
-    $result = db_query("SELECT nid, name AS hosting_name FROM {hosting_context} WHERE nid IN(:nids)", array(':nids' => array_keys($nodes)))->fetchAllKeyed();
-    // Add our extra data to the node objects.
-    foreach ($result as $nid => $hosting_name) {
-      $nodes[$nid]->hosting_name = $hosting_name;
-      // Redispatch through our custom nodeapi implementation.
-      hosting_nodeapi($nodes[$nid], 'load');
-    }
+  // Gather our extra data for each of these nodes.
+  $result = db_query("SELECT nid, name AS hosting_name FROM {hosting_context} WHERE nid IN(:nids)", array(':nids' => array_keys($nodes)))->fetchAllKeyed();
+  // Add our extra data to the node objects.
+  foreach ($result as $nid => $hosting_name) {
+    $nodes[$nid]->hosting_name = $hosting_name;
+    // Redispatch through our custom nodeapi implementation.
+    hosting_nodeapi($nodes[$nid], 'load');
   }
 }
 
@@ -286,12 +284,6 @@ function hosting_node_prepare($node) {
  * @see hook_nodeapi_TYPE_OP()
  */
 function hosting_node_presave($node) {
-  if (in_array($node->type, hosting_context_node_types())) {
-    if (!isset($node->uid)) {
-      global $user;
-      $node->uid = $user->uid;
-    }
-  }
   // Redispatch through our custom nodeapi implementation.
   hosting_nodeapi($node, 'presave');
 }
@@ -635,6 +627,7 @@ function hosting_queue_block() {
     $queues = hosting_get_queues();
     $output = '';
     foreach ($queues as $queue => $info) {
+      // Invoke hosting_TASK_SINGULAR_summary().
       $func = 'hosting_' . $info['singular'] . '_summary';
       if (function_exists($func)) {
         $output .= $func();
@@ -725,7 +718,7 @@ function _hosting_setup_cron($add = TRUE) {
   exec('crontab -l 2> /dev/null', $cron_lines);
   variable_set('hosting_cron_backup', $cron_lines);
   if (count($cron_lines)) {
-    drush_log(dt("Replacing existing crontab"), 'warning');
+    drush_log(dt("Replacing existing crontab"), 'notice');
     $cron_lines = hosting_queues_cron_removal($cron_lines);
     $cron = implode("\n", $cron_lines);
   }
@@ -829,6 +822,7 @@ function hosting_queues($key = '') {
       $output .= "<h1>" . $queues[$key]['name'] . "</h1>";
     }
 
+    // Invoke hosting_TASK_SINGULAR_list().
     $func = 'hosting_' . $queues[$key]['singular'] . '_list';
     if (function_exists($func)) {
       $output .= $func();
@@ -1252,6 +1246,9 @@ function hosting_context_nid($alias) {
 
 /**
  * Define the node types that have associated provision contexts.
+ *
+ * @deprecated See issue #2763509. If you really need this, you can check
+ * if a nid is in the hosting_context table.
  */
 function hosting_context_node_types() {
   return array('site', 'platform', 'server');

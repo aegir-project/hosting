@@ -395,7 +395,12 @@ function hosting_task_node_info() {
 function hosting_task_node_access($node, $op, $account) {
   if (hosting_feature('client')) {
     // We rely on hosting_client_node_grants() instead of global configuration.
-    return NULL;
+    return NODE_ACCESS_IGNORE;
+  }
+
+  $type = is_string($node) ? $node : $node->type;
+  if ($type != 'task' ) {
+    return NODE_ACCESS_IGNORE;
   }
 
   if (user_access('administer tasks', $account)) {
@@ -1860,7 +1865,7 @@ function hosting_task_entity_property_info_alter(&$info) {
     'label' => t('Task status'),
     'description' => t('The status of the task. E.g. @TODO, etc.'),
     'type' => 'integer',
-    'options list' => '_hosting_task_status_codes_labels',
+    'options list' => '_hosting_task_error_codes',
     'setter callback' => 'entity_property_verbatim_set',
   );
 
@@ -1883,15 +1888,4 @@ function hosting_task_entity_property_info_alter(&$info) {
     'setter callback' => 'entity_property_verbatim_set',
   );
   */
-}
-
-/**
- * Task status codes to human-readable label map.
- */
-function _hosting_task_status_codes_labels() {
-  $labels = array();
-  foreach (_hosting_server_status_codes() as $code => $info) {
-    $labels[$code] = $info['label'];
-  }
-  return $labels;
 }
