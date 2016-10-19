@@ -204,11 +204,7 @@ function hosting_task_ajax_list($node) {
  * AJAX callback for refreshing task list.
  */
 function hosting_task_ajax_queue() {
-  $view = views_get_view('hosting_task_list');
-  $view->set_display('block');
-  $view->pre_execute();
-  $return['markup'] = $view->render('block');
-
+  $return['tasks'] = views_get_view_result('hosting_task_list', 'block');
   drupal_json_output($return);
   exit();
 }
@@ -1697,6 +1693,7 @@ function hosting_task_views_api() {
   return array(
     'api' => 3,
     'path' => drupal_get_path('module', 'hosting_task') . '/includes/views',
+    'template path' => drupal_get_path('module', 'hosting_task'),
   );
 }
 
@@ -1726,7 +1723,14 @@ function hosting_task_preprocess_views_view_table(&$vars) {
       $settings['hostingTaskRefresh'] = array(
         'queueBlock' => 1,
       );
+      $settings['hostingTasks'] = array(
+        'url' => url("hosting/tasks/queue"),
+        'refreshTimeout' => 2000,
+        'tasks' => views_get_view_result('hosting_task_list', 'block'),
+      );
       drupal_add_js($settings, 'setting');
+      drupal_add_js(drupal_get_path('module', 'hosting_task') . '/hosting_task.js');
+      drupal_add_js('https://npmcdn.com/vue/dist/vue.js', 'external');
       break;
   }
 }
