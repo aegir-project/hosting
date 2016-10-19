@@ -42,7 +42,7 @@
         <span class="views-field-task-type">{{ task.hosting_task_task_type }}:</span> <a v-bind:href="task.ref_url">{{ task.node_hosting_task_title }}</a>
       </td>
       <td class="views-field views-field-nid hosting-actions">
-        <a v-bind:href="task.ref_url" class="hosting-button-enabled hosting-button-log hosting-button-dialog">{{ task.task_link_text }}</a>
+        <a v-bind:href="task.task_url" class="hosting-button-enabled hosting-button-log hosting-button-dialog">{{ task.task_link_text }}</a>
       </td>
     </tr>
     </template>
