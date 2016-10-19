@@ -171,22 +171,29 @@ function hosting_server_permission() {
  * Implements hook_node_access().
  */
 function hosting_server_node_access($node, $op, $account) {
-  // @todo Verify that this ought not be going through node_grants()
-  if (!hosting_feature('server')) {
-    return FALSE;
+  if (hosting_feature('client') && $op != 'create') {
+    // We rely on hosting_client_node_grants() instead of global configuration.
+    return NODE_ACCESS_IGNORE;
   }
+
+  $type = is_string($node) ? $node : $node->type;
+  if ($type != 'server' ) {
+    return NODE_ACCESS_IGNORE;
+  }
+
   switch ($op) {
     case 'create':
       return user_access('create server', $account);
-
-    case 'view':
-      return user_access('view server', $account);
 
     case 'update':
       return user_access('edit server', $account);
 
     case 'delete':
       return user_access('delete server', $account);
+
+    case 'view':
+      return user_access('view server', $account);
+
   }
 }
 
@@ -722,8 +729,6 @@ function hosting_server_view($node, $view_mode, $langcode = NULL) {
         'changed' => $node->changed,
       );
       drupal_add_js($settings, array('type' => 'setting', 'scope' => JS_DEFAULT));
-
-      drupal_add_js(drupal_get_path('module', 'hosting_task') . '/hosting_task.js');
     }
   }
 

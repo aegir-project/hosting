@@ -1,0 +1,53 @@
+language: generic
+
+sudo: required
+
+# Only run test when committing to master branch.
+branches:
+  only:
+    - 7.x-3.x
+
+env:
+  global:
+    - AEGIR_HOSTING_VERSION=7.x-3.x
+    - AEGIR_TESTS_VERSION=master
+    - AEGIR_PROVISION_VERSION=7.x-3.x
+
+#env:
+#  - test: Ubuntu 14.04 Apache
+#    distribution: ubuntu
+#    version: 14.04
+#    init: /sbin/init
+#    run_opts: ""
+
+addons:
+  hosts:
+    - aegir.local.computer
+    - sitetest.aegir.local.computer
+
+services:
+  - docker
+
+before_install:
+  # Get test scripts
+  - git clone http://github.com/aegir-project/tests.git /home/travis/build/aegir-project/tests
+  - cd /home/travis/build/aegir-project/tests
+  - git checkout $AEGIR_TESTS_VERSION
+
+  # Get Provision
+  - git clone http://github.com/aegir-project/provision.git /home/travis/build/aegir-project/provision
+  - cd /home/travis/build/aegir-project/provision
+  - git checkout $AEGIR_PROVISION_VERSION
+
+  # Run prepare scripts.
+  - cd /home/travis/build/aegir-project/tests/travis
+  - sudo bash prepare-docker.sh
+  - bash prepare-testenv.sh
+
+script:
+
+  # Tests are included in the docker-compose.yml file in the tests repo.
+  # See https://github.com/aegir-project/tests/blob/master/travis/docker-compose-hosting.yml for the docker setup.
+  # See https://github.com/aegir-project/dockerfiles/blob/master/run-tests.sh for the script that runs the tests.
+  # See https://github.com/aegir-project/tests for the behat tests.
+  - sudo docker-compose -f docker-compose-hosting.yml run hostmaster

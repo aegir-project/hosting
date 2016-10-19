@@ -6,10 +6,12 @@
 
 /**
  * Implements hook_hosting_queues().
+ *
+ * @todo: In Hosting 4.x change the type to HOSTING_QUEUE_TYPE_SPREAD.
  */
 function hosting_cron_hosting_queues() {
   $items['cron'] = array(
-    'type' => 'batch',
+    'type' => HOSTING_QUEUE_TYPE_BATCH,
     'name' => t('Cron queue'),
     'description' => t('Run cron on hosted sites.'),
     'total_items' => hosting_site_count(),

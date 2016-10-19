@@ -23,7 +23,15 @@ function hosting_migrate_platform($form, $form_state, $node) {
       return $form;
     }
 
-    $platforms = _hosting_get_platforms();
+    // TODO: hosting_get_enabled_platforms should be sufficient here, except
+    // that we haven't implemented node-level access control on platforms yet.
+    // See: http://drupal.org/node/725952.
+    if (function_exists('_hosting_get_allowed_platforms')) {
+      $platforms = _hosting_get_allowed_platforms();
+    }
+    else {
+      $platforms = _hosting_get_enabled_platforms();
+    }
     if (sizeof($platforms) > 1) {
       unset($platforms[$node->nid]);
       $form['#current_platform'] = $node;

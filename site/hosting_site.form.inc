@@ -264,9 +264,33 @@ function hosting_site_form($node, &$form_state) {
     $selected_profile = hosting_package_instance_load(array('p.nid' => hosting_get_default_profile()))->nid;
   }
 
-  $q = drupal_get_query_parameters();
-  $default_platform = isset($q['platform']) ? $q['platform'] : NULL;
+  // Load platforms for the selected profile
   $platforms = hosting_get_profile_platforms($selected_profile);
+
+  $q = drupal_get_query_parameters();
+  if (isset($q['platform']) && is_numeric($q['platform'])) {
+    $default_platform = $q['platform'];
+
+    // Since platform is predetermined, limit the options based on the selected platform.
+    $selected_profile = hosting_package_instance_load(array('platform' => $default_platform, 'package_type' => 'profile'))->nid;
+    $platforms = hosting_get_profile_platforms($selected_profile);
+
+    $form['profile']['#default_value'] = $selected_profile;
+    $form['profile']['#options'] = hosting_get_profiles($default_platform);
+    foreach ($form['profile']['#options'] as $id => &$name) {
+      $profile = hosting_package_instance_load(array('p.nid' => $id));
+      $name = theme('hosting_site_profile', array('profile' => $profile, 'html' => TRUE));
+    }
+    natcasesort($form['profile']['#options']);
+    reset($form['profile']['#options']);
+
+    // Set page title
+    drupal_set_title(t('Create site on platform @name', array('@name' => $platforms[$default_platform])));
+  }
+  else {
+    $default_platform = NULL;
+  }
+
   if (!array_key_exists($default_platform, $platforms)) {
     // Default to the first platform, if none was passed in the path.
     $default_platform = current(array_keys($platforms));
@@ -390,7 +414,7 @@ function hosting_site_validate($node, &$form) {
 
   // Check that we are selecting a valid language for this profile,
   // but only when a new site is created.
-  if (!in_array($node->site_language, $valid_options['site_language']) && !$node->nid) {
+  if (!in_array($node->site_language, $valid_options['site_language']) && empty($node->nid)) {
     form_set_error('site_language', t('Please fill in a valid language'));
   }
 
