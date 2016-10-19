@@ -9,6 +9,11 @@
                 data: {
                     tasks: Drupal.settings.hostingTasks.tasks,
                 },
+                watch: {
+                    tasks: function (val) {
+                        // Drupal.attachBehaviors('#hostingTasks a');
+                    },
+                }
             });
 
             // Attach to the available_tasks block, if there is one.
