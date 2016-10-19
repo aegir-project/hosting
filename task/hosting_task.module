@@ -1745,6 +1745,8 @@ function hosting_task_views_post_execute(&$view) {
     foreach ($view->result as $i => &$result) {
       $result->status_class = hosting_task_status_class($result->hosting_task_task_status);
       $result->ref_url = url("node/$result->node_hosting_task_nid");
+      $result->task_url = url("hosting/task/$result->nid");
+      $result->task_link_text = t('View');
     }
   }
 }
