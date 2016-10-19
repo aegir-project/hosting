@@ -6,12 +6,6 @@
                 el: '#hostingTasks',
                 data: {
                     tasks: Drupal.settings.hostingTasks.tasks,
-                    classObject: function () {
-                        return {
-                            'hosting-warning': this.hosting_task_task_status == 3,
-                            'hosting-success': this.hosting_task_task_status == 1,
-                        }
-                    }
                 },
             });
 
