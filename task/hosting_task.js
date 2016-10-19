@@ -19,7 +19,7 @@
         checkTasks: function () {
             var url = Drupal.settings.hostingTasks.url;
             $.getJSON(url, function (data) {
-                console.log(data);
+                // console.log(data);
                 Drupal.settings.hostingTasks.vue.tasks = data.tasks;
                 // console.log(Drupal.settings.hostingTasks.vue.data);
                 // Drupal.settings.hostingTasks.vue.data.tasks = data.tasks;

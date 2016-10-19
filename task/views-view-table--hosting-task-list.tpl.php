@@ -36,10 +36,12 @@
     </thead>
   <?php endif; ?>
   <tbody>
-    <tr v-for="task in tasks" <?php if ($row_classes[$row_count]) { print 'class="' . implode(' ', $row_classes[$row_count]) .'"';  } ?>>
-      <td class="{{ task.status_class }}">
-        {{ task.hosting_task_task_type }} {{ task.hosting_task_task_status }}
+    <template v-for="task in tasks">
+    <tr v-bind:class="task.status_class">
+      <td class="hosting-status">
+        <span class="views-field-task-type">{{ task.hosting_task_task_type }}:</span> <a v-bind:href="task.ref_url">{{ task.node_hosting_task_title }}</a>
       </td>
     </tr>
+    </template>
   </tbody>
 </table>

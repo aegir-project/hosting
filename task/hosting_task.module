@@ -1736,6 +1736,20 @@ function hosting_task_preprocess_views_view_table(&$vars) {
 }
 
 /**
+ *
+ */
+function hosting_task_views_post_execute(&$view) {
+
+  // Parse Results on hosting_task_list view.
+  if ($view->name == 'hosting_task_list') {
+    foreach ($view->result as $i => &$result) {
+      $result->status_class = hosting_task_status_class($result->hosting_task_task_status);
+      $result->ref_url = url("node/$result->node_hosting_task_nid");
+    }
+  }
+}
+
+/**
  * Set a task's status according to its log.
  *
  * @param object|int $task
