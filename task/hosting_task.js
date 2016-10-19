@@ -2,6 +2,8 @@
 
     Drupal.behaviors.hostingTasks = {
         attach: function (context, settings) {
+
+            // Attach to the global hosting tasks block.
             Drupal.settings.hostingTasks.vue = new Vue({
                 el: '#hostingTasks',
                 data: {
@@ -9,16 +11,30 @@
                 },
             });
 
+            // Attach to the available_tasks block, if there is one.
+            if ($('#hosting-task-list').length > 0) {
+                Drupal.settings.hostingTasks.vueAvailable = new Vue({
+                    el: '#hosting-task-list',
+                    data: {
+                        tasks: Drupal.settings.hostingAvailableTasks,
+                    },
+                });
+
+            }
+
             setTimeout("Drupal.behaviors.hostingTasks.checkTasks()", settings.hostingTasks.refreshTimeout);
         },
         checkTasks: function () {
             var url = Drupal.settings.hostingTasks.url;
             $.getJSON(url, function (data) {
-                // console.log(data);
-                Drupal.settings.hostingTasks.vue.tasks = data.tasks;
-                // console.log(Drupal.settings.hostingTasks.vue.data);
-                // Drupal.settings.hostingTasks.vue.data.tasks = data.tasks;
 
+                // Replace vue data with new data.
+                Drupal.settings.hostingTasks.vue.tasks = data.tasks;
+                if (data.availableTasks &&  Drupal.settings.hostingTasks.vueAvailable) {
+                  Drupal.settings.hostingTasks.vueAvailable.tasks = data.availableTasks;
+                }
+
+                // Stop if needed.
                 if (Drupal.settings.hostingTasks.halt != true) {
                     setTimeout("Drupal.behaviors.hostingTasks.checkTasks()", Drupal.settings.hostingTasks.refreshTimeout);
                 }
