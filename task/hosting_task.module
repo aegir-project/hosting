@@ -1606,6 +1606,7 @@ function hosting_task_fetch_tasks($rid) {
 
     // Generate Links
     $task['view_link'] = FALSE;
+    $task['view_link_text'] = t('View');
     $task['run_link'] = FALSE;
     $task['cancel_link'] = FALSE;
 
@@ -1646,61 +1647,15 @@ function hosting_task_fetch_tasks($rid) {
   }
 
 
+    if (empty($nid) && $task['task_permitted'] == FALSE) {
+      $task['hidden'] = TRUE;
+    }
+
     $return[$type] = $task;
   }
 
   return $return;
 }
-//$output = '';
-//
-//$headers[] = t('Task');
-//$headers[] = array(
-//  'data' => t('Actions'),
-//  'class' => array('hosting-actions'),
-//);
-//
-//$tasklist = hosting_task_fetch_tasks($node->nid);
-//$rows = array();
-//
-//foreach ($tasklist as $task => $info) {
-//  $row = array();
-//
-//  if (!isset($info['nid']) && !$info['task_permitted']) {
-//    // Just don't show those tasks, since we'll not be able to run them.
-//    continue;
-//  }
-//
-//  if (empty($info['title'])) {
-//    // Skip tasks from types that have since been removed.
-//    continue;
-//  }
-//
-//  $row['type'] = array(
-//    'data' => $info['title'],
-//    'class' => array('hosting-status'),
-//  );
-//  $actions = array();
-//
-//  if (isset($info['task_status']) && ($info['task_status'] == 0)) {
-//    $actions['cancel'] = _hosting_task_button(t('Cancel'), sprintf("hosting/tasks/%d/cancel", $info['nid']), t("Cancel the task and remove it from the queue"), 'hosting-button-stop', !$info['task_permitted']);
-//  }
-//  else {
-//    $actions['run'] = _hosting_task_button(t('Run'), sprintf("hosting_confirm/%d/%s_%s", $node->nid, $node->type, $task), $info['description'], 'hosting-button-run', $info['task_permitted'], $info['dialog']);
-//  }
-//
-//  $actions['log'] = _hosting_task_button(t('View'), isset($info['nid']) ? 'hosting/task/' . $info['nid'] : '<front>', t("Display the task log"), 'hosting-button-log', isset($info['nid']) &&  user_access('access task logs'), TRUE, FALSE);
-//  $row['actions'] = array(
-//    'data' => implode('', $actions),
-//    'class' => array('hosting-actions'),
-//  );
-//
-//  $rows[] = array(
-//    'data' => $row,
-//    'class' => array($info['class']),
-//  );
-//}
-//$output .= theme('table', array('header' => $headers, 'rows' => $rows, 'attributes' => array('class' => array('hosting-table'))));
-//return $output;
 
 
 

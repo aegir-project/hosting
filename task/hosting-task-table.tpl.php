@@ -13,7 +13,7 @@
 
     <template v-for="task in tasks">
 
-    <tr v-bind:class="task.class">
+    <tr v-bind:class="task.class" v-if="!task.hidden">
       <td class="hosting-status">
         {{ task.title }}
       </td>
@@ -27,15 +27,26 @@
           class="hosting-button-enabled hosting-button-log hosting-button-dialog">
             {{ task.view_link.text }}
         </a>
+        <span
+          v-if="!task.view_link"
+          class='hosting-button-disabled'>
+          {{ task.view_link_text }}
+        </span>
 
         <!-- Run Link -->
         <a
-          v-if="task.run_link"
+          v-if="task.task_permitted"
           v-bind:href="task.run_link.url"
           v-bind:title="task.run_link.title"
           class="hosting-button-enabled hosting-button-run hosting-button-dialog">
             {{ task.run_link.text }}
         </a>
+
+        <span
+          v-if="!task.task_permitted"
+          class='hosting-button-disabled'>
+          {{ task.run_link.text }}
+        </span>
 
         <!-- Cancel Link -->
         <a
