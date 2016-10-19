@@ -1614,7 +1614,7 @@ function hosting_task_fetch_tasks($rid) {
     $task_type = $task['task_type'];
 
     // View Logs link
-    if (drupal_valid_path("hosting/task/{$nid}")) {
+    if (!empty($nid) && drupal_valid_path("hosting/task/{$nid}")) {
       $task['view_link'] = array(
         'url' => url("hosting/task/{$nid}"),
         'title' => t('Display the task log.'),
