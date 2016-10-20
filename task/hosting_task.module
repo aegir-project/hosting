@@ -1557,8 +1557,17 @@ function _hosting_task_list($filter_by, $filter_value, $count = 5, $element = 0,
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Retrieve the available tasks for a given Aegir Object. This function is used
+ * on the site/platform/server node page to provide the list of actions a user
+ * can take.
+ *
+ * @param $rid
+ *   The node ID of the desired object.
+ *
+ * @return array
+ *   A list of available tasks and metadata about the last task status.
+ *
+ *   The keys of the array are the type of task, such as "verify" and "install".
  */
 function hosting_task_fetch_tasks($rid) {
   $return = array();
