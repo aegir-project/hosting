@@ -1561,6 +1561,7 @@ function _hosting_task_list($filter_by, $filter_value, $count = 5, $element = 0,
  * @see http://drupal.org/node/1354
  */
 function hosting_task_fetch_tasks($rid) {
+  $return = array();
   $node = node_load($rid);
 
   $result = db_query("SELECT n.nid, t.task_type, t.task_status FROM {node} n INNER JOIN {hosting_task} t ON n.vid = t.vid
