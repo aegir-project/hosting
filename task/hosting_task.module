@@ -785,7 +785,12 @@ function hosting_available_tasks($type = NULL, $reset = FALSE) {
     drupal_alter('hosting_tasks', $cache);
   }
   if (isset($type)) {
-    return $cache[$type];
+    if (isset($cache[$type])) {
+      return $cache[$type];
+    }
+    else {
+      return array();
+    }
   }
   else {
     return $cache;
