@@ -1610,7 +1610,7 @@ function hosting_task_fetch_tasks($rid) {
     $task['run_link'] = FALSE;
     $task['cancel_link'] = FALSE;
 
-    $nid = $task['nid'];
+    $nid = isset($task['nid'])? $task['nid']: NULL;
     $ref_type = $node->type;
     $task_type = $task['task_type'];
 
