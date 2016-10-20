@@ -1751,6 +1751,7 @@ function hosting_task_preprocess_page(&$variables) {
   drupal_add_js($settings, 'setting');
   drupal_add_js(drupal_get_path('module', 'hosting_task') . '/hosting_task.js');
   drupal_add_js('https://npmcdn.com/vue/dist/vue.js', 'external');
+  drupal_add_js(drupal_get_path('module', 'hosting_task') . '/js/jquery.timeago.js');
 }
 
 /**
@@ -1765,6 +1766,8 @@ function hosting_task_views_post_execute(&$view) {
       $result->ref_url = url("node/$result->node_hosting_task_nid");
       $result->task_url = url("hosting/task/$result->nid");
       $result->task_link_text = t('View');
+      $result->timestamp = date('c', $result->node_created);
+      $result->timestamp_ago = t('!time ago', array('!time' => format_interval(time() - $result->node_revision_timestamp, 1)));
     }
   }
 }

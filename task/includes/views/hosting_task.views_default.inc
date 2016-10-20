@@ -134,6 +134,21 @@ function hosting_task_views_default_views() {
   $handler->display->display_options['fields']['created']['exclude'] = TRUE;
   $handler->display->display_options['fields']['created']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['created']['date_format'] = 'long';
+  /* Field: Content: Type */
+  $handler->display->display_options['fields']['type']['id'] = 'type';
+  $handler->display->display_options['fields']['type']['table'] = 'node';
+  $handler->display->display_options['fields']['type']['field'] = 'type';
+  $handler->display->display_options['fields']['type']['relationship'] = 'rid';
+  $handler->display->display_options['fields']['type']['exclude'] = TRUE;
+  /* Field: Output */
+  $handler->display->display_options['fields']['task_type']['id'] = 'task_type';
+  $handler->display->display_options['fields']['task_type']['table'] = 'hosting_task';
+  $handler->display->display_options['fields']['task_type']['field'] = 'task_type';
+  $handler->display->display_options['fields']['task_type']['ui_name'] = 'Output';
+  $handler->display->display_options['fields']['task_type']['label'] = 'Task';
+  $handler->display->display_options['fields']['task_type']['alter']['alter_text'] = TRUE;
+  $handler->display->display_options['fields']['task_type']['alter']['text'] = '[task_type] [type]: [title]';
+  $handler->display->display_options['fields']['task_type']['element_class'] = 'hosting-status';
   /* Sort criterion: Content: Updated date */
   $handler->display->display_options['sorts']['changed']['id'] = 'changed';
   $handler->display->display_options['sorts']['changed']['table'] = 'node';
