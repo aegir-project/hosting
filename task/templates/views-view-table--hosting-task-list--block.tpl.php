@@ -40,7 +40,7 @@
     <tr v-bind:class="task.status_class">
       <td class="hosting-status">
         <span class="views-field-task-type">{{ task.hosting_task_task_type }} {{ task.node_hosting_task_type }}:</span> <a class="reference" v-bind:href="task.ref_url">{{ task.node_hosting_task_title }}</a>
-        <time class="timeago" v-bind:datetime="task.timestamp">{{ task.timestamp }}</time>
+        <time class="timeago" v-bind:datetime="task.timestamp">{{ task.timestamp_human }}</time>
       </td>
       <td class="views-field views-field-nid hosting-actions">
         <a v-bind:href="task.task_url" class="hosting-button-enabled hosting-button-log hosting-button-dialog">{{ task.task_link_text }}</a>
