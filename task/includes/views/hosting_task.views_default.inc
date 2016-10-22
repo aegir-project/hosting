@@ -101,25 +101,6 @@ function hosting_task_views_default_views() {
   $handler->display->display_options['fields']['title']['field'] = 'title';
   $handler->display->display_options['fields']['title']['relationship'] = 'rid';
   $handler->display->display_options['fields']['title']['exclude'] = TRUE;
-  /* Field: Hosting Task: Type */
-  $handler->display->display_options['fields']['task_type']['id'] = 'task_type';
-  $handler->display->display_options['fields']['task_type']['table'] = 'hosting_task';
-  $handler->display->display_options['fields']['task_type']['field'] = 'task_type';
-  $handler->display->display_options['fields']['task_type']['label'] = 'Task';
-  $handler->display->display_options['fields']['task_type']['alter']['alter_text'] = TRUE;
-  $handler->display->display_options['fields']['task_type']['alter']['text'] = '[task_type]: [title]';
-  $handler->display->display_options['fields']['task_type']['element_class'] = 'hosting-status';
-  /* Field: Content: Nid */
-  $handler->display->display_options['fields']['nid']['id'] = 'nid';
-  $handler->display->display_options['fields']['nid']['table'] = 'node';
-  $handler->display->display_options['fields']['nid']['field'] = 'nid';
-  $handler->display->display_options['fields']['nid']['label'] = 'Actions';
-  $handler->display->display_options['fields']['nid']['alter']['alter_text'] = TRUE;
-  $handler->display->display_options['fields']['nid']['alter']['text'] = 'View';
-  $handler->display->display_options['fields']['nid']['alter']['make_link'] = TRUE;
-  $handler->display->display_options['fields']['nid']['alter']['path'] = 'hosting/task/[nid]';
-  $handler->display->display_options['fields']['nid']['alter']['link_class'] = 'hosting-button-enabled hosting-button-log hosting-button-dialog';
-  $handler->display->display_options['fields']['nid']['element_class'] = 'hosting-actions';
   /* Field: Hosting Task: Executed */
   $handler->display->display_options['fields']['executed']['id'] = 'executed';
   $handler->display->display_options['fields']['executed']['table'] = 'hosting_task';
@@ -132,8 +113,11 @@ function hosting_task_views_default_views() {
   $handler->display->display_options['fields']['created']['field'] = 'created';
   $handler->display->display_options['fields']['created']['label'] = '';
   $handler->display->display_options['fields']['created']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['created']['alter']['text'] = '[created]';
   $handler->display->display_options['fields']['created']['element_label_colon'] = FALSE;
-  $handler->display->display_options['fields']['created']['date_format'] = 'long';
+  $handler->display->display_options['fields']['created']['element_default_classes'] = FALSE;
+  $handler->display->display_options['fields']['created']['date_format'] = 'time ago';
+  $handler->display->display_options['fields']['created']['second_date_format'] = 'custom';
   /* Field: Content: Type */
   $handler->display->display_options['fields']['type']['id'] = 'type';
   $handler->display->display_options['fields']['type']['table'] = 'node';
@@ -147,8 +131,19 @@ function hosting_task_views_default_views() {
   $handler->display->display_options['fields']['task_type']['ui_name'] = 'Output';
   $handler->display->display_options['fields']['task_type']['label'] = 'Task';
   $handler->display->display_options['fields']['task_type']['alter']['alter_text'] = TRUE;
-  $handler->display->display_options['fields']['task_type']['alter']['text'] = '[task_type] [type]: [title]';
+  $handler->display->display_options['fields']['task_type']['alter']['text'] = '[task_type] [type]: [title] <time>[created]</time>';
   $handler->display->display_options['fields']['task_type']['element_class'] = 'hosting-status';
+  /* Field: Content: Nid */
+  $handler->display->display_options['fields']['nid']['id'] = 'nid';
+  $handler->display->display_options['fields']['nid']['table'] = 'node';
+  $handler->display->display_options['fields']['nid']['field'] = 'nid';
+  $handler->display->display_options['fields']['nid']['label'] = 'Actions';
+  $handler->display->display_options['fields']['nid']['alter']['alter_text'] = TRUE;
+  $handler->display->display_options['fields']['nid']['alter']['text'] = 'View';
+  $handler->display->display_options['fields']['nid']['alter']['make_link'] = TRUE;
+  $handler->display->display_options['fields']['nid']['alter']['path'] = 'hosting/task/[nid]';
+  $handler->display->display_options['fields']['nid']['alter']['link_class'] = 'hosting-button-enabled hosting-button-log hosting-button-dialog';
+  $handler->display->display_options['fields']['nid']['element_class'] = 'hosting-actions';
   /* Sort criterion: Content: Updated date */
   $handler->display->display_options['sorts']['changed']['id'] = 'changed';
   $handler->display->display_options['sorts']['changed']['table'] = 'node';
