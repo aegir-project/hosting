@@ -13,7 +13,7 @@
 
     <template v-for="task in tasks">
 
-    <tr v-bind:class="task.class" v-if="!task.hidden">
+    <tr v-bind:class="task.class">
       <td class="hosting-status">
         {{ task.title }}
       </td>
