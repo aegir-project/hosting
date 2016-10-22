@@ -1456,7 +1456,7 @@ function hosting_task_table($node) {
   drupal_add_js($settings, 'setting');
   drupal_add_js(drupal_get_path('module', 'hosting_task') . '/hosting_task.js');
   drupal_add_js('https://npmcdn.com/vue/dist/vue.js', 'external');
-  return theme('hosting_task_table');
+  return theme('hosting_task_table', array('tasks' => $tasks));
 }
 
 /**

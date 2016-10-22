@@ -11,6 +11,58 @@
   </thead>
   <tbody>
 
+    <noscript>
+      <?php foreach ($tasks as $task_type => $task):
+        $task = (object) $task;
+
+        // Skip hidden tasks.
+        if ($task->hidden) {
+          continue;
+        }
+
+        ?>
+      <tr class="<?php print $task->class; ?>">
+        <td class="hosting-status">
+          <?php print $task->title ?>
+        </td>
+        <td class="hosting-actions">
+
+          <?php if ($task->view_link):
+            $task = (object) $task;
+            ?>
+          <!-- View Link -->
+          <a
+            href="<?php print $task->view_link['url']; ?>"
+            title="<?php print $task->view_link['title']; ?>"
+            class="hosting-button-enabled hosting-button-log hosting-button-dialog">
+            <?php print $task->view_link_text; ?>
+          </a>
+          <?php else: ?>
+          <span class='hosting-button-disabled'>
+            <?php print $task->view_link_text; ?>
+          </span>
+          <?php endif; ?>
+
+          <?php if ($task->run_link):
+            $task = (object) $task;
+            ?>
+          <!-- Run Link -->
+          <a
+            href="<?php print $task->run_link['url']; ?>"
+            title="<?php print $task->run_link['title']; ?>"
+            class="hosting-button-enabled hosting-button-log hosting-button-dialog">
+            <?php print $task->run_link['text']; ?>
+          </a>
+          <?php else: ?>
+          <span class='hosting-button-disabled'>
+            <?php print $task->run_link['text']; ?>
+          </span>
+          <?php endif; ?>
+        </td>
+      </tr>
+      <?php endforeach; ?>
+    </noscript>
+
     <template v-for="task in tasks">
 
     <tr v-bind:class="task.class" v-if="!task.hidden">
