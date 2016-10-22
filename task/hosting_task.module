@@ -1709,7 +1709,7 @@ function hosting_task_views_api() {
   return array(
     'api' => 3,
     'path' => drupal_get_path('module', 'hosting_task') . '/includes/views',
-    'template path' => drupal_get_path('module', 'hosting_task'),
+    'template path' => drupal_get_path('module', 'hosting_task') . '/templates',
   );
 }
 
@@ -1952,11 +1952,11 @@ function hosting_task_entity_property_info_alter(&$info) {
 function hosting_task_theme($existing, $type, $theme, $path) {
   $theme = array();
   $theme['hosting_task_table'] = array(
-      'template' => 'hosting-task-table',
-      'variables' => array(
-        array('header' => NULL, 'rows' => NULL, 'attributes' => array(), 'caption' => NULL, 'colgroups' => array(), 'sticky' => TRUE, 'empty' => ''),
-      'path' => drupal_get_path('module', 'hosting_task'),
-    )
+    'template' => 'hosting-task-table',
+    'path' => drupal_get_path('module', 'hosting_task') . '/templates',
+    'variables' => array(
+        array('tasks' => array()),
+    ),
   );
   return $theme;
 }
