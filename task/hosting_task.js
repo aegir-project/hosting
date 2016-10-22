@@ -50,7 +50,7 @@
 
     Drupal.behaviors.hostingTimeAgo = {
         attach: function (context, settings) {
-            $.timeago.settings.refreshMillis = 100;
+            $.timeago.settings.refreshMillis = 1000;
             $.timeago.settings.strings = {
                 prefixAgo: null,
                 prefixFromNow: null,
