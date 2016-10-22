@@ -1,4 +1,4 @@
-<table class="hosting-table">
+<table class="hosting-table" id="hostingAvailableTasks">
   <thead>
     <tr>
         <th scope="col">

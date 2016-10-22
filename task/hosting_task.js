@@ -20,7 +20,7 @@
             // Attach to the available_tasks block, if there is one.
             if ($('#hosting-task-list').length > 0) {
                 Drupal.settings.hostingTasks.vueAvailable = new Vue({
-                    el: '#hosting-task-list',
+                    el: '#hostingAvailableTasks',
                     data: {
                         tasks: Drupal.settings.hostingAvailableTasks,
                     },
