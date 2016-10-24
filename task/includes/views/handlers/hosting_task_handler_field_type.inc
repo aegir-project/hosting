@@ -32,7 +32,14 @@ class hosting_task_handler_field_type extends views_handler_field {
     $value = $this->get_value($values);
     switch ($this->options['type_format']) {
       case 'text':
-        return hosting_task_type_name($value);
+
+        // Return the right type of task.
+        if (isset($values->node_hosting_task_type)) {
+          return hosting_task_type_name($value, $values->node_hosting_task_type);
+        }
+        else {
+          return hosting_task_type_name($value);
+        }
       default:
         return $value;
     }

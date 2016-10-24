@@ -1705,16 +1705,22 @@ function hosting_task_status_class($status = NULL) {
 /**
  * Get a task's human type name from it's machine name.
  */
-function hosting_task_type_name($type) {
-  // Tasks are grouped by node type, and might vary by that even thought type value is the same.
-  $all_tasks = hosting_available_tasks();
-  $tasks = array_merge($all_tasks['server'], $all_tasks['platform'], $all_tasks['site']);
+function hosting_task_type_name($task_type, $node_type = NULL) {
 
-  if (isset($tasks[$type]['title'])) {
-    return $tasks[$type]['title'];
+  if ($node_type) {
+    $tasks = hosting_available_tasks($node_type);
   }
   else {
-    return $type;
+    // Tasks are grouped by node type, and might vary by that even thought type value is the same.
+    $all_tasks = hosting_available_tasks();
+    $tasks = array_merge($all_tasks['server'], $all_tasks['platform'], $all_tasks['site']);
+  }
+
+  if (isset($tasks[$task_type]['title'])) {
+    return $tasks[$task_type]['title'];
+  }
+  else {
+    return $task_type;
   }
 }
 
@@ -1800,9 +1806,16 @@ function hosting_task_views_post_execute(&$view) {
       $result->ref_url = url("node/$result->node_hosting_task_nid");
       $result->task_url = url("hosting/task/$result->nid");
       $result->task_link_text = t('View');
-      $result->task_type_name = hosting_task_type_name($result->hosting_task_task_type);
       $result->timestamp = date('c', $result->node_created);
       $result->timestamp_human = format_date($result->node_created);
+
+      // Load the correct task type name.
+      if (isset($result->node_hosting_task_type)) {
+        $result->task_type_name = hosting_task_type_name($result->hosting_task_task_type, $result->node_hosting_task_type);
+      }
+      else {
+        $result->task_type_name = hosting_task_type_name($result->hosting_task_task_type);
+      }
     }
   }
 }
