@@ -130,14 +130,14 @@ function hosting_server_menu() {
 function hosting_server_hosting_tasks() {
   $tasks = array();
   $tasks['server']['verify'] = array(
-    'title' => t('Verify'),
+    'title' => t('Verify Server'),
     'description' => t('Verify that the server is correctly installed and working.'),
     'weight' => 10,
     'provision_save' => TRUE,
   );
 
   $tasks['server']['delete'] = array(
-    'title' => t('Delete'),
+    'title' => t('Delete Server'),
     'description' => t('Delete the server.'),
   );
 
