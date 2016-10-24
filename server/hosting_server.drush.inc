@@ -23,15 +23,7 @@ function hosting_hosting_server_context_options(&$task) {
       }
     }
     else {
-      // If we're here, there is no enabled service of this type on this server.
-      // If such a service had previously been enabled, that fact, along with
-      // any subscribed properties would be recorded in the server context.
-      // Since we persist values in contexts, we cannot just leave this unset.
-      // Similarly, in Provision_Context::__get(), we filter out falsy values,
-      // so we cannot set this to NULL. 0 or the like. Therefore, we explicitely
-      // set it to value that we check for in
-      // Provision_Context_server::spawn_service().
-      $task->context_options["{$type}_service_type"] = 'NONE';
+      $task->context_options["{$type}_service_type"] = '0';
     }
   }
 }
