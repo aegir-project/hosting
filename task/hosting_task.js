@@ -4,7 +4,7 @@
         attach: function (context, settings) {
 
             // Attach to the global hosting tasks block.
-            if ($('#hostingAvailableTasks').length > 0) {
+            if ($('#hostingTasks').length > 0) {
                 Drupal.settings.hostingTasks.vue = new Vue({
                     el: '#hostingTasks',
                     data: {
