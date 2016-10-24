@@ -38,6 +38,8 @@ function hosting_schema() {
  */
 function hosting_install() {
   hosting_create_roles();
+
+  variable_set('error_level', ERROR_REPORTING_HIDE);
 }
 
 /**
@@ -541,4 +543,11 @@ function hosting_update_7000() {
                        ON pkg.nid = pkgi.package_id
                     WHERE pkg.short_name = \'hostmaster\'')->fetchField();
   variable_set('aegir_hostmaster_site_nid', $nid);
+}
+
+/**
+ * Suppress error messages by default.
+ */
+function hosting_update_7001() {
+  variable_set('error_level', ERROR_REPORTING_HIDE);
 }
