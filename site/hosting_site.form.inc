@@ -16,8 +16,8 @@ function _hosting_site_field(&$form, $node, $item, $element, $filter_display = '
     // Create it.
     if (($element['#type'] == 'radios') && !count($element['#options'])) {
       $form[$item] = array(
-        '#type' => 'hidden',
-        '#value' => key($element['#options']),
+        '#type' => 'value',
+        '#value' => !empty($element['#default_value']) ? $element['#default_value'] : NULL,
       );
     }
     else {
