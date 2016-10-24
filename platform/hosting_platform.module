@@ -74,13 +74,13 @@ function hosting_platform_node_info() {
 function hosting_platform_hosting_tasks() {
   $tasks = array();
   $tasks['platform']['verify'] = array(
-    'title' => t('Verify'),
+    'title' => t('Verify Platform'),
     'description' => t('Verify that the platform is correctly installed and working.'),
     'weight' => 10,
     'provision_save' => TRUE,
   );
   $tasks['platform']['delete'] = array(
-    'title' => t('Delete'),
+    'title' => t('Delete Platform'),
     'description' => t('Deleting this platform will completely remove it from the hosting system.
         This process can not be undone. It can not be performed if you have sites currently
         running on this platform.
