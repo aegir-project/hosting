@@ -1703,6 +1703,22 @@ function hosting_task_status_class($status = NULL) {
 }
 
 /**
+ * Get a task's human type name from it's machine name.
+ */
+function hosting_task_type_name($type) {
+  // Tasks are grouped by node type, and might vary by that even thought type value is the same.
+  $all_tasks = hosting_available_tasks();
+  $tasks = array_merge($all_tasks['server'], $all_tasks['platform'], $all_tasks['site']);
+
+  if (isset($tasks[$type]['title'])) {
+    return $tasks[$type]['title'];
+  }
+  else {
+    return $type;
+  }
+}
+
+/**
  * Views integration.
  */
 function hosting_task_views_api() {
@@ -1770,7 +1786,10 @@ function hosting_task_preprocess_page(&$variables) {
 }
 
 /**
+ * Implements hook_views_post_execute()
  *
+ * Alter the results of the hosting_task_list view.
+ * This view is used to generate the JSON list of tasks.
  */
 function hosting_task_views_post_execute(&$view) {
 
@@ -1781,6 +1800,7 @@ function hosting_task_views_post_execute(&$view) {
       $result->ref_url = url("node/$result->node_hosting_task_nid");
       $result->task_url = url("hosting/task/$result->nid");
       $result->task_link_text = t('View');
+      $result->task_type_name = hosting_task_type_name($result->hosting_task_task_type);
       $result->timestamp = date('c', $result->node_created);
       $result->timestamp_human = format_date($result->node_created);
     }
