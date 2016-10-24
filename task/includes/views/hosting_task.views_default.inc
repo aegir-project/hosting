@@ -118,12 +118,6 @@ function hosting_task_views_default_views() {
   $handler->display->display_options['fields']['created']['element_default_classes'] = FALSE;
   $handler->display->display_options['fields']['created']['date_format'] = 'time ago';
   $handler->display->display_options['fields']['created']['second_date_format'] = 'custom';
-  /* Field: Content: Type */
-  $handler->display->display_options['fields']['type']['id'] = 'type';
-  $handler->display->display_options['fields']['type']['table'] = 'node';
-  $handler->display->display_options['fields']['type']['field'] = 'type';
-  $handler->display->display_options['fields']['type']['relationship'] = 'rid';
-  $handler->display->display_options['fields']['type']['exclude'] = TRUE;
   /* Field: Output */
   $handler->display->display_options['fields']['task_type']['id'] = 'task_type';
   $handler->display->display_options['fields']['task_type']['table'] = 'hosting_task';
@@ -131,7 +125,7 @@ function hosting_task_views_default_views() {
   $handler->display->display_options['fields']['task_type']['ui_name'] = 'Output';
   $handler->display->display_options['fields']['task_type']['label'] = 'Task';
   $handler->display->display_options['fields']['task_type']['alter']['alter_text'] = TRUE;
-  $handler->display->display_options['fields']['task_type']['alter']['text'] = '[task_type] [type]: [title] <time>[created]</time>';
+  $handler->display->display_options['fields']['task_type']['alter']['text'] = '[task_type]: [title] <time>[created]</time>';
   $handler->display->display_options['fields']['task_type']['element_class'] = 'hosting-status';
   /* Field: Content: Nid */
   $handler->display->display_options['fields']['nid']['id'] = 'nid';
