@@ -10,9 +10,20 @@
                     tasks: Drupal.settings.hostingTasks.tasks,
                 },
                 watch: {
-                    tasks: function (val) {
-                        // Drupal.attachBehaviors('#hostingTasks');
-                        // Drupal.behaviors.hostingTimeAgo.attach(context, settings);
+
+                    // Watch tasks for changes: update timeago if timestamp changes
+                    tasks: function (tasks, oldTasks) {
+                        for (var i = 0, len = tasks.length; i < len; i++) {
+                            var task = tasks[i];
+                            if (task.timestamp != oldTasks[i].timestamp) {
+
+                                // Set a tiny timeout so timeago reset happens after DOM update.
+                                setTimeout(function(){
+                                    $("time.timeago").timeago("updateFromDOM");
+                                }, 10);
+                                return;
+                            }
+                        }
                     },
                 }
             });
