@@ -4,29 +4,31 @@
         attach: function (context, settings) {
 
             // Attach to the global hosting tasks block.
-            Drupal.settings.hostingTasks.vue = new Vue({
-                el: '#hostingTasks',
-                data: {
-                    tasks: Drupal.settings.hostingTasks.tasks,
-                },
-                watch: {
-
-                    // Watch tasks for changes: update timeago if timestamp changes
-                    tasks: function (tasks, oldTasks) {
-                        for (var i = 0, len = tasks.length; i < len; i++) {
-                            var task = tasks[i];
-                            if (task.timestamp != oldTasks[i].timestamp) {
-
-                                // Set a tiny timeout so timeago reset happens after DOM update.
-                                setTimeout(function(){
-                                    $("time.timeago").timeago("updateFromDOM");
-                                }, 10);
-                                return;
-                            }
-                        }
+            if ($('#hostingAvailableTasks').length > 0) {
+                Drupal.settings.hostingTasks.vue = new Vue({
+                    el: '#hostingTasks',
+                    data: {
+                        tasks: Drupal.settings.hostingTasks.tasks,
                     },
-                }
-            });
+                    watch: {
+
+                        // Watch tasks for changes: update timeago if timestamp changes
+                        tasks: function (tasks, oldTasks) {
+                            for (var i = 0, len = tasks.length; i < len; i++) {
+                                var task = tasks[i];
+                                if (task.timestamp != oldTasks[i].timestamp) {
+
+                                    // Set a tiny timeout so timeago reset happens after DOM update.
+                                    setTimeout(function () {
+                                        $("time.timeago").timeago("updateFromDOM");
+                                    }, 10);
+                                    return;
+                                }
+                            }
+                        },
+                    }
+                });
+            }
 
             // Attach to the available_tasks block, if there is one.
             if ($('#hostingAvailableTasks').length > 0) {
