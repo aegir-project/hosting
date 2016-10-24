@@ -101,6 +101,12 @@ function hosting_task_views_default_views() {
   $handler->display->display_options['fields']['title']['field'] = 'title';
   $handler->display->display_options['fields']['title']['relationship'] = 'rid';
   $handler->display->display_options['fields']['title']['exclude'] = TRUE;
+  /* Field: Content: Type */
+  $handler->display->display_options['fields']['type']['id'] = 'type';
+  $handler->display->display_options['fields']['type']['table'] = 'node';
+  $handler->display->display_options['fields']['type']['field'] = 'type';
+  $handler->display->display_options['fields']['type']['relationship'] = 'rid';
+  $handler->display->display_options['fields']['type']['exclude'] = TRUE;
   /* Field: Hosting Task: Executed */
   $handler->display->display_options['fields']['executed']['id'] = 'executed';
   $handler->display->display_options['fields']['executed']['table'] = 'hosting_task';
