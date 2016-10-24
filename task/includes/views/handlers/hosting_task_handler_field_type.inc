@@ -23,7 +23,7 @@ class hosting_task_handler_field_type extends views_handler_field {
         'text' => t('Text value'),
       ),
       '#default_value' => isset($this->options['type_format'])? $this->options['type_format']: 'title',
-      '#description' => t('Output the machine-name or human name of the task type.'),
+      '#description' => t('Output the machine-name or human name of the task type. To ensure correct name, make sure Node Type field (assigned to reference) is added to this view.'),
     );
     parent::options_form($form, $form_state);
   }
