@@ -1782,7 +1782,7 @@ function hosting_task_views_post_execute(&$view) {
       $result->task_url = url("hosting/task/$result->nid");
       $result->task_link_text = t('View');
       $result->timestamp = date('c', $result->node_created);
-      $result->timestamp_ago = t('!time ago', array('!time' => format_interval(time() - $result->node_created, 1)));
+      $result->timestamp_human = format_date($result->node_created);
     }
   }
 }
