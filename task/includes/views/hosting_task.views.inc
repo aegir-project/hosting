@@ -27,7 +27,7 @@ function hosting_task_views_data() {
     'title' => t('Type'),
     'help' => t('The type of task.'),
     'field' => array(
-      'handler' => 'views_handler_field',
+      'handler' => 'hosting_task_handler_field_type',
       'click sortable' => TRUE,
     ),
     'filter' => array(

@@ -5,6 +5,7 @@ dependencies[] = hosting
 core = 7.x
 
 files[] = includes/views/handlers/hosting_task_handler_field_status.inc
+files[] = includes/views/handlers/hosting_task_handler_field_type.inc
 files[] = includes/views/handlers/hosting_task_handler_filter_type.inc
 files[] = includes/views/handlers/hosting_task_handler_filter_status.inc
 files[] = includes/views/handlers/hosting_task_handler_sort_default.inc
