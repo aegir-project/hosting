@@ -112,7 +112,8 @@ function hosting_task_views_default_views() {
   $handler->display->display_options['fields']['executed']['table'] = 'hosting_task';
   $handler->display->display_options['fields']['executed']['field'] = 'executed';
   $handler->display->display_options['fields']['executed']['exclude'] = TRUE;
-  $handler->display->display_options['fields']['executed']['date_format'] = 'long';
+  $handler->display->display_options['fields']['executed']['date_format'] = 'hosting_timeago';
+  $handler->display->display_options['fields']['executed']['second_date_format'] = 'hosting_timeago';
   /* Field: Content: Post date */
   $handler->display->display_options['fields']['created']['id'] = 'created';
   $handler->display->display_options['fields']['created']['table'] = 'node';
@@ -122,7 +123,7 @@ function hosting_task_views_default_views() {
   $handler->display->display_options['fields']['created']['alter']['text'] = '[created]';
   $handler->display->display_options['fields']['created']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['created']['element_default_classes'] = FALSE;
-  $handler->display->display_options['fields']['created']['date_format'] = 'time ago';
+  $handler->display->display_options['fields']['created']['date_format'] = 'dynamic';
   $handler->display->display_options['fields']['created']['second_date_format'] = 'custom';
   /* Field: Output */
   $handler->display->display_options['fields']['task_type']['id'] = 'task_type';
@@ -281,12 +282,14 @@ function hosting_task_views_default_views() {
   $handler->display->display_options['fields']['created']['table'] = 'node';
   $handler->display->display_options['fields']['created']['field'] = 'created';
   $handler->display->display_options['fields']['created']['label'] = 'Created';
-  $handler->display->display_options['fields']['created']['date_format'] = 'time ago';
+  $handler->display->display_options['fields']['created']['date_format'] = 'hosting_timeago';
+  $handler->display->display_options['fields']['created']['second_date_format'] = 'long';
   /* Field: Hosting Task: Executed */
   $handler->display->display_options['fields']['executed']['id'] = 'executed';
   $handler->display->display_options['fields']['executed']['table'] = 'hosting_task';
   $handler->display->display_options['fields']['executed']['field'] = 'executed';
-  $handler->display->display_options['fields']['executed']['date_format'] = 'time ago';
+  $handler->display->display_options['fields']['executed']['date_format'] = 'hosting_timeago';
+  $handler->display->display_options['fields']['executed']['second_date_format'] = 'long';
   /* Field: Hosting Task: Execution time */
   $handler->display->display_options['fields']['delta']['id'] = 'delta';
   $handler->display->display_options['fields']['delta']['table'] = 'hosting_task';
@@ -422,7 +425,8 @@ function hosting_task_views_default_views() {
   $handler->display->display_options['fields']['executed']['id'] = 'executed';
   $handler->display->display_options['fields']['executed']['table'] = 'hosting_task';
   $handler->display->display_options['fields']['executed']['field'] = 'executed';
-  $handler->display->display_options['fields']['executed']['date_format'] = 'time ago';
+  $handler->display->display_options['fields']['executed']['date_format'] = 'dynamic';
+  $handler->display->display_options['fields']['executed']['second_date_format'] = 'long';
   /* Field: Hosting Task: Execution time */
   $handler->display->display_options['fields']['delta']['id'] = 'delta';
   $handler->display->display_options['fields']['delta']['table'] = 'hosting_task';

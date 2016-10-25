@@ -1751,6 +1751,15 @@ function hosting_task_overlay_paths() {
 }
 
 /**
+ * Implements hook_date_format_types().
+ */
+function hosting_task_date_format_types() {
+    return array(
+      'hosting_timeago' => t('Dynamic Time Ago'),
+    );
+}
+
+/**
  * Implements hook_preprocess_views_view_table().
  */
 function hosting_task_preprocess_views_view_table(&$vars) {
