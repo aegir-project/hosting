@@ -1788,7 +1788,6 @@ function hosting_task_preprocess_page(&$variables) {
   drupal_add_js($settings, 'setting');
   drupal_add_js(drupal_get_path('module', 'hosting_task') . '/hosting_task.js');
   drupal_add_js('https://npmcdn.com/vue/dist/vue.js', 'external');
-  drupal_add_js(drupal_get_path('module', 'hosting_task') . '/js/jquery.timeago.js');
 }
 
 /**
