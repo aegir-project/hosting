@@ -38,9 +38,6 @@ before_install:
   - git clone http://github.com/aegir-project/provision.git /home/travis/build/aegir-project/provision
   - cd /home/travis/build/aegir-project/provision
   - git checkout $AEGIR_PROVISION_VERSION
-  # show the commit we're at.
-  - git log --oneline -n1
-
 
   # Run prepare scripts.
   - cd /home/travis/build/aegir-project/tests/travis
