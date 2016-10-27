@@ -328,9 +328,9 @@ function hosting_task_update_7000() {
 }
 
 /**
- * Install timeago module and set the default format for the hosting_timeago date type.
+ * Install timeago and libraries module and set the default format for the hosting_timeago date type.
  */
 function hosting_task_update_7001() {
-  module_enable(array('timeago'));
-  variable_set('date_format_hosting_timeago', 'date_format_dynamic');
+  module_enable(array('timeago', 'libraries'));
+  variable_set('date_format_hosting_timeago', '<\s\p\a\n \c\l\a\s\s="\t\i\m\e\a\g\o" \t\i\t\l\e="c">n/j/y - g:ia</\s\p\a\n>');
 }
