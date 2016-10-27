@@ -48,7 +48,9 @@
             $.getJSON(url, function (data) {
 
                 // Replace vue data with new data.
-                Drupal.settings.hostingTasks.vue.tasks = data.tasks;
+                if (data.tasks && Drupal.settings.hostingTasks.vue) {
+                    Drupal.settings.hostingTasks.vue.tasks = data.tasks;
+                }
                 if (data.availableTasks &&  Drupal.settings.hostingTasks.vueAvailable) {
                   Drupal.settings.hostingTasks.vueAvailable.tasks = data.availableTasks;
                 }
