@@ -1817,6 +1817,22 @@ function hosting_task_views_post_execute(&$view) {
       $result->timestamp = date('c', $result->node_created);
       $result->timestamp_human = format_date($result->node_created);
 
+      if ($result->hosting_task_executed != NULL) {
+        $result->timestamp_executed = date('c', $result->hosting_task_executed);
+        $result->timestamp_executed_human = format_date($result->hosting_task_executed);
+      }
+      else {
+        $result->timestamp_executed = date('c');
+        $result->timestamp_executed_human = format_date(time());
+      }
+
+      if ($result->hosting_task_delta) {
+        $result->hosting_task_delta_human = format_interval($result->hosting_task_delta);
+      }
+      else {
+        $result->hosting_task_delta_human = format_interval(0);
+      }
+
       // Load the correct task type name.
       if (isset($result->node_hosting_task_type)) {
         $result->task_type_name = hosting_task_type_name($result->hosting_task_task_type, $result->node_hosting_task_type);
