@@ -14,25 +14,22 @@
 
                         // Watch tasks for changes: update timeago if timestamp changes
                         tasks: function (tasks, oldTasks) {
-                            var reloadTimeago = false;
 
+                            // Clear HTML on all time elements without datetime.
+                            setTimeout(function () {
+                                $('time.timeago[datetime=""]').html('').attr('title');
+                            }, 10);
+
+                            // Check all tasks, if timestamp changed, updateFromDOM
                             for (var i = 0, len = tasks.length; i < len; i++) {
                                 var task = tasks[i];
                                 if (task.timestamp != oldTasks[i].timestamp || task.timestamp_executed != oldTasks[i].timestamp_executed) {
-                                    reloadTimeago = true;
+                                    // Set a tiny timeout so timeago reset happens after DOM update.
+                                    setTimeout(function () {
+                                        $("time.timeago").timeago("updateFromDOM");
+                                    }, 10);
+                                    return;
                                 }
-
-                                if (!task.timestamp_executed) {
-                                    $('time.timeago.executed', '#task-status-' + task.nid).html('').attr('title');
-                                }
-                            }
-
-                            if (reloadTimeago) {
-                                // Set a tiny timeout so timeago reset happens after DOM update.
-                                setTimeout(function () {
-                                    $("time.timeago").timeago("updateFromDOM");
-                                }, 10);
-                                return;
                             }
                         },
                     }
