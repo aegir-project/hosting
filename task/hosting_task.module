@@ -1811,7 +1811,12 @@ function hosting_task_views_post_execute(&$view) {
       else {
         // timestamp_executed_human cannot be empty. If it is, vue.js throws an error.
         $result->timestamp_executed = '';
-        $result->timestamp_executed_human = t('Pending');
+        $result->timestamp_executed_human = t('Queued');
+      }
+
+      // @TODO: Hosting module doesn't update delta during processing.
+      if ($result->hosting_task_task_status == HOSTING_TASK_PROCESSING && $result->hosting_task_delta == 0) {
+        $result->hosting_task_delta .= time() - $result->hosting_task_executed;
       }
 
       if ($result->hosting_task_delta) {
