@@ -1809,8 +1809,9 @@ function hosting_task_views_post_execute(&$view) {
         $result->timestamp_executed_human = format_date($result->hosting_task_executed);
       }
       else {
+        // timestamp_executed_human cannot be empty. If it is, vue.js throws an error.
         $result->timestamp_executed = '';
-        $result->timestamp_executed_human = '';
+        $result->timestamp_executed_human = t('Pending');
       }
 
       if ($result->hosting_task_delta) {
