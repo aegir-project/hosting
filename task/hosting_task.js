@@ -1,102 +1,174 @@
 (function($) {
+window.onload=function() {
 
-    Drupal.behaviors.hostingTasks = {
-        attach: function (context, settings) {
-
-            // Attach to the global hosting tasks block.
-            if ($('#hostingTasks').length > 0) {
-                Drupal.settings.hostingTasks.vue = new Vue({
-                    el: '#hostingTasks',
-                    data: {
-                        tasks: Drupal.settings.hostingTasks.tasks,
-                    },
-                    watch: {
-
-                        // Watch tasks for changes: update timeago if timestamp changes
-                        tasks: function (tasks, oldTasks) {
-
-                            // Clear HTML on all time elements without datetime.
-                            setTimeout(function () {
-                                $('time.timeago[datetime=""]').html('').attr('title');
-                            }, 10);
-
-                            // Check all tasks, if timestamp changed, updateFromDOM
-                            for (var i = 0, len = tasks.length; i < len; i++) {
-                                var task = tasks[i];
-                                if (task.timestamp != oldTasks[i].timestamp || task.timestamp_executed != oldTasks[i].timestamp_executed) {
-                                    // Set a tiny timeout so timeago reset happens after DOM update.
-                                    setTimeout(function () {
-                                        $("time.timeago").timeago("updateFromDOM");
-                                    }, 10);
-                                    return;
-                                }
-                            }
-                        },
-                    }
-                });
-            }
-
-            // Attach to the available_tasks block, if there is one.
-            if ($('#hostingAvailableTasks').length > 0) {
-                Drupal.settings.hostingTasks.vueAvailable = new Vue({
-                    el: '#hostingAvailableTasks',
-                    data: {
-                        tasks: Drupal.settings.hostingAvailableTasks,
-                    },
-                });
-
-            }
-
-            setTimeout("Drupal.behaviors.hostingTasks.checkTasks()", settings.hostingTasks.refreshTimeout);
+    var hostingTasksVue = new Vue({
+        el: '#hostingTasks',
+        data: {
+            tasksUrl: Drupal.settings.hostingTasks.url,
+            tasks: Drupal.settings.hostingTasks.tasks,
+            availableTasks: Drupal.settings.availableTasks,
+            timeout: Drupal.settings.hostingTasks.refreshTimeout
         },
-        checkTasks: function () {
-            var url = Drupal.settings.hostingTasks.url;
-            $.getJSON(url, function (data) {
+        created: function () {
 
-                // Replace vue data with new data.
-                if (data.tasks && Drupal.settings.hostingTasks.vue) {
-                    Drupal.settings.hostingTasks.vue.tasks = data.tasks;
-                }
-                if (data.availableTasks &&  Drupal.settings.hostingTasks.vueAvailable) {
-                  Drupal.settings.hostingTasks.vueAvailable.tasks = data.availableTasks;
-                }
+            // Update time elements from their DOM timestamps.
+            $('time.timeago', '#hostingTasks').timeago("updateFromDOM");
 
-                // Stop if needed.
-                if (Drupal.settings.hostingTasks.halt != true) {
-                    setTimeout("Drupal.behaviors.hostingTasks.checkTasks()", Drupal.settings.hostingTasks.refreshTimeout);
-                }
-            });
+            // Set timeout to reload data.
+            setTimeout(this.fetchData, this.timeout);
         },
-    };
+        updated: function () {
 
-    Drupal.behaviors.hostingTimeAgo = {
-        attach: function (context, settings) {
-            $.timeago.settings.refreshMillis = 1000;
-            $.timeago.settings.strings = {
-                prefixAgo: null,
-                prefixFromNow: null,
-                suffixAgo: "ago",
-                suffixFromNow: "from now",
-                allowFuture: true,
-                inPast: 'any moment now',
-                seconds: "%d sec",
-                minute: "1 min",
-                minutes: "%d min",
-                hour: "1 hr",
-                hours: "%d hrs",
-                day: "1 day",
-                days: "%d days",
-                month: "1 month",
-                months: "%d months",
-                year: "1 year",
-                years: "%d years",
-                wordSeparator: " ",
-                numbers: []
+            // Clear html and title attributes from elements with empty datetime.
+            $('time.timeago[datetime=""]').html('').attr('title')
+
+            // Update time elements from their DOM timestamps.
+            $('time.timeago', '#hostingTasks').timeago("updateFromDOM");
+        },
+        methods: {
+            fetchData: function () {
+                // Thanks to the GitHub Commits example: https://vuejs.org/examples/commits.html
+                var xhr = new XMLHttpRequest()
+                var self = this
+                xhr.open('GET', self.tasksUrl)
+                xhr.onload = function () {
+                    var data = JSON.parse(xhr.responseText);
+                    self.tasks = data.tasks
+                }
+                xhr.send()
+                setTimeout(this.fetchData, this.timeout);
             }
-            $(".timeago", context).timeago();
         }
-    }
+    });
+}
+
+    // Drupal.behaviors.hostingTimeAgo = {
+    //     attach: function (context, settings) {
+    //         $.timeago.settings.refreshMillis = 1000;
+    //         $.timeago.settings.strings = {
+    //             prefixAgo: null,
+    //             prefixFromNow: null,
+    //             suffixAgo: "ago",
+    //             suffixFromNow: "from now",
+    //             allowFuture: true,
+    //             inPast: 'any moment now',
+    //             seconds: "%d sec",
+    //             minute: "1 min",
+    //             minutes: "%d min",
+    //             hour: "1 hr",
+    //             hours: "%d hrs",
+    //             day: "1 day",
+    //             days: "%d days",
+    //             month: "1 month",
+    //             months: "%d months",
+    //             year: "1 year",
+    //             years: "%d years",
+    //             wordSeparator: " ",
+    //             numbers: []
+    //         }
+    //         $(".timeago", context).timeago();
+    //     }
+    // }
 }(jQuery));
+
+    //
+    // Drupal.behaviors.hostingTasks = {
+    //     attach: function (context, settings) {
+    //
+    //         // Attach to the global hosting tasks block.
+    //         if ($('#hostingTasks').length > 0) {
+    //             Drupal.settings.hostingTasks.vue = new Vue({
+    //                 el: '#hostingTasks',
+    //                 data: {
+    //                     tasks: Drupal.settings.hostingTasks.tasks,
+    //                 },
+    //                 watch: {
+    //
+    //                     // Watch tasks for changes: update timeago if timestamp changes
+    //                     tasks: function (tasks, oldTasks) {
+    //
+    //                         // Clear HTML on all time elements without datetime.
+    //                         setTimeout(function () {
+    //                             $('time.timeago[datetime=""]').html('').attr('title');
+    //                         }, 10);
+    //
+    //                         // Check all tasks, if timestamp changed, updateFromDOM
+    //                         for (var i = 0, len = tasks.length; i < len; i++) {
+    //                             var task = tasks[i];
+    //                             if (task.timestamp != oldTasks[i].timestamp || task.timestamp_executed != oldTasks[i].timestamp_executed) {
+    //                                 // Set a tiny timeout so timeago reset happens after DOM update.
+    //                                 setTimeout(function () {
+    //                                     $("time.timeago").timeago("updateFromDOM");
+    //                                 }, 10);
+    //                                 return;
+    //                             }
+    //                         }
+    //                     },
+    //                 }
+    //             });
+    //         }
+    //
+    //         // Attach to the available_tasks block, if there is one.
+    //         if ($('#hostingAvailableTasks').length > 0) {
+    //             Drupal.settings.hostingTasks.vueAvailable = new Vue({
+    //                 el: '#hostingAvailableTasks',
+    //                 data: {
+    //                     tasks: Drupal.settings.hostingAvailableTasks,
+    //                 },
+    //             });
+    //
+    //         }
+    //
+    //         setTimeout("Drupal.behaviors.hostingTasks.checkTasks()", settings.hostingTasks.refreshTimeout);
+    //     },
+    //     checkTasks: function () {
+    //         var url = Drupal.settings.hostingTasks.url;
+    //         $.getJSON(url, function (data) {
+    //
+    //             // Replace vue data with new data.
+    //             if (data.tasks && Drupal.settings.hostingTasks.vue) {
+    //                 Drupal.settings.hostingTasks.vue.tasks = data.tasks;
+    //             }
+    //             if (data.availableTasks &&  Drupal.settings.hostingTasks.vueAvailable) {
+    //               Drupal.settings.hostingTasks.vueAvailable.tasks = data.availableTasks;
+    //             }
+    //
+    //             // Stop if needed.
+    //             if (Drupal.settings.hostingTasks.halt != true) {
+    //                 setTimeout("Drupal.behaviors.hostingTasks.checkTasks()", Drupal.settings.hostingTasks.refreshTimeout);
+    //             }
+    //         });
+    //     },
+    // };
+    //
+    // Drupal.behaviors.hostingTimeAgo = {
+    //     attach: function (context, settings) {
+    //         $.timeago.settings.refreshMillis = 1000;
+    //         $.timeago.settings.strings = {
+    //             prefixAgo: null,
+    //             prefixFromNow: null,
+    //             suffixAgo: "ago",
+    //             suffixFromNow: "from now",
+    //             allowFuture: true,
+    //             inPast: 'any moment now',
+    //             seconds: "%d sec",
+    //             minute: "1 min",
+    //             minutes: "%d min",
+    //             hour: "1 hr",
+    //             hours: "%d hrs",
+    //             day: "1 day",
+    //             days: "%d days",
+    //             month: "1 month",
+    //             months: "%d months",
+    //             year: "1 year",
+    //             years: "%d years",
+    //             wordSeparator: " ",
+    //             numbers: []
+    //         }
+    //         $(".timeago", context).timeago();
+    //     }
+    // }
+// }(jQuery));
 
 // (function($) {
 //
