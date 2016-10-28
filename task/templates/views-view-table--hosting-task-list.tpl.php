@@ -36,7 +36,7 @@
   <?php endif; ?>
   <tbody>
   <template v-for="task in tasks">
-    <tr v-bind:class="task.status_class">
+    <tr v-bind:class="task.status_class" v-bind:id="'task-status-' + task.nid">
       <td class="hosting-status">
         <span class="views-field-task-type">{{ task.task_type_name }}:</span> <a class="reference" v-bind:href="task.ref_url">{{ task.node_hosting_task_title }}</a>
       </td>
@@ -44,7 +44,7 @@
         <time class="timeago" v-bind:datetime="task.timestamp">{{ task.timestamp_human }}</time>
       </td>
       <td>
-        <time class="timeago" v-bind:datetime="task.timestamp_executed">{{ task.timestamp_executed_human }}</time>
+        <time class="timeago executed" v-bind:datetime="task.timestamp_executed">{{ task.timestamp_executed_human }}</time>
       </td>
       <td>
         <span class="executed-time">
