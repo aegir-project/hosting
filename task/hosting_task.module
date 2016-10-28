@@ -1809,8 +1809,8 @@ function hosting_task_views_post_execute(&$view) {
         $result->timestamp_executed_human = format_date($result->hosting_task_executed);
       }
       else {
-        $result->timestamp_executed = date('c');
-        $result->timestamp_executed_human = format_date(time());
+        $result->timestamp_executed = '';
+        $result->timestamp_executed_human = '';
       }
 
       if ($result->hosting_task_delta) {
