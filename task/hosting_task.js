@@ -1,45 +1,55 @@
 (function($) {
 window.onload=function() {
 
-    var hostingTasksVue = new Vue({
-        el: '#hostingTasks',
-        data: {
-            tasksUrl: Drupal.settings.hostingTasks.url,
-            tasks: Drupal.settings.hostingTasks.tasks,
-            availableTasks: Drupal.settings.availableTasks,
-            timeout: Drupal.settings.hostingTasks.refreshTimeout
-        },
-        created: function () {
+    // If #hostingTasks object is available, initiate a Vue.
+    if ($('#hostingTasks').length) {
+        var hostingTasksVue = new Vue({
+            el: '#hostingTasks',
+            data: {
+                tasksUrl: Drupal.settings.hostingTasks.url,
+                tasks: Drupal.settings.hostingTasks.tasks,
+                availableTasks: Drupal.settings.availableTasks,
+                timeout: Drupal.settings.hostingTasks.refreshTimeout
+            },
+            created: function () {
 
-            // Update time elements from their DOM timestamps.
-            $('time.timeago', '#hostingTasks').timeago("updateFromDOM");
+                // Update time elements from their DOM timestamps.
+                $('time.timeago', '#hostingTasks').timeago("updateFromDOM");
 
-            // Set timeout to reload data.
-            setTimeout(this.fetchData, this.timeout);
-        },
-        updated: function () {
-
-            // Clear html and title attributes from elements with empty datetime.
-            $('time.timeago[datetime=""]').html('').attr('title')
-
-            // Update time elements from their DOM timestamps.
-            $('time.timeago', '#hostingTasks').timeago("updateFromDOM");
-        },
-        methods: {
-            fetchData: function () {
-                // Thanks to the GitHub Commits example: https://vuejs.org/examples/commits.html
-                var xhr = new XMLHttpRequest()
-                var self = this
-                xhr.open('GET', self.tasksUrl)
-                xhr.onload = function () {
-                    var data = JSON.parse(xhr.responseText);
-                    self.tasks = data.tasks
-                }
-                xhr.send()
+                // Set timeout to reload data.
                 setTimeout(this.fetchData, this.timeout);
+            },
+            updated: function () {
+
+                // Clear html and title attributes from elements with empty datetime.
+                $('time.timeago[datetime=""]').html('').attr('title')
+
+                // Update time elements from their DOM timestamps.
+                $('time.timeago', '#hostingTasks').timeago("updateFromDOM");
+            },
+            methods: {
+                fetchData: function () {
+                    // Thanks to the GitHub Commits example: https://vuejs.org/examples/commits.html
+                    var xhr = new XMLHttpRequest()
+                    var self = this
+                    xhr.open('GET', self.tasksUrl)
+                    xhr.onload = function () {
+                        var data = JSON.parse(xhr.responseText)
+
+                        // Replace vue data with new data.
+                        if (data.tasks) {
+                            self.tasks = data.tasks
+                        }
+                        if (data.availableTasks) {
+                            self.availableTasks = data.availableTasks;
+                        }
+                    }
+                    xhr.send()
+                    setTimeout(this.fetchData, this.timeout);
+                }
             }
-        }
-    });
+        });
+    }
 }
 
     // Drupal.behaviors.hostingTimeAgo = {
