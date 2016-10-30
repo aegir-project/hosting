@@ -44,10 +44,10 @@
         <time class="timeago" v-bind:datetime="task.timestamp">{{ task.timestamp_human }}</time>
       </td>
       <td>
-        <time class="timeago executed" v-bind:datetime="task.timestamp_executed">{{ task.timestamp_executed_human }}</time>
+        <time class="timeago executed" v-bind:datetime="task.timestamp_executed" v-if="task.timestamp_executed">{{ task.timestamp_executed_human }}</time>
       </td>
       <td>
-        <span class="executed-time">
+        <span class="executed-time" v-if="task.hosting_task_delta">
           {{ task.hosting_task_delta_human }}
         </span>
       </td>
