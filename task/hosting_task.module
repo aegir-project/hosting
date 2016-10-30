@@ -175,13 +175,19 @@ function hosting_task_ajax_list($nid = NULL) {
   // Load available tasks if a node is specified and accessible.
   $node = node_load($nid);
   if ($node && node_access('view', $node)) {
-    $return['availableTasks'] =  array_values(hosting_task_fetch_tasks($node->nid));
+
+    if (current_path() == "node/$nid") {
+      $return['availableTasks'] =  array_values(hosting_task_fetch_tasks($node->nid));
+    }
+
     $return['changed'] = $node->changed;
     $return['navigate_url'] = url('node/' . $node->nid);
+    $return['tasks'] = views_get_view_result('hosting_task_list', 'page_contextual', $nid);
   }
-
-  // Load global tasks for block.
-  $return['tasks'] = views_get_view_result('hosting_task_list', 'block');
+  elseif ($nid == NULL) {
+    // Load global tasks for block.
+    $return['tasks'] = views_get_view_result('hosting_task_list', 'block');
+  }
 
   // Output JSON
   drupal_json_output($return);
@@ -1779,6 +1785,15 @@ function hosting_task_preprocess_page(&$variables) {
     // Get rid of array keys so it becomes an array.
     $settings['hostingAvailableTasks'] = array_values($availableTasks);
     $settings['hostingTasks']['url'] = url("hosting/json/tasks/" . $variables['node']->nid);
+  }
+
+  // If on a node/*/? page
+  if (arg(0) == 'node' && is_numeric(arg(1))) {
+    $settings['hostingTasks']['url'] = url("hosting/json/tasks/" . arg(1));
+    $settings['hostingTasks']['tasks'] = views_get_view_result('hosting_task_list', 'page_contextual', arg(1));
+  }
+  else {
+    $settings['hostingTasks']['tasks'] = views_get_view_result('hosting_task_list', 'page_global');
   }
 
   drupal_add_js($settings, 'setting');
