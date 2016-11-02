@@ -279,7 +279,7 @@ function hosting_site_node_insert($node) {
         hosting_add_task($node->nid, 'import');
       }
       else {
-        hosting_add_task($node->nid, 'verify');
+        hosting_add_task($node->nid, 'install');
       }
     }
   }
@@ -337,6 +337,7 @@ function hosting_site_load($nodes) {
     $additions = db_query('SELECT  client, db_server, db_name, platform, profile, language as site_language, last_cron, cron_key, status AS site_status, verified FROM {hosting_site} WHERE vid = :vid', array(':vid' => $node->vid))->fetch();
     foreach ($additions as $property => &$value) {
       $node->$property = $value;
+      $node->install_method = 'profile';
     }
   }
 }
