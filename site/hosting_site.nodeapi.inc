@@ -249,6 +249,58 @@ function hosting_site_insert(&$node) {
   // Provide a dummy profile, e.g. for hosting-import.
   $node->profile = isset($node->profile) ? $node->profile : 0;
 
+  // If platform NID is not defined, but platform data is available, create the platform.
+  if (empty($node->platform)
+    && !empty($node->platform_node)
+    && !empty($node->platform_node->publish_path)
+  ) {
+
+    // If a platform exists for the given path, use that.
+    $existing_platform_nid = db_select('hosting_platform', 'p')
+      ->condition('publish_path', $node->platform_node->publish_path)
+      ->fields('p', array('nid'))
+      ->execute()
+      ->fetchField();
+
+    // Use the existing platform NID
+    if ($existing_platform_nid) {
+      $node->platform = $existing_platform_nid;
+    }
+    // or prepare a new one.
+    else {
+
+      // If platform_status hasn't been explicitly set, assume platform status matches site status: If developer creates a site node that's disabled, the platform should be too.
+      if (empty($node->platform_node->platform_status)) {
+        $node->platform_node->platform_status = $node->site_status;
+      }
+
+      // If web_server hasn't been explicity set, use hostmaster's web server.
+      if (empty($node->platform_node->web_server)) {
+        $hostmaster = hosting_context_load('hostmaster');
+        $hostmaster_platform = node_load($hostmaster->platform);
+        $node->platform_node->web_server = $hostmaster_platform->nid;
+      }
+
+      // If platform title has not been set, generate one from the site title.
+      if (empty($node->platform_node->title)) {
+        $node->platform_node->title = 'platform_' . preg_replace("/[!\W]/", "", $node->title);
+      }
+
+      // If platform UID has not been set, use site UID
+      if (empty($node->platform_node->uid)) {
+        $node->platform_node->uid = $node->uid;
+      }
+
+      $platform_nid = node_save($node->platform_node);
+      $node->platform = $node->platform_node->nid;
+    }
+  }
+
+  // If there is no platform NID and there is no publish path, throw an exception
+  if (empty($node->platform) && empty($node->platform_node->publish_path)) {
+    throw new Exception('Site nodes require either platform or platform_node->publish_path property');
+  }
+
   $id = db_insert('hosting_site')
     ->fields(array(
       'vid' => $node->vid,
