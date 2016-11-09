@@ -93,7 +93,10 @@ function drush_hosting_task_validate($id, $type = NULL) {
     }
   }
   else {
-    drush_set_error('HOSTING_INVALID_TASK', t("This task is not valid"));
+    drush_set_error('HOSTING_INVALID_TASK', t("Could not find or create a '!type' task for hosting context '!context'.", array(
+      '!type' => $type,
+      '!context' => $id,
+    )));
   }
 
 }
