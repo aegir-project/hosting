@@ -177,7 +177,7 @@ function hosting_server_node_access($node, $op, $account) {
   }
 
   $type = is_string($node) ? $node : $node->type;
-  if ($type != 'server' ) {
+  if ($type != 'server') {
     return NODE_ACCESS_IGNORE;
   }
 
@@ -775,7 +775,7 @@ function hosting_server_entity_property_info() {
     'verified' => array(
       'label' => t('Last verification time'),
       'description' => t('The date and time of the last verification of the server.'),
-      'type' =>  'date',
+      'type' => 'date',
     ),
     'server_status' => array(
       'label' => t('Server status'),

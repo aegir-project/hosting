@@ -102,7 +102,7 @@ function hosting_site_available_options($node, $platform = NULL) {
 
     // Trim down the list of profiles to those that are available and the user has access to
     // XXX This hack (next 22 lines) hides profiles that can't be accessed
-    // Eventually we should lighten up the content of this callback
+    // Eventually we should lighten up the content of this callback.
     $result = db_query("SELECT l.nid
                         FROM {hosting_package_instance} i
                         JOIN {hosting_package} p
@@ -135,7 +135,7 @@ function hosting_site_available_options($node, $platform = NULL) {
       }
       // Open access if no platform access has been set.
       // @todo move this into _hosting_get_allowed_platforms
-      // @todo confirm this logic
+      // @todo confirm this logic.
       elseif (!$unrestricted = db_query("SELECT cid
                                          FROM {hosting_platform_client_access}
                                          WHERE pid = :pid LIMIT 1",
@@ -218,18 +218,18 @@ function hosting_site_form($node, &$form_state) {
   $editable = ((!isset($node->client) || !isset($node->nid)) || user_access('administer sites')) && hosting_feature('client');
   $add_client_text = '';
   if (user_access('administer clients') || user_access('create client')) {
-    $add_client_text = t(' Click !here to add a new client.', array('!here' => l(t('here'), 'node/add/client', array('attributes' => array('target' => '_blank')))));
+    $add_client_text = t('Click !here to add a new client.', array('!here' => l(t('here'), 'node/add/client', array('attributes' => array('target' => '_blank')))));
   }
   _hosting_site_field($form, $node, 'client', array(
     '#type' => 'textfield',
     '#required' => TRUE,
     '#title' => t('Client'),
     '#default_value' => _hosting_client_site_default($node),
-    '#description' => t('The client to whom this site belongs.') . $add_client_text,
+    '#description' => t('The client to whom this site belongs.') . ' ' . $add_client_text,
     '#autocomplete_path' => 'hosting_client/autocomplete/client',
   ), 'filter_xss', $editable);
 
-  // Install profiles
+  // Install profiles.
   $profiles = hosting_get_profiles();
   foreach ($profiles as $id => $name) {
     $profile = hosting_package_instance_load(array('p.nid' => $id));
@@ -264,7 +264,7 @@ function hosting_site_form($node, &$form_state) {
     $selected_profile = hosting_package_instance_load(array('p.nid' => hosting_get_default_profile()))->nid;
   }
 
-  // Load platforms for the selected profile
+  // Load platforms for the selected profile.
   $platforms = hosting_get_profile_platforms($selected_profile);
 
   $node->profile = $selected_profile;
@@ -289,7 +289,7 @@ function hosting_site_form($node, &$form_state) {
     natcasesort($form['profile']['#options']);
     reset($form['profile']['#options']);
 
-    // Set page title
+    // Set page title.
     drupal_set_title(t('Create site on platform @name', array('@name' => $platforms[$default_platform])));
   }
   else {
@@ -355,10 +355,17 @@ function hosting_site_form($node, &$form_state) {
   return $form;
 }
 
+
+/**
+ * Ajax callback for the site profile field.
+ */
 function hosting_site_platform_callback($form, &$form_state) {
   return $form['platform'];
 }
 
+/**
+ * Ajax callback for the site platform field.
+ */
 function hosting_site_language_callback($form, &$form_state) {
   return $form['site_language'];
 }
