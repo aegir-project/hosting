@@ -249,7 +249,8 @@ function hosting_site_insert(&$node) {
   // Provide a dummy profile, e.g. for hosting-import.
   $node->profile = isset($node->profile) ? $node->profile : 0;
 
-  // If platform NID is not defined, but platform data is available, create the platform.
+  // If platform NID is not defined, but platform data is available,
+  // create the platform.
   if (empty($node->platform)
     && !empty($node->platform_node)
     && !empty($node->platform_node->publish_path)
@@ -262,14 +263,17 @@ function hosting_site_insert(&$node) {
       ->execute()
       ->fetchField();
 
-    // Use the existing platform NID
+    // Use the existing platform NID.
     if ($existing_platform_nid) {
       $node->platform = $existing_platform_nid;
     }
-    // or prepare a new one.
+    // Or prepare a new one.
     else {
 
-      // If platform_status hasn't been explicitly set, assume platform status matches site status: If developer creates a site node that's disabled, the platform should be too.
+      // If platform_status hasn't been explicitly set,
+      // assume platform status matches site status:
+      // If developer creates a site node that's disabled,
+      // the platform should be too.
       if (empty($node->platform_node->platform_status)) {
         $node->platform_node->platform_status = $node->site_status;
       }
@@ -286,7 +290,7 @@ function hosting_site_insert(&$node) {
         $node->platform_node->title = 'platform_' . preg_replace("/[!\W]/", "", $node->title);
       }
 
-      // If platform UID has not been set, use site UID
+      // If platform UID has not been set, use site UID.
       if (empty($node->platform_node->uid)) {
         $node->platform_node->uid = $node->uid;
       }
@@ -296,7 +300,7 @@ function hosting_site_insert(&$node) {
     }
   }
 
-  // If there is no platform NID and there is no publish path, throw an exception
+  // If there is no platform NID and no publish path, throw an exception.
   if (empty($node->platform) && empty($node->platform_node->publish_path)) {
     throw new Exception('Site nodes require either platform or platform_node->publish_path property');
   }
