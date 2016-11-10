@@ -154,12 +154,14 @@ function hosting_task_views_default_views() {
   $handler->display->display_options['filters']['type']['value'] = array(
     'task' => 'task',
   );
+  $handler->display->display_options['filters']['type']['group'] = 1;
   $handler->display->display_options['filters']['type']['expose']['operator'] = FALSE;
   /* Filter criterion: Content: Published */
   $handler->display->display_options['filters']['status']['id'] = 'status';
   $handler->display->display_options['filters']['status']['table'] = 'node';
   $handler->display->display_options['filters']['status']['field'] = 'status';
   $handler->display->display_options['filters']['status']['value'] = '1';
+  $handler->display->display_options['filters']['status']['group'] = 1;
   $handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
 
   /* Display: Block */
@@ -293,6 +295,62 @@ function hosting_task_views_default_views() {
   $handler->display->display_options['fields']['nid']['alter']['path'] = 'hosting/task/[nid]';
   $handler->display->display_options['fields']['nid']['alter']['link_class'] = 'hosting-button-enabled hosting-button-log hosting-button-dialog';
   $handler->display->display_options['fields']['nid']['element_class'] = 'hosting-actions';
+  $handler->display->display_options['defaults']['filter_groups'] = FALSE;
+  $handler->display->display_options['defaults']['filters'] = FALSE;
+  /* Filter criterion: Content: Type */
+  $handler->display->display_options['filters']['type']['id'] = 'type';
+  $handler->display->display_options['filters']['type']['table'] = 'node';
+  $handler->display->display_options['filters']['type']['field'] = 'type';
+  $handler->display->display_options['filters']['type']['value'] = array(
+    'task' => 'task',
+  );
+  $handler->display->display_options['filters']['type']['expose']['operator'] = FALSE;
+  /* Filter criterion: Content: Published */
+  $handler->display->display_options['filters']['status']['id'] = 'status';
+  $handler->display->display_options['filters']['status']['table'] = 'node';
+  $handler->display->display_options['filters']['status']['field'] = 'status';
+  $handler->display->display_options['filters']['status']['value'] = '1';
+  $handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+  /* Filter criterion: Hosting Task: Status */
+  $handler->display->display_options['filters']['task_status']['id'] = 'task_status';
+  $handler->display->display_options['filters']['task_status']['table'] = 'hosting_task';
+  $handler->display->display_options['filters']['task_status']['field'] = 'task_status';
+  $handler->display->display_options['filters']['task_status']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['task_status']['expose']['operator_id'] = 'task_status_op';
+  $handler->display->display_options['filters']['task_status']['expose']['label'] = 'Status';
+  $handler->display->display_options['filters']['task_status']['expose']['operator'] = 'task_status_op';
+  $handler->display->display_options['filters']['task_status']['expose']['identifier'] = 'task_status';
+  $handler->display->display_options['filters']['task_status']['expose']['remember_roles'] = array(
+    2 => '2',
+    1 => 0,
+    3 => 0,
+    8 => 0,
+    4 => 0,
+    6 => 0,
+    7 => 0,
+    5 => 0,
+    9 => 0,
+  );
+  /* Filter criterion: Hosting Task: Type */
+  $handler->display->display_options['filters']['task_type']['id'] = 'task_type';
+  $handler->display->display_options['filters']['task_type']['table'] = 'hosting_task';
+  $handler->display->display_options['filters']['task_type']['field'] = 'task_type';
+  $handler->display->display_options['filters']['task_type']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['task_type']['expose']['operator_id'] = 'task_type_op';
+  $handler->display->display_options['filters']['task_type']['expose']['label'] = 'Type';
+  $handler->display->display_options['filters']['task_type']['expose']['operator'] = 'task_type_op';
+  $handler->display->display_options['filters']['task_type']['expose']['identifier'] = 'task_type';
+  $handler->display->display_options['filters']['task_type']['expose']['remember_roles'] = array(
+    2 => '2',
+    1 => 0,
+    3 => 0,
+    8 => 0,
+    4 => 0,
+    6 => 0,
+    7 => 0,
+    5 => 0,
+    9 => 0,
+  );
   $handler->display->display_options['path'] = 'hosting/tasks';
   $handler->display->display_options['menu']['type'] = 'normal';
   $handler->display->display_options['menu']['title'] = 'Tasks';
