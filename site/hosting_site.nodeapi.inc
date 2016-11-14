@@ -295,7 +295,10 @@ function hosting_site_insert(&$node) {
         $node->platform_node->uid = $node->uid;
       }
 
-      $platform_nid = node_save($node->platform_node);
+      $node->platform_node->type = 'platform';
+      if ($node->platform_node = node_submit($node->platform_node)) {
+          node_save($node->platform_node);
+      }
       $node->platform = $node->platform_node->nid;
     }
   }
