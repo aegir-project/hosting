@@ -493,7 +493,7 @@ function hosting_alias_settings($form, &$form_state) {
  * Validation handler for hosting_alias_settings form.
  */
 function hosting_alias_settings_validate($form, $form_state) {
-  if (!valid_url($form_state['values']['hosting_alias_subdomain'])) {
+  if (!empty($form_state['values']['hosting_alias_subdomain']) && !valid_url($form_state['values']['hosting_alias_subdomain'])) {
     form_set_error('hosting_alias_subdomain', t('The provided domain is invalid.'));
   }
 }
