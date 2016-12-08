@@ -267,6 +267,7 @@ function hosting_site_form($node, &$form_state) {
   // Load platforms for the selected profile
   $platforms = hosting_get_profile_platforms($selected_profile);
 
+  $node->profile = $selected_profile;
   $available_options = hosting_site_available_options($node);
   $available_platforms = array_flip($available_options['platform']);
   $platforms = array_intersect_key($platforms, $available_platforms);
