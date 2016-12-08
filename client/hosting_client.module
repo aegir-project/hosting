@@ -580,21 +580,6 @@ function hosting_client_load($nodes) {
 }
 
 /**
- * Implements hook_node_load().
- */
-function hosting_client_node_load($arg) {
-  if (!is_numeric($arg)) {
-    return FALSE;
-  }
-  if ($node = node_load_multiple(array($arg))) {
-    if ($node->type == 'client') {
-      return $node;
-    }
-  }
-  return FALSE;
-}
-
-/**
  * Return a list of users for a given client.
  *
  * @param int|object $node

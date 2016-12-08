@@ -40,21 +40,6 @@ function hosting_package_node_info() {
 }
 
 /**
- * @todo document this function
- */
-function hosting_package_node_load($arg) {
- if (!is_numeric($arg)) {
-    return FALSE;
-  }
-  if ($node = node_load($arg)) {
-    if (in_array($node->type, array('site', 'platform'))) {
-      return $node;
-    }
-  }
-  return FALSE;
-}
-
-/**
  * Implements hook_permission().
  */
 function hosting_package_permission() {
