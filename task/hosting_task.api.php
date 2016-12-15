@@ -103,6 +103,24 @@ function hosting_task_TASK_TYPE_form_validate($form, &$form_state) {
 
 }
 
+/**
+ * Alter the query that selects the next tasks to run.
+ *
+ * You may use this hook to prioritise one type of task over another, or to
+ * prefer one client over another etc.
+ *
+ * @see hosting_get_new_tasks
+ *
+ * @param QueryAlterableInterface $query
+ *   The structured query that will select the next tasks to run.
+ */
+function hook_query_hosting_get_new_tasks_alter(QueryAlterableInterface $query) {
+  // Change the sort ordering so that newer tasks are preferred to older ones.
+  $order_by = &$query->getOrderBy();
+  $order_by['n.changed'] = 'DESC';
+  $order_by['n.nid'] = 'DESC';
+}
+
 
 /**
  * @} End of "addtogroup hooks".

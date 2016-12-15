@@ -723,7 +723,7 @@ function hosting_task_set_title(&$node) {
 function hosting_tasks_queue($count = 20) {
   global $provision_errors;
 
-  $tasks = _hosting_get_new_tasks($count);
+  $tasks = hosting_get_new_tasks($count);
 
   if (count($tasks)) {
     drush_log(dt("Found @count tasks (max @max) in queue. Running...", array(
@@ -1373,32 +1373,43 @@ function hosting_get_tasks($filter_by = NULL, $filter_value = NULL, $count = 5, 
 }
 
 /**
- * Retrieve a list of outstanding tasks.
+ * Retrieve a list of outstanding, queued, tasks.
  *
  * @param int $limit
- *   The amount of items to return.
+ *   The maximum number of tasks to return.
  *
  * @return array
  *   An associative array containing task nodes, indexed by node id.
  */
-function _hosting_get_new_tasks($limit = 20) {
+function hosting_get_new_tasks($limit = 20) {
   $return = array();
-  $result = db_query_range("SELECT t.nid
-    FROM {hosting_task} t
-    INNER JOIN {node} n
-    ON t.vid = n.vid
-    WHERE t.task_status = :task_status
-    GROUP BY t.rid
-    ORDER BY n.changed, n.nid ASC",
-    0,
-    $limit,
-    array(
-      ':task_status' => HOSTING_TASK_QUEUED,
-    ));
-  foreach ($result as $node) {
+  $query = db_select('hosting_task', 't');
+  $query->innerJoin('node', 'n', 't.vid = n.vid');
+  $query
+    ->fields('t', array('nid'))
+    ->condition('t.task_status', HOSTING_TASK_QUEUED)
+    ->orderBy('n.changed')
+    ->orderBy('n.nid')
+    ->groupBy('t.rid')
+    ->range(0, $limit)
+    ->addTag('hosting_get_new_tasks');
+
+  foreach ($query->execute() as $node) {
     $return[$node->nid] = node_load($node->nid);
   }
   return $return;
+}
+
+/**
+ * Retrieve a list of outstanding, queued, tasks.
+ *
+ * @deprecated First deprecated in Hosting 3.9 because this function was made
+ * part of the public API, use hosting_get_new_tasks() instead.
+ *
+ * @see hosting_get_new_tasks
+ */
+function _hosting_get_new_tasks($limit = 20) {
+  return hosting_get_new_tasks($limit);
 }
 
 /**
