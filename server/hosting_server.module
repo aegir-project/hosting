@@ -177,7 +177,7 @@ function hosting_server_node_access($node, $op, $account) {
   }
 
   $type = is_string($node) ? $node : $node->type;
-  if ($type != 'server' ) {
+  if ($type != 'server') {
     return NODE_ACCESS_IGNORE;
   }
 
@@ -775,7 +775,7 @@ function hosting_server_entity_property_info() {
     'verified' => array(
       'label' => t('Last verification time'),
       'description' => t('The date and time of the last verification of the server.'),
-      'type' =>  'date',
+      'type' => 'date',
     ),
     'server_status' => array(
       'label' => t('Server status'),
@@ -800,21 +800,27 @@ function hosting_server_entity_property_info() {
  * @param string $service
  *   Service type string, like 'http' or 'db'
  *
+ * @param bool $node_access
+ *   Apply node access filters, defaults to TRUE.
+ *
  * @return array
  *   An array of enabled servers, keys are the nid's of the nodes representing
  *   them, values are the titles of the servers.
  *
  * @see hook_hosting_servers_titles_alter()
  */
-function hosting_get_servers($service) {
+function hosting_get_servers($service, $node_access = TRUE) {
   $return = array();
   $query = db_select('node', 'n');
   $query->join('hosting_service', 's', 'n.vid = s.vid');
   $query
     ->fields('n', array('nid', 'title'))
     ->condition('s.available', '1')
-    ->condition('s.service', $service)
-    ->addTag('node_access');
+    ->condition('s.service', $service);
+
+  if ($node_access) {
+    $query->addTag('node_access');
+  }
 
   $result = $query->execute();
 
