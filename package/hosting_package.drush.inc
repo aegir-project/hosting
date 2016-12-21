@@ -20,7 +20,7 @@ function drush_hosting_package_pre_hosting_task() {
         ));
 
         // If instance is found, save the package ID to hosting_site table.
-        $instance = current($instance);
+        $instance = current($instances);
         if (!empty($instance->package_id)) {
           db_update('hosting_site')
             ->fields(array('profile' => $instance->package_id))
