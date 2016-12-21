@@ -259,6 +259,7 @@ function hosting_site_insert(&$node) {
     // If a platform exists for the given path, use that.
     $existing_platform_nid = db_select('hosting_platform', 'p')
       ->condition('publish_path', $node->platform_node->publish_path)
+      ->condition('platform_status', HOSTING_PLATFORM_ENABLED)
       ->fields('p', array('nid'))
       ->execute()
       ->fetchField();
