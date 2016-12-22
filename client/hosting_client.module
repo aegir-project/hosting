@@ -88,6 +88,10 @@ function hosting_client_permission() {
     'edit client uname' => array(
       'title' => t('edit client uname'),
     ),
+    'bypass domain owner check' => array(
+      'title' => t('bypass domain owner check'),
+      'description' => t('Allows the client to register a subdomain, even when the above domain is owned by another client.'),
+    ),
   );
 }
 
@@ -991,6 +995,12 @@ function hosting_client_configure($form, &$form_state) {
     '#description' => t('If this setting is on, any new client nodes will automatically have a system user account generated for them, and associated with the new client node. Users going through the signup form module have a user created regardless of this setting.'),
     '#default_value' => variable_get('hosting_client_register_user', FALSE),
   );
+  $form['hosting_client_subdomain_owner_check'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Check owner upon creating subdomains.'),
+    '#description' => t("As a policy a hosting_client user is not allowed to create a site on a domain or subdomain thereof that is already in use by another client. (Unles the client has the 'bypass domain owner check' permission)"),
+    '#default_value' => variable_get('hosting_client_subdomain_owner_check', FALSE),
+  );
 
   // User e-mail settings.
   $form['email'] = array(
@@ -1174,4 +1184,82 @@ function hosting_client_views_api() {
     'api' => 3,
     'path' => drupal_get_path('module', 'hosting_client') . '/includes/views',
   );
+}
+
+/**
+ * Implements hook_allow_domain().
+ *
+ * Disallow domains already used as any site's title/url, unless the site has
+ * been deleted.
+ *
+ * @see hosting_domain_allowed()
+ */
+function hosting_client_allow_domain($url, $params = array()) {
+  // If we do not have to be here, leave ASAP.
+  if (!variable_get('hosting_client_subdomain_owner_check', FALSE) || user_access('bypass domain owner check')) {
+    return TRUE;
+  }
+
+  // Get the client node from the client name.
+  $client = hosting_get_client($params['client']);
+
+  // Prepare array.
+  $subdomains = array();
+
+  // Break up url.
+  $url_array = explode('.', $url);
+  while ($url_array) {
+    $subdomains[] = implode('.', $url_array);
+    array_shift($url_array);
+  }
+
+  // Start query
+  $query = db_select('node', 'n')
+    ->fields('n', array('nid'))
+    ->condition('n.type', 'site');
+  $query->leftJoin('hosting_site', 'h', 'h.nid = n.nid');
+  $query->condition('h.status', HOSTING_SITE_DELETED, '<>');
+
+  // Check for either ...
+  $or = db_or();
+
+  $sites = db_or();
+  $aliases = db_or();
+
+  // Iterate over all subdomains and populate sites and aliases checks.
+  foreach ($subdomains as $domain) {
+    // Regular site names
+    $sites->condition('n.title', $domain);
+
+    // And aliases
+    $aliases->condition('a.alias', $domain);
+  }
+
+  // Any of the above domains that do not belong to this client.
+  $or->condition(
+    db_and()
+      ->condition($sites)
+      ->condition('h.client', $client->nid, '<>')
+  );
+
+  if (module_exists('hosting_alias')) {
+    $query->leftJoin('hosting_site_alias', 'a', 'n.vid = a.vid');
+
+    // Any of the above domain aliases that do not belong to this client.
+    $or->condition(
+      db_and()
+        ->condition($aliases)
+        ->condition('h.client', $client->nid, '<>')
+    );
+  }
+
+  // Add conditions to the query.
+  $query->condition($or);
+
+  // For existing sites, don't match the site's current url.
+  if (isset($params['nid'])) {
+    $query->condition('n.nid', $params['nid'], '<>');
+  }
+
+  return !$query->countQuery()->execute()->fetchField();
 }
