@@ -10,10 +10,10 @@
  * Adds refreshTimeout javascript variable.
  */
 function hosting_task_init() {
-  $settings['hostingTaskRefresh'] = array(
-      'refreshTimeout' => variable_get('hosting_task_refresh_timeout', 30000),
-  );
-  drupal_add_js($settings, 'setting');
+//  $settings['hostingTaskRefresh'] = array(
+//      'refreshTimeout' => variable_get('hosting_task_refresh_timeout', 30000),
+//  );
+//  drupal_add_js($settings, 'setting');
 }
 
 
@@ -48,13 +48,12 @@ function hosting_task_menu() {
     }
   }
 
-  $items['hosting/tasks/%node/list'] = array(
+  $items['hosting/json/tasks'] = array(
     'title' => 'Task list',
     'description' => 'AJAX callback for refreshing task list',
     'page callback' => 'hosting_task_ajax_list',
-    'page arguments' => array(2),
-    'access callback' => 'node_access',
-    'access arguments' => array('view', 2),
+    'page arguments' => array(3),
+    'access arguments' => array('access task logs'),
     'type' => MENU_CALLBACK,
   );
 
@@ -65,14 +64,6 @@ function hosting_task_menu() {
     'page arguments' => array(2),
     'access callback' => 'hosting_task_cancel_access',
     'access arguments' => array(2),
-    'type' => MENU_CALLBACK,
-  );
-
-  $items['hosting/tasks/queue'] = array(
-    'title' => 'Task list',
-    'description' => 'AJAX callback for refreshing task queue',
-    'page callback' => 'hosting_task_ajax_queue',
-    'access arguments' => array('access task logs'),
     'type' => MENU_CALLBACK,
   );
 
@@ -192,23 +183,20 @@ function hosting_task_ajax_command_hosting_table_check($selector, $url, $setting
 /**
  * Page callback to provide JSON output for a task.
  */
-function hosting_task_ajax_list($node) {
-  $return['markup'] = hosting_task_table($node);
-  $return['changed'] = $node->changed;
-  $return['navigate_url'] = url('node/' . $node->nid);
-  drupal_json_output($return);
-  exit();
-}
+function hosting_task_ajax_list($nid = NULL) {
 
-/**
- * AJAX callback for refreshing task list.
- */
-function hosting_task_ajax_queue() {
-  $view = views_get_view('hosting_task_list');
-  $view->set_display('block');
-  $view->pre_execute();
-  $return['markup'] = $view->render('block');
+  // Load available tasks if a node is specified and accessible.
+  $node = node_load($nid);
+  if ($node && node_access('view', $node)) {
+    $return['availableTasks'] =  array_values(hosting_task_fetch_tasks($node->nid));
+    $return['changed'] = $node->changed;
+    $return['navigate_url'] = url('node/' . $node->nid);
+  }
 
+  // Load global tasks for block.
+  $return['tasks'] = views_get_view_result('hosting_task_list', 'block');
+
+  // Output JSON
   drupal_json_output($return);
   exit();
 }
@@ -584,7 +572,6 @@ function hosting_add_task($nid, $type, $args = NULL, $status = HOSTING_TASK_QUEU
  * Implements hook_form().
  */
 function hosting_task_confirm_form($form, $form_state, $node, $task) {
-  drupal_add_js(drupal_get_path('module', 'hosting_task') . '/hosting_task.js');
   $tasks = hosting_available_tasks($node->type);
 
   if (!isset($tasks[$task]['dialog']) || !$tasks[$task]['dialog']) {
@@ -848,7 +835,12 @@ function hosting_available_tasks($type = NULL, $reset = FALSE) {
     drupal_alter('hosting_tasks', $cache);
   }
   if (isset($type)) {
-    return $cache[$type];
+    if (isset($cache[$type])) {
+      return $cache[$type];
+    }
+    else {
+      return array();
+    }
   }
   else {
     return $cache;
@@ -1520,56 +1512,12 @@ function hosting_task_list($filter_by = NULL, $filter_value = NULL) {
  * simple interface.
  */
 function hosting_task_table($node) {
-  $output = '';
-
-  $headers[] = t('Task');
-  $headers[] = array(
-    'data' => t('Actions'),
-    'class' => array('hosting-actions'),
-  );
-
-  $tasklist = hosting_task_fetch_tasks($node->nid);
-  $rows = array();
-
-  foreach ($tasklist as $task => $info) {
-    $row = array();
-
-    if (!isset($info['nid']) && !$info['task_permitted']) {
-      // Just don't show those tasks, since we'll not be able to run them.
-      continue;
-    }
-
-    if (empty($info['title'])) {
-      // Skip tasks from types that have since been removed.
-      continue;
-    }
-
-    $row['type'] = array(
-      'data' => $info['title'],
-      'class' => array('hosting-status'),
-    );
-    $actions = array();
-
-    if (isset($info['task_status']) && ($info['task_status'] == 0)) {
-      $actions['cancel'] = _hosting_task_button(t('Cancel'), sprintf("hosting/tasks/%d/cancel", $info['nid']), t("Cancel the task and remove it from the queue"), 'hosting-button-stop', !$info['task_permitted']);
-    }
-    else {
-      $actions['run'] = _hosting_task_button(t('Run'), sprintf("hosting_confirm/%d/%s_%s", $node->nid, $node->type, $task), $info['description'], 'hosting-button-run', $info['task_permitted'], $info['dialog']);
-    }
-
-    $actions['log'] = _hosting_task_button(t('View'), isset($info['nid']) ? 'hosting/task/' . $info['nid'] : '<front>', t("Display the task log"), 'hosting-button-log', isset($info['nid']) &&  user_access('access task logs'), TRUE, FALSE);
-    $row['actions'] = array(
-      'data' => implode('', $actions),
-      'class' => array('hosting-actions'),
-    );
-
-    $rows[] = array(
-      'data' => $row,
-      'class' => array($info['class']),
-    );
-  }
-  $output .= theme('table', array('header' => $headers, 'rows' => $rows, 'attributes' => array('class' => array('hosting-table'))));
-  return $output;
+  $tasks = hosting_task_fetch_tasks($node->nid);
+  $settings['hostingTasks']['availableTasks'] = $tasks;
+  drupal_add_js($settings, 'setting');
+  drupal_add_js(drupal_get_path('module', 'hosting_task') . '/hosting_task.js');
+  drupal_add_js('https://npmcdn.com/vue/dist/vue.js', 'external');
+  return theme('hosting_task_table', array('tasks' => $tasks));
 }
 
 /**
@@ -1670,10 +1618,20 @@ function _hosting_task_list($filter_by, $filter_value, $count = 5, $element = 0,
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Retrieve the available tasks for a given Aegir Object. This function is used
+ * on the site/platform/server node page to provide the list of actions a user
+ * can take.
+ *
+ * @param $rid
+ *   The node ID of the desired object.
+ *
+ * @return array
+ *   A list of available tasks and metadata about the last task status.
+ *
+ *   The keys of the array are the type of task, such as "verify" and "install".
  */
 function hosting_task_fetch_tasks($rid) {
+  $return = array();
   $node = node_load($rid);
 
   $result = db_query("SELECT n.nid, t.task_type, t.task_status FROM {node} n INNER JOIN {hosting_task} t ON n.vid = t.vid
@@ -1691,6 +1649,8 @@ function hosting_task_fetch_tasks($rid) {
   $tasks = hosting_available_tasks($node->type);
   ksort($tasks);
 
+  global $user;
+
   foreach ($tasks as $type => $hook_task) {
 
     if (!isset($return[$type])) {
@@ -1701,6 +1661,8 @@ function hosting_task_fetch_tasks($rid) {
 
     $task = array();
     $task = array_merge($return[$type], $hook_task);
+
+    $task['task_type'] = $type;
 
     $allowed = (isset($task['exists']) && !in_array($task['task_status'], array(HOSTING_TASK_QUEUED, HOSTING_TASK_PROCESSING))) || !isset($task['exists']);
     if ($allowed && empty($task['hidden']) && $access_callback($node, $type)) {
@@ -1718,11 +1680,60 @@ function hosting_task_fetch_tasks($rid) {
     }
     $task['class'] = hosting_task_status_class($task['task_status']);
 
+    // Generate Links
+    $task['view_link'] = FALSE;
+    $task['view_link_text'] = t('View');
+    $task['run_link'] = FALSE;
+    $task['cancel_link'] = FALSE;
+
+    $nid = isset($task['nid'])? $task['nid']: NULL;
+    $ref_type = $node->type;
+    $task_type = $task['task_type'];
+
+    // View Logs link
+    if (!empty($nid) && drupal_valid_path("hosting/task/{$nid}")) {
+      $task['view_link'] = array(
+        'url' => url("hosting/task/{$nid}"),
+        'title' => t('Display the task log.'),
+        'text' => t('View'),
+      );
+    }
+
+    // Cancel Task link
+    if (isset($task['task_status']) && ($task['task_status'] === HOSTING_TASK_QUEUED)) {
+//      $actions['cancel'] = _hosting_task_button(t('Cancel'), sprintf("hosting/tasks/%d/cancel", $info['nid']), t("Cancel the task and remove it from the queue"), 'hosting-button-stop', !$info['task_permitted']);
+
+      $task['cancel_link'] = array(
+        'url' => url("hosting/tasks/{$nid}/cancel"),
+        'title' => t('Cancel the task and remove it from the queue.'),
+        'text' => t('Cancel'),
+      );
+  }
+  else {
+//    $actions['run'] = _hosting_task_button(t('Run'), sprintf("hosting_confirm/%d/%s_%s", $node->nid, $node->type, $task), $info['description'], 'hosting-button-run', $info['task_permitted'], $info['dialog']);
+    $task['run_link'] = array(
+      'url' => url("hosting_confirm/{$rid}/{$ref_type}_{$task_type}", array(
+        'query'=> array(
+          'token' => drupal_get_token($user->uid),
+        )
+      )),
+      'title' => $task['description'],
+      'text' => t('Run'),
+    );
+  }
+
+
+    if (empty($nid) && $task['task_permitted'] == FALSE) {
+      $task['hidden'] = TRUE;
+    }
+
     $return[$type] = $task;
   }
 
   return $return;
 }
+
+
 
 /**
  * Traslate a task status code into a css class.
@@ -1753,12 +1764,35 @@ function hosting_task_status_class($status = NULL) {
 }
 
 /**
+ * Get a task's human type name from it's machine name.
+ */
+function hosting_task_type_name($task_type, $node_type = NULL) {
+
+  if ($node_type) {
+    $tasks = hosting_available_tasks($node_type);
+  }
+  else {
+    // Tasks are grouped by node type, and might vary by that even thought type value is the same.
+    $all_tasks = hosting_available_tasks();
+    $tasks = array_merge($all_tasks['server'], $all_tasks['platform'], $all_tasks['site']);
+  }
+
+  if (isset($tasks[$task_type]['title'])) {
+    return $tasks[$task_type]['title'];
+  }
+  else {
+    return $task_type;
+  }
+}
+
+/**
  * Views integration.
  */
 function hosting_task_views_api() {
   return array(
     'api' => 3,
     'path' => drupal_get_path('module', 'hosting_task') . '/includes/views',
+    'template path' => drupal_get_path('module', 'hosting_task') . '/templates',
   );
 }
 
@@ -1778,6 +1812,15 @@ function hosting_task_overlay_paths() {
 }
 
 /**
+ * Implements hook_date_format_types().
+ */
+function hosting_task_date_format_types() {
+    return array(
+      'hosting_timeago' => t('Dynamic Time Ago'),
+    );
+}
+
+/**
  * Implements hook_preprocess_views_view_table().
  */
 function hosting_task_preprocess_views_view_table(&$vars) {
@@ -1785,13 +1828,64 @@ function hosting_task_preprocess_views_view_table(&$vars) {
 
   switch ($id) {
     case 'hosting_task_list-block':
-      drupal_add_js(drupal_get_path('module', 'hosting_task') . '/hosting_task.js');
-
       $settings['hostingTaskRefresh'] = array(
         'queueBlock' => 1,
       );
-      drupal_add_js($settings, 'setting');
+
       break;
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function hosting_task_preprocess_page(&$variables) {
+  $settings['hostingTasks'] = array(
+    'url' => url("hosting/json/tasks"),
+    'refreshTimeout' => 2000,
+    'tasks' => views_get_view_result('hosting_task_list', 'block'),
+  );
+
+  // If on a hosting node page...
+  if (isset($variables['node']) && !empty($variables['node']->nid)) {
+    $availableTasks = hosting_task_fetch_tasks($variables['node']->nid);
+
+    // Get rid of array keys so it becomes an array.
+    $settings['hostingAvailableTasks'] = array_values($availableTasks);
+    $settings['hostingTasks']['url'] = url("hosting/json/tasks/" . $variables['node']->nid);
+  }
+
+  drupal_add_js($settings, 'setting');
+  drupal_add_js(drupal_get_path('module', 'hosting_task') . '/hosting_task.js');
+  drupal_add_js('https://npmcdn.com/vue/dist/vue.js', 'external');
+}
+
+/**
+ * Implements hook_views_post_execute()
+ *
+ * Alter the results of the hosting_task_list view.
+ * This view is used to generate the JSON list of tasks.
+ */
+function hosting_task_views_post_execute(&$view) {
+
+  // Parse Results on hosting_task_list view.
+  if ($view->name == 'hosting_task_list') {
+    foreach ($view->result as $i => &$result) {
+      $result->status_class = hosting_task_status_class($result->hosting_task_task_status);
+      $result->ref_url = url("node/$result->node_hosting_task_nid");
+      $result->task_url = url("hosting/task/$result->nid");
+      $result->task_link_text = t('View');
+      $result->timestamp = date('c', $result->node_created);
+      $result->timestamp_human = format_date($result->node_created);
+
+      // Load the correct task type name.
+      if (isset($result->node_hosting_task_type)) {
+        $result->task_type_name = hosting_task_type_name($result->hosting_task_task_type, $result->node_hosting_task_type);
+      }
+      else {
+        $result->task_type_name = hosting_task_type_name($result->hosting_task_task_type);
+      }
+    }
   }
 }
 
@@ -1952,4 +2046,19 @@ function hosting_task_entity_property_info_alter(&$info) {
     'setter callback' => 'entity_property_verbatim_set',
   );
   */
+}
+
+/**
+ * Implements hook_theme().
+ */
+function hosting_task_theme($existing, $type, $theme, $path) {
+  $theme = array();
+  $theme['hosting_task_table'] = array(
+    'template' => 'hosting-task-table',
+    'path' => drupal_get_path('module', 'hosting_task') . '/templates',
+    'variables' => array(
+        array('tasks' => array()),
+    ),
+  );
+  return $theme;
 }
