@@ -157,7 +157,9 @@ function hosting_site_delete_site_task_submit($form, $form_state){
   if ($delete || variable_get('hosting_delete_backups', 'never') == 'always') {
     $nid = $form_state['values']['nid'];
     $backups = hosting_site_get_backups($nid);
-    hosting_add_task($nid, 'backup-delete', $backups);
+    if (!empty($backups)) {
+      hosting_add_task($nid, 'backup-delete', $backups);
+    }
   }
 }
 
