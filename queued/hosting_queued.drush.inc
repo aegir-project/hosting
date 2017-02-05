@@ -61,10 +61,18 @@ function drush_hosting_queued() {
   // frontend.
   variable_set('hosting_queued_process_started', REQUEST_TIME);
 
-  watchdog('hosting_queued', 'Started Hosting queue daemon, waiting for new tasks');
-  drush_log('Started hosting queue daemon. Waiting for new tasks.', 'ok');
-  
+  // Check if hosting queue is paused, show appropriate message.
   $is_paused = variable_get('hosting_queued_paused', 0);
+  if ($is_paused) {
+    watchdog('hosting_queued', 'Started Hosting queue daemon, hosting queue is paused.');
+    drush_log('Started hosting queue daemon, hosting queue is paused.', 'ok');
+  }
+  else {
+    watchdog('hosting_queued', 'Started Hosting queue daemon, waiting for new tasks');
+    drush_log('Started hosting queue daemon. Waiting for new tasks.', 'ok');
+  }
+  
+  global $conf;
   
   while (TRUE) {
 
