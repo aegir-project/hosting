@@ -493,7 +493,7 @@ function hosting_client_mail($key, &$message, $params) {
   switch ($key) {
     case 'hosting-client-register-welcome':
       $message['subject'] = _hosting_client_mail_text('welcome_subject', $params);
-      $message['body'] = _hosting_client_mail_text('welcome_body', $params);
+      $message['body'][] = _hosting_client_mail_text('welcome_body', $params);
       break;
   }
 }
