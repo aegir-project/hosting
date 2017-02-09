@@ -61,9 +61,47 @@ function drush_hosting_queued() {
   // frontend.
   variable_set('hosting_queued_process_started', REQUEST_TIME);
 
-  watchdog('hosting_queued', 'Started Hosting queue daemon, waiting for new tasks');
-  drush_log('Started hosting queue daemon. Waiting for new tasks.', 'ok');
+  // Check if hosting queue is paused, show appropriate message.
+  $is_paused = variable_get('hosting_queued_paused', 0);
+  if ($is_paused) {
+    watchdog('hosting_queued', 'Started Hosting queue daemon, hosting queue is paused.');
+    drush_log('Started hosting queue daemon, hosting queue is paused.', 'ok');
+  }
+  else {
+    watchdog('hosting_queued', 'Started Hosting queue daemon, waiting for new tasks');
+    drush_log('Started hosting queue daemon. Waiting for new tasks.', 'ok');
+  }
+  
+  global $conf;
+  
   while (TRUE) {
+
+    // Detect if the hosting queue is paused or not.
+    // Reload variables. Since this is still a single request, any variable changes are not available.
+    $conf = variable_initialize();
+    if (variable_get('hosting_queued_paused', 0)) {
+      
+      // If was not paused on last cycle, announce that it has been paused.
+      if (!$is_paused) {
+        drush_log('Hosting Queued has been paused.', 'ok');
+      }
+      sleep(1);
+  
+      // Save current state for next cycle.
+      $is_paused = variable_get('hosting_queued_paused', 0);
+  
+      continue;
+    }
+    else {
+      // If was paused on last cycle, announce that it has been unpaused.
+      if ($is_paused) {
+        drush_log('Hosting Queued has been unpaused.', 'ok');
+      }
+  
+      // Save current state for next cycle.
+      $is_paused = variable_get('hosting_queued_paused', 0);
+    }
+  
     try {
       // Should we terminate.
       if (time() > $end_time) {

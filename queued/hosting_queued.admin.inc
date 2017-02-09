@@ -53,6 +53,13 @@ function hosting_queued_settings_form($form, &$form_state) {
       60 * 60,
     ), 'format_interval'),
   );
+  
+  $form['hosting_queued_paused'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Pause the Hosting Queue'),
+    '#description' => t('Temporarily pause the hosting queue from running tasks.'),
+    '#default_value' => variable_get('hosting_queued_paused', 0),
+  );
 
   return system_settings_form($form);
   // @ignore security_fapi_markup
