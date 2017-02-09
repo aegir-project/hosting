@@ -53,7 +53,7 @@ function drush_hosting_task_validate($id, $type = NULL) {
   elseif (is_string($id) && isset($type)) {
     $ref = hosting_context_load($id);
     if ($ref->nid) {
-      
+
       // Get additional arguments to the drush command and convert them to "task_args" as expected by the task node.
       $task_args = array();
 
@@ -89,7 +89,7 @@ function drush_hosting_task_validate($id, $type = NULL) {
     }
     $task->task_status = HOSTING_TASK_PROCESSING;
     $task->revision = TRUE;
-    
+
     node_save($task);
     drush_set_context('HOSTING_TASK', $task);
     drush_set_context('DRUSH_LOG_CALLBACK', '_hosting_task_log');
@@ -152,7 +152,7 @@ function drush_hosting_task() {
     $alias = '@none';
   }
   else {
-    $alias = $task->ref ->hosting_name;
+    $alias = $task->ref->hosting_name;
   }
 
   // Run the actual command. Adding alias here to work around Drush API.
