@@ -11,7 +11,7 @@ env:
   global:
     - AEGIR_HOSTING_VERSION=7.x-3.x
     - AEGIR_TESTS_VERSION=master
-    - AEGIR_PROVISION_VERSION=7.x-3.x
+    - AEGIR_PROVISION_VERSION=feature/quick-review
 
 #env:
 #  - test: Ubuntu 14.04 Apache

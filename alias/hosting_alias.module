@@ -72,7 +72,7 @@ function hosting_alias_form_site_node_form_alter(&$form, &$form_state) {
 function hosting_alias_site_form_validate($form, &$form_state) {
   $aliases = $form_state['values']['aliases'] = array_filter($form_state['values']['aliases']);
   foreach ($aliases as $key => $alias) {
-    hosting_alias_validate_alias($form_state['node'], $alias, $key);
+    hosting_alias_validate_alias($form_state['values'], $alias, $key);
   }
 }
 
@@ -365,8 +365,7 @@ function hosting_alias_node_revision_delete($node) {
 function hosting_alias_validate_alias($site, $alias, $key) {
   if ($alias = strtolower(trim($alias))) {
     $alias = strtolower(trim($alias));
-    $params = isset($site->nid) ? array('nid' => $site->nid) : array();
-    if (!hosting_domain_allowed($alias, $params) || $alias == $site->title) {
+    if (!hosting_domain_allowed($alias, (array) $site) || $alias == $site->title) {
       form_set_error("aliases][$key", t('The domain name @alias is already in use', array('@alias' => $alias)));
     }
     if (!_hosting_valid_fqdn_wildcard($alias)) {

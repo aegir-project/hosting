@@ -294,7 +294,7 @@ function hosting_site_hosting_tasks() {
   );
 
   $tasks['site']['verify'] = array(
-    'title' => t('Verify'),
+    'title' => t('Verify Site'),
     'description' => t('Confirm that the site has been correctly installed and regenerate all configuration files to match the hosting front end.'),
     'provision_save' => TRUE,
   );
@@ -311,7 +311,7 @@ function hosting_site_hosting_tasks() {
          It may be disabled again if needed.'),
   );
   $tasks['site']['delete'] = array(
-    'title' => t('Delete'),
+    'title' => t('Delete Site'),
     'description' => t('Deleting this site will completely remove it from the hosting system,
         but will keep the last backup available. This process can not be undone.
         Are you really sure you want to delete this site?'),
@@ -661,18 +661,20 @@ function hosting_site_status_codes($type = NULL) {
  * @see hosting_domain_allowed()
  */
 function hosting_site_allow_domain($url, $params = array()) {
-  $query = "SELECT COUNT(n.nid) FROM {node} n
-    JOIN {hosting_site} h ON n.nid = h.nid
-    WHERE type = 'site' AND n.title = :title AND h.status <> :status";
-  $args[':title'] = $url;
-  $args[':status'] = HOSTING_SITE_DELETED;
+  $query = db_select('node', 'n')
+    ->fields('n', array('nid'))
+    ->condition('n.type', 'site')
+    ->condition('n.title', $url);
 
+  $query->leftJoin('hosting_site', 'h', 'h.nid = n.nid');
+  $query->condition('h.status', HOSTING_SITE_DELETED, '<>');
+
+  // For existing sites, don't match the site's current url.
   if (isset($params['nid'])) {
-    $query .= " AND n.nid <> :nid";
-    $args[':nid'] = $params['nid'];
+    $query->condition('n.nid', $params['nid'], '<>');
   }
-  $result = !db_query($query, $args)->fetchField();
-  return $result;
+
+  return !$query->countQuery()->execute()->fetchField();
 }
 
 /**

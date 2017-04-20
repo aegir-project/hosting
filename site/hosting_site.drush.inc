@@ -24,6 +24,7 @@ function hosting_hosting_site_context_options(&$task) {
     $task->options['client_email'] = $user->mail;
   }
   $task->context_options['client_name'] = $client->uname;
+  $task->options['site_install_method'] = $task->ref->install_method;
 }
 
 /**

@@ -79,6 +79,18 @@ td.hosting-actions .hosting-button-disabled {
   text-transform: none;
 }
 
+.view-hosting-task-list .hosting-status time {
+  font-size:0.8em;
+  color: #555;
+  text-transform: uppercase;
+  padding: 0 1em 0 0;
+  white-space: nowrap;
+}
+
+.view-hosting-task-list .hosting-status time em.placeholder {
+  font-style: normal;
+}
+
 /**
  * Status icons, colors.
  */

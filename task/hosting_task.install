@@ -326,3 +326,11 @@ function hosting_task_update_6200() {
 function hosting_task_update_7000() {
   drupal_flush_all_caches();
 }
+
+/**
+ * Install timeago module and set the default format for the hosting_timeago date type.
+ */
+function hosting_task_update_7001() {
+  module_enable(array('timeago'));
+  variable_set('date_format_hosting_timeago', 'date_format_dynamic');
+}
