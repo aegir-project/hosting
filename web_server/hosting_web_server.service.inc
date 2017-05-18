@@ -34,9 +34,11 @@ class hostingService_http_apache extends hostingService_http_public {
 
   function default_restart_cmd() {
     $command = '/usr/sbin/apache2ctl'; # a proper default for most of the world
-    foreach (explode(':', $_SERVER['PATH']) as $path) {
-      $options[] = "$path/apache2ctl";
-      $options[] = "$path/apachectl";
+    if (isset($_SERVER['PATH'])) {
+      foreach (explode(':', $_SERVER['PATH']) as $path) {
+        $options[] = "$path/apache2ctl";
+        $options[] = "$path/apachectl";
+      }
     }
     # try to detect the apache restart command
     $options[] = '/usr/local/sbin/apachectl'; # freebsd

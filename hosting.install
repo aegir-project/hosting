@@ -8,6 +8,26 @@
 require_once(dirname(__FILE__) . '/hosting.module');
 
 /**
+ * Implements hook_uninstall().
+ */
+function hosting_uninstall() {
+  variable_del('hosting_dispatch_last_run');
+  variable_del('hosting_features_form_settings');
+  variable_del('hosting_queue_tasks_items');
+  variable_del('hosting_default_db_server');
+  variable_del('hosting_own_db_server');
+  variable_del('hosting_update_6008_run');
+  variable_del('hosting_dispatch_enabled');
+  variable_del('hosting_cron_backup');
+  variable_del('hosting_task_update_6000_run');
+  variable_del('hosting_package_update_6002_run');
+  variable_del('hosting_package_update_6004_run');
+  variable_del('hosting_platform_update_6004_run');
+  variable_del('hosting_queued_process_started');
+  variable_del('hosting_queue_tasks_enabled');
+}
+
+/**
  * Implements hook_schema().
  */
 function hosting_schema() {

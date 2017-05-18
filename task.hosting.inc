@@ -53,7 +53,17 @@ function drush_hosting_task_validate($id, $type = NULL) {
   elseif (is_string($id) && isset($type)) {
     $ref = hosting_context_load($id);
     if ($ref->nid) {
-      $task = hosting_add_task($ref->nid, $type);
+
+      // Get additional arguments to the drush command and convert them to "task_args" as expected by the task node.
+      $task_args = array();
+
+      // Parse task_arguments passed to drush in the format "name=value"
+      $drush_args = array_splice(func_get_args(), 2);
+      foreach ($drush_args as $i => $arg) {
+        list($name, $value) = explode('=', $arg);
+        $task_args[$name] = $value;
+      }
+      $task = hosting_add_task($ref->nid, $type, $task_args);
     }
   }
 
@@ -79,6 +89,7 @@ function drush_hosting_task_validate($id, $type = NULL) {
     }
     $task->task_status = HOSTING_TASK_PROCESSING;
     $task->revision = TRUE;
+
     node_save($task);
     drush_set_context('HOSTING_TASK', $task);
     drush_set_context('DRUSH_LOG_CALLBACK', '_hosting_task_log');
@@ -127,7 +138,7 @@ function drush_hosting_task() {
     $hook = 'hosting_' . $task->ref->type . '_context_options';
     foreach (module_implements($hook) as $module) {
       $function = $module . '_' . $hook;
-      call_user_func($function, $task);
+      call_user_func_array($function, array(&$task));
     }
 
     drush_invoke_process('@none', 'provision-save', array('@' . $task->ref->hosting_name), $task->context_options, array('method' => $mode, 'integrate' => TRUE));

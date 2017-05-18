@@ -61,9 +61,47 @@ function drush_hosting_queued() {
   // frontend.
   variable_set('hosting_queued_process_started', REQUEST_TIME);
 
-  watchdog('hosting_queued', 'Started Hosting queue daemon, waiting for new tasks');
+  // Check if hosting queue is paused, show appropriate message.
+  $is_paused = variable_get('hosting_queued_paused', 0);
+  if ($is_paused) {
+    watchdog('hosting_queued', 'Started Hosting queue daemon, hosting queue is paused.');
+    drush_log('Started hosting queue daemon, hosting queue is paused.', 'ok');
+  }
+  else {
+    watchdog('hosting_queued', 'Started Hosting queue daemon, waiting for new tasks');
+    drush_log('Started hosting queue daemon. Waiting for new tasks.', 'ok');
+  }
+
+  global $conf;
 
   while (TRUE) {
+
+    // Detect if the hosting queue is paused or not.
+    // Reload variables. Since this is still a single request, any variable changes are not available.
+    $conf = variable_initialize();
+    if (variable_get('hosting_queued_paused', 0)) {
+
+      // If was not paused on last cycle, announce that it has been paused.
+      if (!$is_paused) {
+        drush_log('Hosting Queued has been paused.', 'ok');
+      }
+      sleep(1);
+
+      // Save current state for next cycle.
+      $is_paused = variable_get('hosting_queued_paused', 0);
+
+      continue;
+    }
+    else {
+      // If was paused on last cycle, announce that it has been unpaused.
+      if ($is_paused) {
+        drush_log('Hosting Queued has been unpaused.', 'ok');
+      }
+
+      // Save current state for next cycle.
+      $is_paused = variable_get('hosting_queued_paused', 0);
+    }
+
     try {
       // Should we terminate.
       if (time() > $end_time) {
@@ -72,8 +110,13 @@ function drush_hosting_queued() {
       }
 
 
-    // Get some tasks to run
-    if ($tasks = @_hosting_get_new_tasks()) {
+    // Get some tasks to run.
+    if ($tasks = @hosting_get_new_tasks()) {
+
+      drush_log(dt("Found %count tasks in queue. Running...", array(
+        '%count' => count($tasks),
+      )), "notice");
+
       if (lock_acquire('hosting_queue_tasks_running', HOSTING_QUEUE_LOCK_TIMEOUT)) {
         drush_log('Acquired lock on task queue.');
         foreach ($tasks as $task) {
@@ -85,10 +128,8 @@ function drush_hosting_queued() {
           drush_log(dt('Found task to execute. Pausing before execution.'));
           sleep(1);
 
-          watchdog('hosting_queued', 'Running task @nid.', array('@nid' => $task->nid));
-          // Execute the task in the backend
-          drush_invoke_process('@self', 'hosting-task', array($task->nid), array('strict' => FALSE), array('interactive' => TRUE));
-          drush_log(dt('Finished executing task.'));
+          // Execute the task.
+          hosting_task_execute($task, array('interactive' => TRUE));
 
           // Delay for a configurable amount of time.
           $delay = variable_get('hosting_queued_post_task_delay', 0);

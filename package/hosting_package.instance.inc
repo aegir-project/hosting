@@ -410,3 +410,13 @@ function _hosting_package_temporary_table($ref) {
   return $names[$ref];
 }
 
+/**
+ * Helper to determine if a particular site has a module installed.
+ */
+function _hosting_package_site_has_module($node, $module) {
+  $package = hosting_package_instance_load(array('rid' => $node->nid, 'p.short_name' => $module));
+  if (!is_object($package)) {
+    return FALSE;
+  }
+  return $package->status;
+}
