@@ -283,7 +283,7 @@ function hosting_site_insert(&$node) {
       if (!isset($node->platform_node->web_server)) {
         $hostmaster = hosting_context_load('hostmaster');
         $hostmaster_platform = node_load($hostmaster->platform);
-        $node->platform_node->web_server = $hostmaster_platform->nid;
+        $node->platform_node->web_server = $hostmaster_platform->web_server;
       }
 
       // If platform title has not been set, generate one from the site title.
