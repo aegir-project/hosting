@@ -275,7 +275,7 @@ function hosting_site_insert(&$node) {
       // assume platform status matches site status:
       // If developer creates a site node that's disabled,
       // the platform should be too.
-      if (!isset($node->platform_node->platform_status)) {
+      if (!isset($node->platform_node->platform_status) && isset($node->site_status)) {
         $node->platform_node->platform_status = $node->site_status;
       }
 
