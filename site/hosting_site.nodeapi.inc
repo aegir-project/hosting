@@ -275,12 +275,12 @@ function hosting_site_insert(&$node) {
       // assume platform status matches site status:
       // If developer creates a site node that's disabled,
       // the platform should be too.
-      if (empty($node->platform_node->platform_status)) {
+      if (!isset($node->platform_node->platform_status)) {
         $node->platform_node->platform_status = $node->site_status;
       }
 
       // If web_server hasn't been explicity set, use hostmaster's web server.
-      if (empty($node->platform_node->web_server)) {
+      if (!isset($node->platform_node->web_server)) {
         $hostmaster = hosting_context_load('hostmaster');
         $hostmaster_platform = node_load($hostmaster->platform);
         $node->platform_node->web_server = $hostmaster_platform->nid;
