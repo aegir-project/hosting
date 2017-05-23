@@ -298,7 +298,7 @@ function hosting_site_insert(&$node) {
 
       $node->platform_node->type = 'platform';
       if ($node->platform_node = node_submit($node->platform_node)) {
-          node_save($node->platform_node);
+        node_save($node->platform_node);
       }
       $node->platform = $node->platform_node->nid;
     }
@@ -308,7 +308,7 @@ function hosting_site_insert(&$node) {
   if (empty($node->platform) && empty($node->platform_node->publish_path)) {
     throw new Exception('Site nodes require either platform or platform_node->publish_path property');
   }
-  
+
   // If db_server hasn't been explicity set, use hostmaster's web server.
   if (!isset($node->platform_node->db_server)) {
     $hostmaster = hosting_context_load('hostmaster');

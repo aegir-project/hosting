@@ -474,7 +474,7 @@ function hook_hosting_task_dangerous_tasks_alter(&$tasks) {}
  * $name.mywebservice.com.
  */
 function example_create_site($name, $makefile) {
-  
+
   // Create site node.
   $site = new stdClass();
   $site->type = 'site';
@@ -483,21 +483,20 @@ function example_create_site($name, $makefile) {
   $site->uid = 1;
   $site->client = HOSTING_DEFAULT_CLIENT;
   $site->site_status = HOSTING_SITE_QUEUED;
-  
+
   // Create a platform node.
   $platform_node = new stdClass();
   $platform_node->type = 'platform';
   $platform_node->title = "mywebservice_{$name}";
   $platform_node->publish_path = "/var/aegir/mywebservice/{$name}";
   $platform_node->makefile = $makefile;
-  
+
   // Attach platform node to site node:
   $site->platform_node = $platform_node;
-  
+
   // Save the site node, along with the platform.
   // This is possible thanks to the patch in https://www.drupal.org/node/2824731
   if ($site = node_submit($site)) {
     node_save($site);
   }
-  
 }
