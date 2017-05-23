@@ -461,3 +461,42 @@ function hook_hosting_task_dangerous_tasks_alter(&$tasks) {}
 /**
  * @} End of "addtogroup hostinghooks".
  */
+
+/**
+ * Easily create a new site and a platform by passing just a name and a makefile URL.
+ *
+ * To get a new website running from a new codebase in Aegir, you need to create
+ * a platform, and then a site node. With the latest version, you can use code
+ * to do both at once.
+ *
+ * This function will create a platform node for /var/aegir/mywebservice/$name
+ * using the $makefile specified, and will then create a site node with the URL
+ * $name.mywebservice.com.
+ */
+function example_create_site($name, $makefile) {
+
+  // Create site node.
+  $site = new stdClass();
+  $site->type = 'site';
+  $site->title = "{$name}.mywebservice.com";
+  $site->status = 1;
+  $site->uid = 1;
+  $site->client = HOSTING_DEFAULT_CLIENT;
+  $site->site_status = HOSTING_SITE_QUEUED;
+
+  // Create a platform node.
+  $platform_node = new stdClass();
+  $platform_node->type = 'platform';
+  $platform_node->title = "mywebservice_{$name}";
+  $platform_node->publish_path = "/var/aegir/mywebservice/{$name}";
+  $platform_node->makefile = $makefile;
+
+  // Attach platform node to site node:
+  $site->platform_node = $platform_node;
+
+  // Save the site node, along with the platform.
+  // This is possible thanks to the patch in https://www.drupal.org/node/2824731
+  if ($site = node_submit($site)) {
+    node_save($site);
+  }
+}
