@@ -493,7 +493,7 @@ function hosting_client_mail($key, &$message, $params) {
   switch ($key) {
     case 'hosting-client-register-welcome':
       $message['subject'] = _hosting_client_mail_text('welcome_subject', $params);
-      $message['body'] = _hosting_client_mail_text('welcome_body', $params);
+      $message['body'][] = _hosting_client_mail_text('welcome_body', $params);
       break;
   }
 }
@@ -634,7 +634,7 @@ function hosting_client_view($node, $view_mode, $langcode = NULL) {
     $header = array(t('Allowed users'));
     $node->content['users_view'] = array(
       '#type' => 'item',
-      '#value' => theme('table', array('header' => $header, 'rows' => $rows)),
+      '#markup' => theme('table', array('header' => $header, 'rows' => $rows)),
       '#class' => 'client',
       '#prefix' => '<div id="hosting-site-list">',
       '#suffix' => '</div>',

@@ -736,7 +736,7 @@ function hosting_tasks_queue($count = 20) {
   }
 
   foreach ($tasks as $task) {
-    hosting_task_execute($task, array('fork' => TRUE));
+    hosting_task_execute($task, array('fork' => drush_get_option('fork', TRUE)));
   }
 }
 

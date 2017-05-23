@@ -156,7 +156,7 @@ function hosting_get_profile_platforms($profile, $check_old_short_name = FALSE) 
       // there are other profiles available on this platform. skip this.
       continue;
     }
-    if ($platform->platform_status != HOSTING_PLATFORM_DELETED) {
+    if ($platform->platform_status == HOSTING_PLATFORM_ENABLED) {
       $platforms[$instance->rid] = $platform->title;
     }
   }
