@@ -85,6 +85,10 @@ function hosting_task_migrate_form_validate($form, &$form_state) {
     }
   }
 
+  if (!isset($form_state['values']['parameters']['target_platform'])) {
+    form_set_error('parameters][target_platform', t("You have no target platform specified."));
+  }
+
   if ($form_state['values']['parameters']['target_platform'] != $site->platform) {
     $migrate_possible = TRUE;
   }
@@ -162,6 +166,8 @@ function hosting_task_migrate_form($node) {
     array('r.type' => 'platform', 'p.old_short_name' => $site_profile->short_name)));
 
   $site_platform = node_load($node->platform);
+  $has_platform_available = FALSE;
+
   // Don't show the current platform if it's locked
   if (!_hosting_platform_is_locked($node->platform)) {
     $form[$node->platform]['target_platform'] = array(
@@ -172,6 +178,7 @@ function hosting_task_migrate_form($node) {
       '#description' => t("Current platform"),
       '#parents' => array('parameters', 'target_platform'),
     );
+    $has_platform_available = TRUE;
   }
   foreach ($profile_platform_instances as $profile_instance) {
     if (($profile_instance->rid != $node->platform) && (in_array($profile_instance->rid, $valid_options['platform']))) {
@@ -197,10 +204,12 @@ function hosting_task_migrate_form($node) {
       if ($status['error']) {
         $form[$platform->nid]['target_platform']['#disabled'] = TRUE;
       }
-
+      $has_platform_available = TRUE;
     }
   }
-
+  if (!$has_platform_available) {
+    form_set_error('parameters][target_platform', t("You have no platform available as target. Are they locked?"));
+  }
   $form['#node'] = $node;
   return $form;
 }
