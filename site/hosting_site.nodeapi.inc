@@ -400,7 +400,7 @@ function hosting_site_node_update($node) {
  */
 function hosting_site_load($nodes) {
   foreach ($nodes as $nid => &$node) {
-    $additions = db_query('SELECT  client, db_server, db_name, platform, profile, language as site_language, last_cron, cron_key, status AS site_status, verified FROM {hosting_site} WHERE vid = :vid', array(':vid' => $node->vid))->fetch();
+    $additions = db_query('SELECT  client, db_server, db_name, platform, profile, web_server, publish_path, language as site_language, last_cron, cron_key, s.status AS site_status, p.status AS platform_status, s.verified, p.verified as platform_verified FROM {hosting_site} s LEFT JOIN {hosting_platform} p ON s.platform = p.nid WHERE s.vid = :vid', array(':vid' => $node->vid))->fetch();
     foreach ($additions as $property => &$value) {
       $node->$property = $value;
     }
