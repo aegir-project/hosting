@@ -405,4 +405,8 @@ function hosting_site_load($nodes) {
       $node->$property = $value;
     }
   }
+  
+  // Create a "servers" array based on our two base servers.
+  $node->servers['web'] = node_load($node->web_server);
+  $node->servers['db'] = node_load($node->db_server);
 }
