@@ -302,17 +302,17 @@ function hosting_site_insert(&$node) {
       }
       $node->platform = $node->platform_node->nid;
     }
+
+    // If db_server hasn't been explicity set, use hostmaster's web server.
+    if (!isset($node->platform_node->db_server)) {
+      $hostmaster = hosting_context_load('hostmaster');
+      $node->db_server = $hostmaster->db_server;
+    }
   }
 
   // If there is no platform NID and no publish path, throw an exception.
   if (empty($node->platform) && empty($node->platform_node->publish_path)) {
     throw new Exception('Site nodes require either platform or platform_node->publish_path property');
-  }
-
-  // If db_server hasn't been explicity set, use hostmaster's web server.
-  if (!isset($node->platform_node->db_server)) {
-    $hostmaster = hosting_context_load('hostmaster');
-    $node->db_server = $hostmaster->db_server;
   }
 
   $id = db_insert('hosting_site')
