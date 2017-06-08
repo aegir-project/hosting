@@ -61,7 +61,8 @@ function hosting_drush_command() {
       ),
     ),
     'examples' => array(
-      'drush @hostmaster hosting-task @sitename.com backup "description=backup description"' => 'Run backup task on sitename.com with the description "backup description".'
+      'drush @hostmaster hosting-task @sitename.com backup "description=backup description"' => 'Run backup task on sitename.com with the description "backup description".',
+      'drush @hostmaster hosting-task 42 --verbose --force' => 'Run the task with ID 42.',
     ),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_FULL,
   );
