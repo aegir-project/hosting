@@ -236,6 +236,9 @@ function hosting_client_node_grants($account, $op) {
       elseif ($op == 'update' && user_access('edit ' . $type, $account)) {
         $grants[$cache_id]['hosting ' . $type] = array_keys($account->client_id);
       }
+      elseif ($op == 'view' && !user_access('view ' . $type, $account)) {
+        $grants[$cache_id]['hosting ' . $type] = array_keys($account->client_id);
+      }
     }
   }
   return isset($grants[$cache_id]) ? $grants[$cache_id] : array();
@@ -299,9 +302,18 @@ function hosting_client_node_access_records($node) {
             }
           }
         }
+        else {
+          // When $node->clients isn't set on a platform, all clients have access.
+          $results = db_query("select nid from {hosting_client} c");
+          foreach ($results as $row) {
+            if ($row->nid != HOSTING_ADMIN_CLIENT) {
+              $gids[] = $row->nid;
+            }
+          }
+        }
       }
 
-      // Lookup databaaes hosted on this server.
+      // Lookup databases hosted on this server.
       $databases = hosting_get_sites_on_db_server($node->nid);
       foreach ($databases as $nid => $dbname) {
         $node = node_load($nid);
@@ -325,6 +337,15 @@ function hosting_client_node_access_records($node) {
         foreach ($node->clients as $cid => $client) {
           if ($cid != HOSTING_ADMIN_CLIENT) {
             $grants[] = array_merge($base_grant, array('gid' => $cid, 'grant_update' => 0));
+          }
+        }
+      }
+      else {
+        // When $node->clients isn't set, all clients have access.
+        $results = db_query("select nid from {hosting_client} c");
+        foreach ($results as $row) {
+          if ($row->nid != HOSTING_ADMIN_CLIENT) {
+            $grants[] = array_merge($base_grant, array('gid' => $row->nid, 'grant_update' => 0));
           }
         }
       }

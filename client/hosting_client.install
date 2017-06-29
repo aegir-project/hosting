@@ -354,3 +354,21 @@ function hosting_client_update_6004() {
   $ret[] = update_sql("UPDATE {hosting_site} SET client = %d WHERE client = 0", HOSTING_DEFAULT_CLIENT);
   return $ret;
 }
+
+/**
+ * Implements hook_update_N().
+ *
+ * Re-build node access.
+ */
+function hosting_client_update_7001(&$sandbox) {
+  // node_access_rebuild from the the update hook fails without the following defintion.
+  if (!defined('HOSTING_ADMIN_CLIENT')) {
+    define('HOSTING_ADMIN_CLIENT', variable_get('hosting_admin_client', 1));
+  }
+  // @see https://gist.github.com/johnennewdeeson/6d4a6d667538e6149f56
+  _node_access_rebuild_batch_operation($sandbox);
+  $sandbox['#finished'] = $sandbox['sandbox']['progress'] >= $sandbox['sandbox']['max'];
+  if ($sandbox['#finished']) {
+    node_access_needs_rebuild(FALSE);
+  }
+}
