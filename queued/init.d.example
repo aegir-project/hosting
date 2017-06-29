@@ -42,7 +42,7 @@ NICE=10
 #
 do_start()
 {
-    su - $USER -- $DAEMON $DAEMON_ARGS &
+    su - $USER -c "$DAEMON $DAEMON_ARGS" &
     ret=$?
     echo $! > $PIDFILE
     return $ret
