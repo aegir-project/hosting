@@ -729,8 +729,6 @@ function hosting_server_view($node, $view_mode, $langcode = NULL) {
         'changed' => $node->changed,
       );
       drupal_add_js($settings, array('type' => 'setting', 'scope' => JS_DEFAULT));
-
-      drupal_add_js(drupal_get_path('module', 'hosting_task') . '/hosting_task.js');
     }
   }
 
