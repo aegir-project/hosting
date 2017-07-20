@@ -370,7 +370,6 @@ function hosting_site_language_callback($form, &$form_state) {
  */
 function hosting_site_validate($node, &$form) {
   global $user;
-
   $valid_options = hosting_site_available_options($node);
 
   // Domain names are case-insensitive, set to lower case.
@@ -404,7 +403,7 @@ function hosting_site_validate($node, &$form) {
 
   // If the quota module is loaded and this is a new node, check
   // the site quota.
-  if (!empty($node->nid) && function_exists('hosting_site_quota_exceeded')) {
+  if (empty($node->nid) && function_exists('hosting_site_quota_exceeded')) {
     $quota_error = hosting_site_quota_exceeded($node);
     if ($quota_error) {
       form_set_error('title', $quota_error);

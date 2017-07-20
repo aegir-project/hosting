@@ -8,7 +8,7 @@
  * Implements hook_permission().
  */
 function hosting_quota_permission() {
-  return array(
+  $permissions = array(
     'edit all quotas' => array(
       'title' => t('edit all quotas'),
     ),
@@ -18,7 +18,18 @@ function hosting_quota_permission() {
     'view own quota' => array(
       'title' => t('view own quota'),
     ),
+    'bypass all quotas' => array(
+      'title' => t('bypass all quotas'),
+    ),
   );
+  $all_resources = module_invoke_all('hosting_quota_resource');
+  foreach ($all_resources as $resource => $data) {
+    $permissions["bypass resource $resource limit"] = array(
+      'title' => t('bypass resource !resource limit',
+        array('!resource' => $resource)),
+    );
+  }
+  return $permissions;
 }
 
 /**
@@ -205,15 +216,19 @@ function hosting_quota_check($client, $resource, $start = NULL, $end = NULL) {
 
   // Get info about the resource if necessary
   if (!is_array($resource)) {
+    $resource_name = $resource;
     $resource = hosting_quota_get($resource);
   }
-  $resource_name = key($resource);
-  $resource = $resource[$resource_name];
   // Get usage and limit for the selected resource
   if ($resource['module']) {
-    $resource_usage = module_invoke($resource['module'], 'hosting_quota_get_usage');
+    if (user_access("bypass all quotas")) {
+      return TRUE;
+    }
+    if (user_access("bypass resource $resource_name limit")) {
+      return TRUE;
+    }
+    $resource_usage = module_invoke($resource['module'], 'hosting_quota_get_usage', $client, $resource_name, $start, $end);
     $resource_limit = db_query('SELECT value FROM {hosting_client_quota} WHERE client = :client AND resource = :resource', array(':client' => $client, ':resource' => $resource_name))->fetchField();
-
     // Return the appropriate values
     if ($resource_limit > $resource_usage) {
       return TRUE;

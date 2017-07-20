@@ -16,6 +16,9 @@ function hosting_quota_hosting_feature() {
     'module' => 'hosting_quota',
     'group' => 'experimental',
     'role_permissions' => array(
+      'aegir administrator' => array(
+        'bypass all quotas',
+      ),
       'aegir account manager' => array(
         'edit all quotas',
         'view all quotas',
@@ -29,4 +32,3 @@ function hosting_quota_hosting_feature() {
   );
   return $features;
 }
-
