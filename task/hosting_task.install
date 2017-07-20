@@ -326,3 +326,13 @@ function hosting_task_update_6200() {
 function hosting_task_update_7000() {
   drupal_flush_all_caches();
 }
+
+/**
+ * Grant aegir clients 'create login-reset task' permission.
+ */
+function hosting_task_update_7001() {
+  $role = user_role_load_by_name('aegir client');
+  if ($role) {
+    user_role_grant_permissions($role->rid, array('create login-reset task'));
+  }
+}

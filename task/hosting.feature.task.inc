@@ -34,6 +34,7 @@ function hosting_task_hosting_feature() {
         'create enable task',
         'create restore task',
         'create verify task',
+        'create login-reset task',
         'access task logs',
         'view own tasks',
         'view task',
