@@ -381,6 +381,10 @@ function hosting_site_update(&$node) {
       ))
       ->condition('vid', $node->vid)
       ->execute();
+    
+    if (isset($node->platform_node->nid)) {
+      node_save($node->platform_node);
+    }
   }
 }
 
