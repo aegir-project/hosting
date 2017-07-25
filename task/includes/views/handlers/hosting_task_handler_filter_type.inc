@@ -13,7 +13,7 @@ class hosting_task_handler_filter_type extends views_handler_filter_in_operator 
 
       $options = array();
 
-      foreach (array('site', 'platform') as $type) {
+      foreach (array('site', 'platform', 'server') as $type) {
         $tasks = hosting_available_tasks($type);
         if (!empty($tasks)) {
           foreach ($tasks as $identifier => $task) {
