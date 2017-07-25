@@ -922,5 +922,6 @@ function hosting_server_form_hosting_settings_alter(&$form, $form_state) {
     '#description' => 'When importing sites, and during some other operations, Aegir will use this database, if none was specified.',
     '#type' => 'select',
     '#options' => hosting_get_servers('db'),
+    '#default_value' => variable_get('hosting_default_db_server', 4),
   );
 }
