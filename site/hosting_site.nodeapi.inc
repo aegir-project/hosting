@@ -382,6 +382,7 @@ function hosting_site_update(&$node) {
       ->condition('vid', $node->vid)
       ->execute();
     
+    // If platform_node is passed in the site node, save it.
     if (isset($node->platform_node->nid)) {
       node_save($node->platform_node);
     }

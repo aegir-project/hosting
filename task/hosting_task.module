@@ -742,9 +742,13 @@ function hosting_tasks_queue($count = 20) {
 
 /**
  * Executes a task while logging to watchdog and drush.
+ * Implemented by drush hosting-tasks and hosting-queued commands.
  *
  * @param $task
  *   A fully loaded task node.
+ *
+ * @param $backend_options
+ *   @see drush_invoke_process().
  */
 function hosting_task_execute($task, $backend_options = array()) {
   // Log in watchdog and drush.
