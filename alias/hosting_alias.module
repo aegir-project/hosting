@@ -109,7 +109,7 @@ function hosting_alias_form_data(&$form, &$form_state) {
     '#suffix' => '</div>',
   );
   $form['aliases_wrapper']['aliases'] = array(
-    '#prefix' => '<div id="hosting-aliases">',
+    '#prefix' => '<div id="hosting-aliases"><label>' . t('Domain Aliases') . '</label>',
     '#suffix' => '</div>',
     '#tree' => TRUE,
    // '#theme' => 'hosting_alias_form',
