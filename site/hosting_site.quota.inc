@@ -36,7 +36,7 @@ function hosting_site_hosting_quota_resource_render($resource, $usage) {
 }
 
 /**
- * Check for quotas and return an appropriate error message to the site creation form
+ * Check for quotas and return an appropriate error message to the site creation form.
  */
 function hosting_site_quota_exceeded($node) {
   $client = hosting_get_client_by_uname($node->client);

@@ -2,7 +2,6 @@
 /**
  * @file
  * Define the database schema and update functions for the hosting_task module.
- *
  */
 
 /**
@@ -173,7 +172,7 @@ function hosting_task_update_6000() {
 
   $ret = hosting_package_update_6002();
 
-  // this update needs to be run before tasks can be added, in other update functions. 
+  // This update needs to be run before tasks can be added, in other update functions.
   if (!variable_get('hosting_task_update_6000_run', FALSE)) {
     db_add_field($ret, 'hosting_task', 'delta', array('type' => 'int', 'not null' => TRUE, 'default' => 0));
     variable_set('hosting_task_update_6000_run', TRUE);
