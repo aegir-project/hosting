@@ -766,7 +766,7 @@ function hosting_task_execute($task, $backend_options = array()) {
 
   // Log a message, depending on forked process or not.
   // If forked, the process may not have completed yet, so we should change the message.
-  if ($backend_options['fork']) {
+  if (isset($backend_options['fork']) && $backend_options['fork']) {
     drush_log(dt('Launched task "@title" in a forked process. [node/@nid]', array(
       '@title' => $task->title,
       '@nid' => $task->nid,
