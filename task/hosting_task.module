@@ -1076,6 +1076,16 @@ function hosting_task_update_status_form_submit($form, &$form_state) {
   if (module_exists('overlay')) {
     overlay_close_dialog();
   }
+  if (module_exists('hosting_queued')) {
+    // Release the hosting_queued lock.
+    // Cannot use lock release because it uses semaphore value, which only works in a single request.
+    global $locks;
+    unset($locks['hosting_queue_tasks_running']);
+    db_delete('semaphore')
+      ->condition('name', 'hosting_queue_tasks_running')
+      ->execute();
+  }
+
 }
 
 /**
