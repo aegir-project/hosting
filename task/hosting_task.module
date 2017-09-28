@@ -866,6 +866,23 @@ function hosting_available_tasks($type = NULL, $reset = FALSE) {
 }
 
 /**
+ * Implements hook_hosting_tasks_alter()
+ *
+ * Set 'command' property for tasks that don't implement it.
+ */
+function hosting_task_hosting_tasks_alter(&$cache) {
+
+  // For any task type that doesn't use "command", add it as 'provision-$TYPE'.
+  foreach ($cache as &$tasks) {
+    foreach ($tasks as $type => &$task_type) {
+      if (!isset($task_type['command']) || empty($task_type['command'])) {
+        $task_type['command'] = 'provision-' . $type;
+      }
+    }
+  }
+}
+
+/**
  * Implements hook_action_info().
  */
 function hosting_task_action_info() {
@@ -1010,6 +1027,7 @@ function hosting_task_delete_related_tasks($nid) {
  * Implements hook_load().
  */
 function hosting_task_load($nodes) {
+  $types = module_invoke_all('hosting_tasks');
   foreach ($nodes as $nid => &$node) {
     $additions = db_query('SELECT task_type, executed, delta, rid, task_status FROM {hosting_task} WHERE vid = :vid', array(':vid' => $node->vid))->fetch();
     $result = db_query("SELECT name, value FROM {hosting_task_arguments} WHERE vid = :vid", array(':vid' => $node->vid));
@@ -1021,6 +1039,9 @@ function hosting_task_load($nodes) {
     foreach ($additions as $property => &$value) {
       $node->$property = $value;
     }
+
+    // Load task_command property from hook_hosting_tasks data.
+    $node->task_command = $types[$node->type][$node->task_type]['command'];
   }
 }
 

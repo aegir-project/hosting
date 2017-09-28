@@ -20,6 +20,7 @@
  *   should be an array of tasks keyed by task type, the value should be an
  *   array that defines the task. Valid keys for defining tasks are:
  *   - 'title': (required) The human readable name of the task.
+ *   - 'command': (optional) The drush command to run. If not included, will assume "provision-TASKTYPE".
  *   - 'description': (optional) The human readable description of the task.
  *   - 'weight': (optional) The weight of the task when displayed in lists.
  *   - 'dialog' (optional) Set to TRUE to indicate that this task requires a
@@ -47,6 +48,7 @@ function hook_hosting_tasks() {
     'description' => t('Make a copy of a site.'),
     'weight' => 5,
     'dialog' => TRUE,
+    'command' => 'provision-clone',
   );
   return $options;
 }
