@@ -366,6 +366,9 @@ function hosting_platform_form(&$node) {
       '#default_value' => $default_path,
       '#maxlength' => 255,
       '#field_prefix' => $base_path,
+      '#element_validate' => array(
+        'hosting_platform_form_publish_path_validate',
+      ),
     );
   }
   else {
@@ -436,8 +439,6 @@ function hosting_platform_form(&$node) {
       '#value' => isset($node->$extra_attribute) ? $node->$extra_attribute : NULL,
     );
   }
-
-  $form['#submit'][] = 'hosting_platform_form_validate';
 
   return $form;
 }
@@ -564,13 +565,16 @@ function hosting_platform_delete($node) {
 }
 
 /**
- * Form validation for platforms.
+ * Element validator for publish_path. Only run when field is editable.
+ * (New node or failed validation and no makefile.)
  */
-function hosting_platform_form_validate(&$form, &$form_state) {
-  // Prepend our platform base path, if this is a new platform.
-  $node = $form['#node'];
-  if (!isset($node->nid)) {
-    $form_state['values']['publish_path'] = variable_get('hosting_platform_base_path', '/var/aegir/platforms/') . $form_state['values']['publish_path'];
+function hosting_platform_form_publish_path_validate($element, &$form_state, &$form) {
+  $platform_base_path = variable_get('hosting_platform_base_path', '/var/aegir/platforms/');
+  
+  // If platform path doesn't already begin with the basepath and does not begin with a "/", append default base path.
+  if (strpos($element['#value'], $platform_base_path) !== 0 && strpos($element['#value'], '/') !== 0) {
+    $full_path = hosting_path_normalize($platform_base_path . '/' . $element['#value']);
+    form_set_value($element, $full_path, $form_state);
   }
 }
 
