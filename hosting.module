@@ -1320,6 +1320,20 @@ function hosting_settings($form, &$form_state) {
       '#default_value' => variable_get('hosting_cron_use_backend', TRUE),
     );
   }
+
+  $types = implode(', ', db_query('SELECT type FROM {hosting_task_log} GROUP BY type ORDER BY type')->fetchCol());
+  if (empty($types)) {
+    $types = 'error warning info message notice ok status success warning';
+  }
+  $form['hosting_task_logs_types_display'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Task Logs to Display'),
+    '#description' => t('Enter the types of logs you wish to show to the user, separated by spaces. Available log types are: %types', array(
+      '%types' => $types,
+    )),
+    '#rows' => 2,
+    '#default_value' => variable_get('hosting_task_logs_types_display', 'error warning info message ok status success warning'),
+  );
   return system_settings_form($form);
 }
 
