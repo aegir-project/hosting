@@ -165,11 +165,17 @@ function drush_hosting_queued() {
         sleep(1);
         $timeout--;
         // Check connection
-        $connect = @mysqli_connect($db['host'], $db['username'], $db['password']);
+        $connect = FALSE;
+        try {
+          $connect = Database::getConnection();
+        }
+        catch (Exception $e) {
+          $connect = FALSE;
+        }
         drush_log('.', 'warning');
       } while (!$connect && $timeout > 0);
       // Close connection
-      mysqli_close($connect);
+      db_close();
       drush_log('Restarting queue daemon.', 'warning');
       hosting_queued_restart();
     }
@@ -257,23 +263,14 @@ function hosting_queued_restart($signal = NULL) {
 }
 
 /**
- * Close all database fiel descriptors, as exec() doesn't close them
- *
- * This only supports MySQLi right now, because there's no db_close() in
- * Drupal.
+ * Close all database file descriptors, as exec() doesn't close them.
  */
 function hosting_queued_db_close_all() {
-  global $db_url, $active_db;
-  if (is_array($db_url)) {
-    foreach ($db_url as $name => $url) {
-      db_set_active($name);
-      if ($active_db) {
-        mysqli_close($active_db);
-      }
+  global $databases;
+  foreach (array_keys($databases) as $target) {
+    foreach (array_keys($databases[$target]) as $key) {
+      Database::closeConnection($target, $key);
     }
-  }
-  else {
-    mysqli_close($active_db);
   }
 }
 
