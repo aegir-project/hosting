@@ -1320,7 +1320,7 @@ function hosting_settings($form, &$form_state) {
       '#default_value' => variable_get('hosting_cron_use_backend', TRUE),
     );
   }
-  
+
   $types = implode(', ', db_query('SELECT type FROM {hosting_task_log} GROUP BY type ORDER BY type')->fetchCol());
   if (empty($types)) {
     $types = 'error warning info message notice ok status success warning';
