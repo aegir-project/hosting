@@ -1491,8 +1491,9 @@ function _hosting_parse_error_code($code) {
  * Return the status of the task matching the specification.
  */
 function hosting_task_status($filter_by, $filter_value, $type = 'install') {
-  $query = db_select('node', 'n')
-    ->join('hosting_task', 't', 'n.vid = t.vid')
+  $query = db_select('node', 'n');
+  $query->join('hosting_task', 't', 'n.vid = t.vid');
+  $query
     ->fields('t', array('task_status'))
     ->condition('n.type', 'task')
     ->condition('t.task_type', $type);
