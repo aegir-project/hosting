@@ -1823,6 +1823,7 @@ function hosting_task_preprocess_views_view_table(&$vars) {
 function hosting_task_update_status($task) {
   if (is_numeric($task)) {
     $vid = $task;
+    $task = node_load(NULL, $task);
   }
   else {
     $vid = $task->vid;
