@@ -340,16 +340,24 @@ function hosting_platform_form(&$node) {
   if (!isset($node->nid) || (!$node->verified && empty($node->makefile))) {
     $base_path = variable_get('hosting_platform_base_path', '/var/aegir/platforms/');
     $default_path = '';
+    $form_element_type = 'machine_name';
+    $field_prefix = $base_path;
     if (isset($node->publish_path)) {
       // Strip the $base_path, since we prepend it in a validation handler.
       // This enforces platform publishing under the defined base path, even if
       // an error allows the path to be edited again.
-      if (substr($node->publish_path, 0, strlen($base_path)) == $base_path) {
+      if (strpos($node->publish_path, $base_path) === 0) {
         $default_path = substr($node->publish_path, strlen($base_path));
       }
+      else {
+        // If publish path is not inside /var/aegir/platforms, use that as the default path and remove the field prefix.
+        $default_path = $node->publish_path;
+        $field_prefix = '';
+      }
     }
+
     $form['publish_path'] = array(
-      '#type' => 'machine_name',
+      '#type' => $form_element_type,
       '#machine_name' =>  array(
         'exists' => 'hosting_platform_path_exists',
         'source' => array('title'),
@@ -365,7 +373,7 @@ function hosting_platform_form(&$node) {
       '#size' => 40,
       '#default_value' => $default_path,
       '#maxlength' => 255,
-      '#field_prefix' => $base_path,
+      '#field_prefix' => $field_prefix,
       '#element_validate' => array(
         'hosting_platform_form_publish_path_validate',
       ),
