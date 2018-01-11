@@ -340,7 +340,6 @@ function hosting_platform_form(&$node) {
   if (!isset($node->nid) || (!$node->verified && empty($node->makefile))) {
     $base_path = variable_get('hosting_platform_base_path', '/var/aegir/platforms/');
     $default_path = '';
-    $form_element_type = 'machine_name';
     $field_prefix = $base_path;
     if (isset($node->publish_path)) {
       // Strip the $base_path, since we prepend it in a validation handler.
@@ -357,7 +356,7 @@ function hosting_platform_form(&$node) {
     }
 
     $form['publish_path'] = array(
-      '#type' => $form_element_type,
+      '#type' => 'machine_name',
       '#machine_name' =>  array(
         'exists' => 'hosting_platform_path_exists',
         'source' => array('title'),
