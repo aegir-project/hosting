@@ -46,6 +46,19 @@ function hosting_platform_menu() {
     'access arguments' => array('create', 'platform'),
   );
 
+  $items['node/%node/platform-edit'] = array(
+    'title' => 'Edit Platform',
+    'page callback' => 'hosting_platform_edit_form_on_site_page',
+    'page arguments' => array(1),
+    'access callback' => 'hosting_platform_edit_form_on_site_page_access',
+    'access arguments' => array('update', 1),
+    'weight' => 0,
+    'type' => MENU_LOCAL_TASK,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'node.pages.inc',
+    'file path' => drupal_get_path('module', 'node'),
+  );
+
   return $items;
 }
 
@@ -66,6 +79,26 @@ function hosting_platform_node_info() {
   );
 
   return $types;
+}
+
+/**
+ * Page callback for node/%node/platform-edit
+ *
+ * Wrapper for node_page_edit, for the "Edit Platform" tab.
+ */
+function hosting_platform_edit_form_on_site_page($site) {
+  $platform = node_load($site->platform);
+  return node_page_edit($platform);
+}
+
+/**
+ * Wrapper for node_page_edit, for the "Edit Platform" tab.
+ */
+function hosting_platform_edit_form_on_site_page_access($op, $site) {
+  if ($site->type == 'site') {
+    $platform = node_load($site->platform);
+    return node_access($op, $platform);
+  }
 }
 
 /**
