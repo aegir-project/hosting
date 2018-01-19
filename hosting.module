@@ -1321,7 +1321,7 @@ function hosting_settings($form, &$form_state) {
     );
   }
 
-  $types = implode(', ', db_query('SELECT type FROM {hosting_task_log} GROUP BY type ORDER BY type')->fetchCol());
+  $types = implode(' ', db_query('SELECT type FROM {hosting_task_log} GROUP BY type ORDER BY type')->fetchCol());
   if (empty($types)) {
     $types = 'error warning info message notice ok status success warning';
   }
