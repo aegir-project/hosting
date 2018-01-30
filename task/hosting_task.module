@@ -854,7 +854,10 @@ function hosting_available_tasks($type = NULL, $reset = FALSE) {
   static $cache = array();
 
   if (!count($cache) || $reset) {
+    // Invoke hook_hosting_tasks().
     $cache = module_invoke_all('hosting_tasks');
+
+    // Invoke hook_hosting_tasks_alter().
     drupal_alter('hosting_tasks', $cache);
   }
   if (isset($type)) {
@@ -1027,7 +1030,10 @@ function hosting_task_delete_related_tasks($nid) {
  * Implements hook_load().
  */
 function hosting_task_load($nodes) {
+  // Invoke hook_hosting_tasks().
   $types = module_invoke_all('hosting_tasks');
+
+  // Invoke hook_hosting_tasks_alter().
   drupal_alter('hosting_tasks', $types);
   foreach ($nodes as $nid => &$node) {
     $additions = db_query('SELECT task_type, executed, delta, rid, task_status, r.type as ref_type FROM {hosting_task} t LEFT JOIN {node} r ON t.rid = r.nid WHERE t.vid = :vid', array(':vid' => $node->vid))->fetch();
