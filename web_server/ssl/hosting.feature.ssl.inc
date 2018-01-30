@@ -10,7 +10,7 @@
 function hosting_ssl_hosting_feature() {
   $features['ssl'] = array(
     'title' => t('SSL support'),
-    'description' => t('Provides a service to expose a site encrypted by SSL certificates. (DEPRECATED, see hosting_https)'),
+    'description' => t('Provides a service to expose a site encrypted by SSL certificates. (LEGACY, see hosting_https)'),
     'status' => HOSTING_FEATURE_DISABLED,
     'module' => 'hosting_ssl',
     'group' => 'optional',

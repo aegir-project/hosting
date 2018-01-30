@@ -10,7 +10,7 @@
 function hosting_nginx_ssl_hosting_feature() {
   $features['nginx_ssl'] = array(
     'title' => t('Nginx SSL support'),
-    'description' => t('Provide support for the NGINX web server with SSL functionality. (DEPRECATED, see hosting_https)'),
+    'description' => t('Provide support for the NGINX web server with SSL functionality. (LEGACY, see hosting_https)'),
     'status' => HOSTING_FEATURE_DISABLED,
     'module' => 'hosting_nginx_ssl',
     'group' => 'optional',
