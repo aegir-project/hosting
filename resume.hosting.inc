@@ -20,7 +20,10 @@ function drush_hosting_resume() {
   $node = hosting_context_load(d()->name);
 
   // Fix the old platform first.
-  $platform_id = db_query('SELECT nid FROM {hosting_platform} WHERE publish_path = :publish_path', array(':publish_path' => d($old_platform)->root))->fetchField();
+  $platform_id = db_query('SELECT nid FROM {hosting_platform} WHERE publish_path = :publish_path AND status = :status', array(
+    ':publish_path' => d($old_platform)->root,
+    ':status' => HOSTING_PLATFORM_ENABLED,
+  ))->fetchField();
   if ($platform_id) {
     hosting_context_register($platform_id, ltrim($old_platform, '@'));
   }
