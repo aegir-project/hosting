@@ -240,6 +240,11 @@ function hosting_alias_get_aliases($node, $type = NULL) {
  */
 function hosting_alias_insert($node) {
   $automatic = hosting_alias_automatic_aliases(strtolower(trim($node->title)));
+
+  if (!isset($node->aliases)) {
+    $node->aliases = array();
+  }
+
   if (!empty($node->aliases) || count($automatic)) {
     $aliases = (is_array($node->aliases)) ? $node->aliases : explode("\n", str_replace(",", "\n", $node->aliases));
     if (is_array($aliases)) {
@@ -466,6 +471,23 @@ function hosting_alias_settings($form, &$form_state) {
     '#description' => t('To be able to provide a temporary url for your sites, you need to have configured a wild card dns entry<br /> resolving all calls to subdomains of your chosen domain, to point at your web server.'),
     '#default_value' => variable_get('hosting_alias_subdomain', ''),
   );
+  $form['hosting_alias_subdomain_replace_dash'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Replace dashes'),
+    '#description' => t('Replace dashes in automatic subdomain aliases. Changes only take effect when a site is verified.'),
+    '#default_value' => variable_get('hosting_alias_subdomain_replace_dash', TRUE),
+  );
+  $form['hosting_alias_subdomain_dash_substitute'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Dash substitute'),
+    '#description' => t('Dashes in automatic subdomain aliases will be replaced with the given value. Changes only take effect when a site is verified.'),
+    '#default_value' => variable_get('hosting_alias_subdomain_dash_substitute', '--'),
+    '#states' => array(
+      'visible' => array(
+        ':input[name="hosting_alias_subdomain_replace_dash"]' => array('checked' => TRUE),
+      ),
+    ),
+  );
   $form['hosting_alias_automatic_www'] = array(
     '#type' => 'checkbox',
     '#title' => t('Generate www.domain.com alias automatically'),
@@ -505,7 +527,13 @@ function hosting_alias_automatic_aliases($url) {
   $alias = array();
   if ($sub = variable_get('hosting_alias_subdomain', FALSE)) {
     if (!preg_match("/\." . preg_quote($sub, '/') . "$/", $url)) {
-      $alias[] = str_replace(array('-', '.'), array('--', '-'), $url) . "." . trim($sub, ".");
+      if (variable_get('hosting_alias_subdomain_replace_dash', TRUE)) {
+        $find[] = '-';
+        $replace[] = variable_get('hosting_alias_subdomain_dash_substitute', '--');
+      }
+      $find[] = '.';
+      $replace[] = '-';
+      $alias[] = str_replace($find, $replace, $url) . "." . trim($sub, ".");
     }
   }
   if (!preg_match('/^www\./', $url) && variable_get('hosting_alias_automatic_www', FALSE)) {

@@ -1,5 +1,5 @@
 name = SSL support
-description = Allow hostmaster to configure web servers with SSL support. (DEPRECATED, see hosting_https)
+description = Allow hostmaster to configure web servers with SSL support. (LEGACY, see hosting_https)
 package = Hosting
 dependencies[] = hosting
 dependencies[] = hosting_web_server

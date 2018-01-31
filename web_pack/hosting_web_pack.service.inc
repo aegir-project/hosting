@@ -111,4 +111,21 @@ class hostingService_http_pack extends hostingService_http {
     $task->context_options['master_web_servers'] = implode(',', array_values(array_map('hosting_context_name', array_intersect_key($this->master_servers, hosting_get_servers('http')))));
     $task->context_options['slave_web_servers'] = implode(',', array_values(array_map('hosting_context_name', array_intersect_key($this->slave_servers, hosting_get_servers('http')))));
   }
+
+  function context_import($context) {
+    $master_servers = $slave_server = array();
+
+    foreach ($context->master_web_servers as $master_server_context) {
+      $nid = hosting_context_nid($master_server_context);
+      $master_servers[$nid] = $nid;
+    }
+    $this->master_servers = $master_servers;
+
+    foreach ($context->slave_web_servers as $slave_server_context) {
+      $nid = hosting_context_nid($slave_server_context);
+      $slave_servers[$nid] = $nid;
+    }
+    $this->slave_servers = $slave_servers;
+  }
+
 }

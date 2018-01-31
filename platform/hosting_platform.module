@@ -46,6 +46,19 @@ function hosting_platform_menu() {
     'access arguments' => array('create', 'platform'),
   );
 
+  $items['node/%node/platform-edit'] = array(
+    'title' => 'Edit Platform',
+    'page callback' => 'hosting_platform_edit_form_on_site_page',
+    'page arguments' => array(1),
+    'access callback' => 'hosting_platform_edit_form_on_site_page_access',
+    'access arguments' => array('update', 1),
+    'weight' => 0,
+    'type' => MENU_LOCAL_TASK,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'node.pages.inc',
+    'file path' => drupal_get_path('module', 'node'),
+  );
+
   return $items;
 }
 
@@ -66,6 +79,26 @@ function hosting_platform_node_info() {
   );
 
   return $types;
+}
+
+/**
+ * Page callback for node/%node/platform-edit
+ *
+ * Wrapper for node_page_edit, for the "Edit Platform" tab.
+ */
+function hosting_platform_edit_form_on_site_page($site) {
+  $platform = node_load($site->platform);
+  return node_page_edit($platform);
+}
+
+/**
+ * Wrapper for node_page_edit, for the "Edit Platform" tab.
+ */
+function hosting_platform_edit_form_on_site_page_access($op, $site) {
+  if ($site->type == 'site') {
+    $platform = node_load($site->platform);
+    return node_access($op, $platform);
+  }
 }
 
 /**
@@ -337,17 +370,24 @@ function hosting_platform_form(&$node) {
   // the path if the makefile was specified is that there's the possibility
   // that the platform path was actually created when the node was saved the
   // first time and we have cruft lying around to cleanup.
-  if (!isset($node->nid) || (!$node->verified && !isset($node->makefile))) {
+  if (!isset($node->nid) || (!$node->verified && empty($node->makefile))) {
     $base_path = variable_get('hosting_platform_base_path', '/var/aegir/platforms/');
     $default_path = '';
+    $field_prefix = $base_path;
     if (isset($node->publish_path)) {
       // Strip the $base_path, since we prepend it in a validation handler.
       // This enforces platform publishing under the defined base path, even if
       // an error allows the path to be edited again.
-      if (substr($node->publish_path, 0, strlen($base_path)) == $base_path) {
+      if (strpos($node->publish_path, $base_path) === 0) {
         $default_path = substr($node->publish_path, strlen($base_path));
       }
+      else {
+        // If publish path is not inside /var/aegir/platforms, use that as the default path and remove the field prefix.
+        $default_path = $node->publish_path;
+        $field_prefix = '';
+      }
     }
+
     $form['publish_path'] = array(
       '#type' => 'machine_name',
       '#machine_name' =>  array(
@@ -365,7 +405,10 @@ function hosting_platform_form(&$node) {
       '#size' => 40,
       '#default_value' => $default_path,
       '#maxlength' => 255,
-      '#field_prefix' => $base_path,
+      '#field_prefix' => $field_prefix,
+      '#element_validate' => array(
+        'hosting_platform_form_publish_path_validate',
+      ),
     );
   }
   else {
@@ -436,8 +479,6 @@ function hosting_platform_form(&$node) {
       '#value' => isset($node->$extra_attribute) ? $node->$extra_attribute : NULL,
     );
   }
-
-  $form['#submit'][] = 'hosting_platform_form_validate';
 
   return $form;
 }
@@ -564,13 +605,16 @@ function hosting_platform_delete($node) {
 }
 
 /**
- * Form validation for platforms.
+ * Element validator for publish_path. Only run when field is editable.
+ * (New node or failed validation and no makefile.)
  */
-function hosting_platform_form_validate(&$form, &$form_state) {
-  // Prepend our platform base path, if this is a new platform.
-  $node = $form['#node'];
-  if (!isset($node->nid)) {
-    $form_state['values']['publish_path'] = variable_get('hosting_platform_base_path', '/var/aegir/platforms/') . $form_state['values']['publish_path'];
+function hosting_platform_form_publish_path_validate($element, &$form_state, &$form) {
+  $platform_base_path = variable_get('hosting_platform_base_path', '/var/aegir/platforms/');
+  
+  // If platform path doesn't already begin with the basepath and does not begin with a "/", append default base path.
+  if (strpos($element['#value'], $platform_base_path) !== 0 && strpos($element['#value'], '/') !== 0) {
+    $full_path = hosting_path_normalize($platform_base_path . '/' . $element['#value']);
+    form_set_value($element, $full_path, $form_state);
   }
 }
 

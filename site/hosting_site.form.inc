@@ -410,11 +410,11 @@ function hosting_site_validate($node, &$form) {
     }
   }
 
-  if (!in_array($node->profile, $valid_options['profile']) && !$node->nid) {
+  if (!in_array($node->profile, $valid_options['profile']) && !isset($node->nid)) {
     form_set_error('profile', t('Please choose a valid profile'));
   }
 
-  if (!in_array($node->platform, $valid_options['platform']) && !$node->nid) {
+  if (!in_array($node->platform, $valid_options['platform']) && !isset($node->nid)) {
     form_set_error('platform', t('Please choose a valid platform'));
   }
 

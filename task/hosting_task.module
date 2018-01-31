@@ -1207,9 +1207,12 @@ function hosting_task_view($node, $view_mode, $langcode = NULL) {
  * Display table containing the logged information for this task.
  */
 function _hosting_task_log_table($node, $last_position = 0) {
-  $result = db_query("SELECT * FROM {hosting_task_log} WHERE vid = :vid AND lid > :lid ORDER BY lid", array(':vid' => $node->vid, ':lid' => $last_position));
+
+  $types = explode(' ', variable_get('hosting_task_logs_types_display', 'error warning info message ok status success warning'));
+
+  $result = db_query("SELECT * FROM {hosting_task_log} WHERE vid = :vid AND lid > :lid AND type IN (:types) ORDER BY lid", array(':vid' => $node->vid, ':lid' => $last_position, ':types' => $types));
   if ($result) {
-    $headers = array('data' => 'Log message', 'execution_time' => 'Execution time');
+    $headers = array('data' => 'Log message', 'execution_time' => 'Execution time', '');
     $rows = array();
     $last_lid = $last_position;
     $last_timestamp = 0;
@@ -1247,7 +1250,7 @@ function _hosting_task_log_table($node, $last_position = 0) {
       }
 
       if ($row_count > -1) {
-        $rows[$row_count]['data'][] = array(
+        $rows[$row_count]['data'][1] = array(
           'data' => $exec_time,
         );
       }
@@ -1260,6 +1263,8 @@ function _hosting_task_log_table($node, $last_position = 0) {
           'data' => $message,
           'class' => array('hosting-status'),
         ),
+        '',
+        $entry->type,
       );
 
       $rows[] = array(
@@ -1496,8 +1501,9 @@ function _hosting_parse_error_code($code) {
  * Return the status of the task matching the specification.
  */
 function hosting_task_status($filter_by, $filter_value, $type = 'install') {
-  $query = db_select('node', 'n')
-    ->join('hosting_task', 't', 'n.vid = t.vid')
+  $query = db_select('node', 'n');
+  $query->join('hosting_task', 't', 'n.vid = t.vid');
+  $query
     ->fields('t', array('task_status'))
     ->condition('n.type', 'task')
     ->condition('t.task_type', $type);
@@ -1827,6 +1833,7 @@ function hosting_task_preprocess_views_view_table(&$vars) {
 function hosting_task_update_status($task) {
   if (is_numeric($task)) {
     $vid = $task;
+    $task = node_load(NULL, $task);
   }
   else {
     $vid = $task->vid;

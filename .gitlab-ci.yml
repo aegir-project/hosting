@@ -1,0 +1,9 @@
+before_script:
+    - composer require phplint/phplint
+
+test:
+    image: bobey/docker-gitlab-ci-runner-php5.6
+    script:
+        - echo "Syntax checking PHP files"
+        - echo "For more information http://www.icosaedro.it/phplint/"
+        - vendor/bin/phplint ./ --exclude "vendor"
