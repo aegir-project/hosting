@@ -445,4 +445,11 @@ function hosting_site_form_alter(&$form, &$form_state, $form_id) {
     $form['#after_build'][] = '_hosting_site_collapse_views_fieldset';
   }
 
+  // On Delete task forms, if variable is set, set the --force option.
+  if ($form_id == 'hosting_task_confirm_form' && $form['task']['#value'] == 'delete' && variable_get('hosting_delete_force', FALSE)) {
+    $form['parameters']['force'] = array(
+      '#type' => 'value',
+      '#value' => 1,
+    );
+  }
 }
