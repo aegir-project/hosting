@@ -252,12 +252,13 @@ function _hosting_site_url($node) {
     }
   }
 
-  /**
-   * This is part of the ssl feature, but is better to implement here.
-   */
-  if (isset($node->ssl_enabled) && ($node->ssl_enabled == 2)) {
-    // this is a bit of a magic number, because we cant rely on the constant being available yet.
-    // 2 == Only SSL is enabled.
+  // This is part of the ssl feature, but is better to implement here.
+  // The 2 is a bit of a magic number, because we cant rely on the constants being available yet.
+  // 2 == Only SSL is required, corresponding to HOSTING_SSL_REQUIRED and HOSTING_HTTPS_REQUIRED.
+  $hosting_ssl_required = (isset($node->ssl_enabled) && $node->ssl_enabled == 2);
+  $hosting_https_required = (isset($node->https_enabled) && $node->https_enabled == 2);
+
+  if ($hosting_ssl_required || $hosting_https_required) {
     $schema = 'https';
 
     if ($server->services['http']->has_port()) {
