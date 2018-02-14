@@ -415,7 +415,7 @@ function hosting_site_load($nodes) {
       array(':vid' => $node->vid)
     )->fetch();
     foreach ($additions as $property => &$value) {
-      $node->$property = $value;
+      $node->$property = is_numeric($value)? (int) $value: $value;
     }
   }
 

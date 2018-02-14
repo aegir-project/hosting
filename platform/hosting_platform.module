@@ -722,7 +722,7 @@ function hosting_platform_load($nodes) {
     }
 
     foreach ($additions as $property => &$value) {
-      $node->$property = $value;
+      $node->$property = is_numeric($value)? (int) $value: $value;
     }
   }
 }
