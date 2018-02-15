@@ -632,7 +632,7 @@ function hosting_server_load($nodes) {
     $additions->ip_addresses = _hosting_ip_load($node);
 
     foreach ($additions as $property => &$value) {
-      $node->$property = is_numeric($value)? (int) $value: $value;
+      $node->$property = is_numeric($value) ? (int) $value : $value;
     }
   }
 }
