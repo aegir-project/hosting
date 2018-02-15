@@ -795,11 +795,16 @@ function hosting_task_outstanding($nid, $type) {
         INNER JOIN {node} n ON t.vid = n.vid
       WHERE
         t.rid = :rid
-        AND t.task_status = :status
+        AND (t.task_status = :status_queued OR t.task_status = :status_processing)
         AND t.task_type = :type
         ORDER BY t.vid DESC
         LIMIT 1",
-        array(':rid' => $nid, ':status' => HOSTING_TASK_QUEUED, ':type' => $type))->fetchField();
+        array(
+          ':rid' => $nid,
+          ':status_queued' => HOSTING_TASK_QUEUED,
+          ':status_processing' => HOSTING_TASK_PROCESSING,
+          ':type' => $type
+        ))->fetchField();
   return $return;
 }
 
