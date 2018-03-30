@@ -40,10 +40,26 @@ function hosting_cron_queue($count) {
       provision_backend_invoke($site_name, "cron");
     }
     else {
-      // Optionally add the cron_key querystring key if the site has one.
-      $url = _hosting_site_url($site) . '/cron.php';
-      if (!empty($site->cron_key)) {
-        $url .= '?cron_key=' . rawurlencode($site->cron_key);
+      $drush_result = provision_backend_invoke($site_name, 'core-status', array('drupal-version'), array('--pipe'));
+      if ($drush_result['error_status'] === DRUSH_SUCCESS) {
+        $core_status = json_decode(trim($drush_result['output']), TRUE);
+        if (!empty($core_status['drupal-version'])) {
+          $version = explode('.', $core_status['drupal-version']);
+          $major_version = array_shift($version);
+        }
+      }
+      if (!empty($major_version) && $major_version == 8) {
+        $url = _hosting_site_url($site) . '/cron';
+        if (!empty($site->cron_key)) {
+          $url .= '/' . rawurlencode($site->cron_key);
+        }
+      }
+      else {
+        // Optionally add the cron_key querystring key if the site has one.
+        $url = _hosting_site_url($site) . '/cron.php';
+        if (!empty($site->cron_key)) {
+          $url .= '?cron_key=' . rawurlencode($site->cron_key);
+        }
       }
       drush_log(dt("running cron on URL %url", array('%url' => $url)));
       $response = drupal_http_request($url);
