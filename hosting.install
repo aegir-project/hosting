@@ -571,3 +571,28 @@ function hosting_update_7000() {
 function hosting_update_7001() {
   variable_set('error_level', ERROR_REPORTING_HIDE);
 }
+
+/**
+ * Force a re-verification of all enabled sites,
+ * to re-generate their Apache virtualhost configurations to use
+ * mitigation measures for SA 2018-002.
+ */
+function hosting_update_7302() {
+  // node_access_rebuild from the the update hook fails without the following defintion.
+  if (!defined('HOSTING_ADMIN_CLIENT')) {
+    define('HOSTING_ADMIN_CLIENT', variable_get('hosting_admin_client', 1));
+  }
+
+  $servers = hosting_get_servers('http');
+  foreach ($servers as $server_nid => $title) {
+    hosting_add_task($server_nid, 'verify');
+  }
+
+  $result = db_query("SELECT nid FROM {hosting_site} WHERE status=1");
+  while ($site = $result->fetch()) {
+    hosting_add_task($site->nid, 'verify');
+  }
+
+  $ret = array();
+  return $ret;
+}
