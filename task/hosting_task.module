@@ -1241,9 +1241,18 @@ function hosting_task_view($node, $view_mode, $langcode = NULL) {
  */
 function _hosting_task_log_table($node, $last_position = 0) {
 
-  $types = explode(' ', variable_get('hosting_task_logs_types_display', 'error warning info message ok status success warning'));
+  $query_args = array(':vid' => $node->vid, ':lid' => $last_position);
 
-  $result = db_query("SELECT * FROM {hosting_task_log} WHERE vid = :vid AND lid > :lid AND type IN (:types) ORDER BY lid", array(':vid' => $node->vid, ':lid' => $last_position, ':types' => $types));
+  $types_string = variable_get('hosting_task_logs_types_display', 'error warning info message ok status success warning');
+  if ($types_string == 'ALL') {
+    $type_query = "";
+  }
+  else {
+    $type_query = "AND type IN (:types)";
+    $query_args[':types'] = explode(' ', $types_string);
+  }
+
+  $result = db_query("SELECT * FROM {hosting_task_log} WHERE vid = :vid AND lid > :lid $type_query ORDER BY lid", $query_args);
   if ($result) {
     $headers = array('data' => 'Log message', 'execution_time' => 'Execution time', '');
     $rows = array();

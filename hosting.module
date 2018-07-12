@@ -1335,7 +1335,7 @@ function hosting_settings($form, &$form_state) {
   $form['hosting_task_logs_types_display'] = array(
     '#type' => 'textarea',
     '#title' => t('Task Logs to Display'),
-    '#description' => t('Enter the types of logs you wish to show to the user, separated by spaces. Available log types are: %types', array(
+    '#description' => t('Enter the types of logs you wish to show to the user, separated by spaces. Use the special type "ALL" to get any type. Available log types are: %types', array(
       '%types' => $types,
     )),
     '#rows' => 2,
