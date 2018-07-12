@@ -45,6 +45,9 @@ function hosting_task_schema() {
         'not null' => FALSE,
       ),
     ),
+    'indexes' => array(
+      'nid' => array('nid'),
+    ),
     'primary key' => array('vid'),
   );
 
@@ -72,6 +75,10 @@ function hosting_task_schema() {
         'size' => 'big',
         'not null' => FALSE,
       ),
+    ),
+    'indexes' => array(
+      'vid' => array('vid'),
+      'nid' => array('nid'),
     ),
   );
 
@@ -333,5 +340,20 @@ function hosting_task_update_7001() {
   $role = user_role_load_by_name('aegir client');
   if ($role) {
     user_role_grant_permissions($role->rid, array('create login-reset task'));
+  }
+}
+
+/**
+ * Add indexes to the hosting_task and hosting_task_arguments tables.
+ */
+function hosting_task_update_7301() {
+  if (!db_index_exists('hosting_task', 'hosting_task_nid_idx')) {
+    db_add_index('hosting_task', 'hosting_task_nid_idx', array('nid'));
+  }
+  if (!db_index_exists('hosting_task_arguments', 'hosting_task_arguments_nid_idx')) {
+    db_add_index('hosting_task_arguments', 'hosting_task_arguments_nid_idx', array('nid'));
+  }
+  if (!db_index_exists('hosting_task_arguments', 'hosting_task_arguments_vid_idx')) {
+    db_add_index('hosting_task_arguments', 'hosting_task_arguments_vid_idx', array('vid'));
   }
 }
