@@ -345,7 +345,7 @@ function hosting_site_node_insert($node) {
         hosting_add_task($node->nid, 'import');
       }
       else {
-        hosting_add_task($node->nid, 'install');
+        hosting_add_task($node->nid, 'verify');
       }
     }
   }
